@@ -1,0 +1,82 @@
+.brands {
+  background: var(--bg-2);
+  border-block: 1px solid var(--line);
+}
+
+.brands-head {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.brands-note {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 0.6rem;
+}
+
+.brands-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+.brand-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 6.5rem;
+  padding: 1.25rem;
+  background: linear-gradient(160deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 0.25s ease, transform 0.2s ease;
+}
+
+.brand-card:hover {
+  border-color: rgba(255, 122, 26, 0.55);
+  transform: translateY(-3px);
+}
+
+.brand-name {
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+  color: var(--metal);
+  transition: color 0.25s ease;
+}
+
+.brand-card:hover .brand-name {
+  color: var(--text);
+}
+
+.brand-belt {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.brand-card:hover .brand-belt {
+  opacity: 1;
+}
+
+@media (max-width: 860px) {
+  .brands-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .brands-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .brand-card {
+    min-height: 5.5rem;
+  }
+}

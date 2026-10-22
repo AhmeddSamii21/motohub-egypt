@@ -1,0 +1,171 @@
+.models-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.model-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.model-card:hover {
+  border-color: rgba(255, 122, 26, 0.5);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+/* مساحة بصرية بدون صور: تدرجات معدنية + خطوط السرعة */
+
+.model-visual {
+  position: relative;
+  height: 11rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 1.1rem;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.06) 0%, transparent 45%),
+    repeating-linear-gradient(-45deg, transparent 0 18px, rgba(255, 255, 255, 0.028) 18px 36px),
+    linear-gradient(160deg, var(--panel-2), #191e25);
+  border-bottom: 1px solid var(--line);
+}
+
+.model-visual.cat-سكوتر {
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+    repeating-linear-gradient(-45deg, transparent 0 22px, rgba(255, 122, 26, 0.06) 22px 44px),
+    linear-gradient(160deg, #23242a, #191a1f);
+}
+
+.model-visual.cat-موتسيكل-عملي {
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.05) 0%, transparent 45%),
+    repeating-linear-gradient(45deg, transparent 0 22px, rgba(255, 255, 255, 0.03) 22px 44px),
+    linear-gradient(160deg, #20262d, #171b20);
+}
+
+.model-scope {
+  position: relative;
+  z-index: 1;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  border: 1px solid rgba(255, 122, 26, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 122, 26, 0.08);
+}
+
+.model-lines {
+  position: absolute;
+  bottom: 0;
+  inset-inline-end: 0;
+  width: 55%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.model-lines span {
+  position: absolute;
+  bottom: 18%;
+  inset-inline-end: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 122, 26, 0.65));
+  border-radius: 3px;
+}
+
+.model-lines span + span {
+  bottom: 30%;
+  width: 70%;
+  opacity: 0.45;
+}
+
+/* جسم البطاقة */
+
+.model-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.25rem 1.25rem 0;
+  flex: 1;
+}
+
+.model-category {
+  color: var(--metal);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.model-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.model-spec {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.model-spec b {
+  color: var(--text);
+}
+
+.model-price {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.model-price b {
+  color: var(--accent-2);
+  font-size: 1.25rem;
+}
+
+.model-price span {
+  font-size: 0.85rem;
+}
+
+.model-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 1.25rem 1.25rem;
+  padding: 0.7rem 1.1rem;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.model-cta:hover {
+  color: #1a0d02;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-color: transparent;
+}
+
+@media (max-width: 960px) {
+  .models-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .models-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .model-visual {
+    height: 9rem;
+  }
+}

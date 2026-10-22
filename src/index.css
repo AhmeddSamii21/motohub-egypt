@@ -1,0 +1,168 @@
+/* ======== متغيرات التصميم العامة — ثيم داكن معدني بلمسة برتقالية ======== */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #0e1013;            /* أسود فحمي */
+  --bg-2: #13161a;          /* سطح رئيسي */
+  --panel: #181c21;         /* بطاقات */
+  --panel-2: #1e232a;       /* بطاقات أفتح */
+  --line: #262c34;          /* حدود */
+  --metal: #8b93a1;         /* رمادي معدني */
+  --text: #e9ebee;
+  --muted: #9aa1ac;
+
+  --accent: #ff7a1a;        /* برتقالي رئيسي */
+  --accent-2: #ffa14d;      /* برتقالي فاتح */
+  --accent-dark: #d95f00;
+
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --container: 72rem;
+  --header-h: 4.25rem;
+
+  font-family: "Segoe UI", "Tahoma", "Cairo", system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* حتى لا يختفي العنوان تحت الهيدر الثابت عند التنقل بالروابط */
+  scroll-padding-top: calc(var(--header-h) + 0.75rem);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.section {
+  padding-block: 4rem;
+}
+
+.section-head {
+  max-width: 40rem;
+  margin-bottom: 2.25rem;
+}
+
+.section-kicker {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.6rem;
+}
+
+.section-title {
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem);
+}
+
+.section-sub {
+  color: var(--muted);
+  margin-top: 0.6rem;
+}
+
+.disclaimer {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #14090b00;
+  color: #1a0d02;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.btn-ghost:hover {
+  border-color: var(--metal);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding-block: 3rem;
+  }
+}

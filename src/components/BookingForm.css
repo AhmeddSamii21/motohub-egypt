@@ -1,0 +1,140 @@
+.booking {
+  padding-block: 3.5rem 5rem;
+}
+
+/* شبكة الحقول: عمودان على الشاشات الكبيرة، عمود واحد للموبايل */
+
+.booking-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  max-width: 56rem;
+  margin-inline: auto;
+  padding: 2rem;
+  background: linear-gradient(160deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.field-full,
+.form-footer {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.req {
+  color: var(--accent);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 5rem;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #5b626d;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255, 122, 26, 0.18);
+}
+
+.field input[aria-invalid='true'],
+.field select[aria-invalid='true'] {
+  border-color: #e5484d;
+}
+
+.field input[type='date'] {
+  color-scheme: dark;
+}
+
+/* قائمة الاختيار: تلوين السهم بمتغير التصميم */
+
+.field select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff7a1a' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 1.1rem;
+  background-position: left 1rem center;
+  padding-inline-start: 3rem;
+}
+
+.field-error {
+  color: #ff8a8e;
+  font-size: 0.82rem;
+}
+
+/* زر الإرسال والرسائل */
+
+.booking-submit {
+  width: 100%;
+  min-height: 3rem;
+}
+
+.booking-submit:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.form-msg {
+  margin-top: 1rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.form-msg-success {
+  color: #7fe3a1;
+  background: rgba(64, 190, 126, 0.09);
+  border: 1px solid rgba(64, 190, 126, 0.35);
+}
+
+.form-msg-error {
+  color: #ff8a8e;
+  background: rgba(229, 72, 77, 0.09);
+  border: 1px solid rgba(229, 72, 77, 0.4);
+}
+
+.form-footer .disclaimer {
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .booking-form {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+  }
+}

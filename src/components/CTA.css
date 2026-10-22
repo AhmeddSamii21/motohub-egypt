@@ -1,0 +1,62 @@
+.cta {
+  padding-block: 3.5rem 5rem;
+}
+
+.cta-panel {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2.25rem, 1.5rem + 3vw, 4rem);
+  text-align: center;
+  background:
+    radial-gradient(50rem 20rem at 80% 120%, rgba(255, 122, 26, 0.18), transparent 60%),
+    linear-gradient(160deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+.cta-decor {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(-45deg, transparent 0 24px, rgba(255, 255, 255, 0.03) 24px 48px);
+  mask-image: linear-gradient(180deg, #000, transparent 70%);
+  -webkit-mask-image: linear-gradient(180deg, #000, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-kicker {
+  color: var(--accent-2);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+}
+
+.cta-title {
+  font-size: clamp(1.6rem, 1.2rem + 2.2vw, 2.4rem);
+  font-weight: 800;
+}
+
+.cta-sub {
+  color: var(--muted);
+  max-width: 38rem;
+  margin: 1rem auto 0;
+}
+
+.cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-top: 2rem;
+  position: relative;
+}
+
+.cta-panel .disclaimer {
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .cta-actions .btn {
+    width: 100%;
+  }
+}

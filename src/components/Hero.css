@@ -1,0 +1,151 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: 5.5rem 4.5rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(60rem 24rem at 85% -10%, rgba(255, 122, 26, 0.13), transparent 60%),
+    linear-gradient(180deg, var(--bg-2), var(--bg));
+}
+
+.hero-inner {
+  position: relative;
+  text-align: center;
+  max-width: 56rem;
+}
+
+.hero-kicker {
+  color: var(--accent-2);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+}
+
+.hero-title {
+  font-size: clamp(2.2rem, 1.4rem + 4.5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.hero-title span {
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-sub {
+  color: var(--muted);
+  font-size: clamp(1rem, 0.95rem + 0.4vw, 1.15rem);
+  max-width: 40rem;
+  margin: 1.25rem auto 0;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-top: 2.25rem;
+}
+
+/* إحصائيات سريعة */
+
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin: 3rem 0 0;
+  padding: 0;
+}
+
+.hero-stats div {
+  min-width: 8.5rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.hero-stats dt {
+  color: var(--muted);
+  font-size: 0.8rem;
+  order: 2;
+}
+
+.hero-stats dd {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text);
+  order: 1;
+}
+
+.hero-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* خلفية زخرفية: خطوط مائلة بروح السباقات + وهج برتقالي */
+
+.hero-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-track {
+  position: absolute;
+  inset-inline-start: -10%;
+  width: 120%;
+  height: 90px;
+  opacity: 0.5;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 26px,
+    rgba(255, 255, 255, 0.045) 26px 52px
+  );
+  mask-image: linear-gradient(180deg, transparent, #000 40%, transparent);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 40%, transparent);
+}
+
+.hero-track-1 {
+  bottom: 12%;
+}
+
+.hero-track-2 {
+  bottom: calc(12% + 130px);
+  opacity: 0.28;
+}
+
+.hero-glow {
+  position: absolute;
+  bottom: -140px;
+  inset-inline-end: 10%;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 122, 26, 0.22), transparent 65%);
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding-block: 3.5rem 3rem;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .hero-stats {
+    gap: 0.6rem;
+  }
+
+  .hero-stats div {
+    flex: 1 1 40%;
+    min-width: 0;
+  }
+}
