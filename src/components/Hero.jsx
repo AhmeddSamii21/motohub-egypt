@@ -1,3 +1,4 @@
+import { BRANDS, FEATURED_MODELS } from '../data/content'
 import './Hero.css'
 
 function Hero() {
@@ -27,15 +28,15 @@ function Hero() {
         <dl className="hero-stats">
           <div>
             <dt>موديلات معروضة</dt>
-            <dd>+25</dd>
+            <dd>{FEATURED_MODELS.length}</dd>
           </div>
           <div>
             <dt>ماركات</dt>
-            <dd>5</dd>
+            <dd>{BRANDS.length}</dd>
           </div>
           <div>
-            <dt>تجربة قيادة</dt>
-            <dd>بداخل المعرض</dd>
+            <dt>البيانات</dt>
+            <dd>توضيحية فقط</dd>
           </div>
         </dl>
       </div>

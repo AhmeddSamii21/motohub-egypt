@@ -34,8 +34,10 @@ function Features() {
       <div className="container">
         <div className="section-head">
           <p className="section-kicker">لماذا MotoHub؟</p>
-          <h2 className="section-title">خدمات بعد البيع والثقة قبلها</h2>
-          <p className="section-sub">نخدمك من لحظة الاستفسار لحظة ما بعد التسليم.</p>
+          <h2 className="section-title">خدمات ما بعد البيع — محتوى توضيحي</h2>
+          <p className="section-sub">
+            نماذج توضيحية لميزات خدمات بعد البيع — عرض تجريبي بدون خدمات فعلية.
+          </p>
         </div>
 
         <ul className="features-grid">

@@ -7,10 +7,10 @@ function CTA() {
         <div className="cta-panel">
           <div className="cta-decor" aria-hidden="true" />
           <p className="cta-kicker">معاينة وتجربة قيادة</p>
-          <h2 className="cta-title">حاتز رحلتك؟ احجز معاينة دلوقتي</h2>
+          <h2 className="cta-title">جاهز لرحلتك؟ احجز معاينة دلوقتي</h2>
           <p className="cta-sub">
-            سيب رقمك أو زور المعرض.. فريقنا هيوافيك ويحجزلك تجربة قيادة على الموديل اللي تختاره.
-            (نموذج تجريبي — لا يتم إرسال أي بيانات فعليًا)
+            جرّب نموذج الحجز في العرض: عند الضغط على إرسال تُرسل البيانات التي أدخلتها
+            إلى ورقة Google المرتبطة بهذا المشروع التجريبي — بدون أي حجز أو موعد فعلي.
           </p>
           <div className="cta-actions">
             <a href="#book" className="btn btn-primary">احجز معاينة</a>
