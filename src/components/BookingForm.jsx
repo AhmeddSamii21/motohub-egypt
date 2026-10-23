@@ -45,13 +45,22 @@ function validate(values) {
   return errors
 }
 
+/**
+ * حساب أدنى تاريخ مسموح (اليوم) خارج دورة الرندر —
+ * يُعاد حسابه عند فتح حقل التاريخ ليبقى صحيحًا لو ظل التبويب مفتوحًا عبر منتصف الليل.
+ */
+function computeMinDate() {
+  const today = new Date()
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+}
+
 function BookingForm() {
   const [values, setValues] = useState(EMPTY)
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle') // idle | sending | success | error
+  const [minDate, setMinDate] = useState(() => computeMinDate())
 
-  const today = new Date()
-  const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+  const refreshMinDate = () => setMinDate(computeMinDate())
 
   const handleChange = (field) => (event) => {
     setValues((prev) => ({ ...prev, [field]: event.target.value }))
@@ -175,6 +184,7 @@ function BookingForm() {
               min={minDate}
               value={values.preferredDate}
               onChange={handleChange('preferredDate')}
+              onFocus={refreshMinDate}
             />
           </div>
 

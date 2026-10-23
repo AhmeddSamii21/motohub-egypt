@@ -1,6 +1,25 @@
+import { useEffect, useState } from 'react'
 import './Footer.css'
 
+/**
+ * سنة الحقوق محسوبة لحظة التركيب (وفي كل عودة للصفحة) لتظل صحيحة
+ * لو ظل التبويب مفتوحًا مع بداية سنة جديدة — بدون استدعاءات غير نقية أثناء الرندر.
+ */
+function getCurrentYear() {
+  return new Date().getFullYear()
+}
+
 function Footer() {
+  const [year, setYear] = useState(() => getCurrentYear())
+
+  // تحديث السنة لو ظل التبويب مفتوحًا عبر بداية سنة جديدة.
+  // هذه مزامنة مع نظام خارجي (حالة إظهار التبويب) — لا تحدث أثناء الرندر.
+  useEffect(() => {
+    const syncYear = () => setYear(getCurrentYear())
+    document.addEventListener('visibilitychange', syncYear)
+    return () => document.removeEventListener('visibilitychange', syncYear)
+  }, [])
+
   return (
     <footer className="site-footer" id="contact">
       <div className="container footer-inner">
@@ -35,7 +54,7 @@ function Footer() {
       </div>
 
       <div className="container footer-bar">
-        <p>© {new Date().getFullYear()} MotoHub Egypt — مشروع تجريبي غير تجاري.</p>
+        <p>© {year} MotoHub Egypt — مشروع تجريبي غير تجاري.</p>
       </div>
     </footer>
   )
