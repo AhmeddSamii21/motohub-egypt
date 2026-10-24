@@ -5,6 +5,9 @@
  */
 export const REQUESTED_MODEL_KEY = 'motohub.requestedModel'
 
+/** حدث مخصص يُطلَق عند نقر بطاقة كتالوج صراحةً — النموذج فيُحدث اختياره فورًا حتى لو كان في #book أصلًا */
+export const REQUESTED_MODEL_EVENT = 'motohub:model-requested'
+
 export function storeRequestedModel(name) {
   try {
     sessionStorage.setItem(REQUESTED_MODEL_KEY, name)

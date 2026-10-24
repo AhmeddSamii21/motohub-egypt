@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { FEATURED_MODELS } from '../data/content'
 import { CATALOG } from '../data/catalog'
-import { readRequestedModel, clearRequestedModel } from '../data/requestedModel'
+import { REQUESTED_MODEL_EVENT, readRequestedModel, clearRequestedModel } from '../data/requestedModel'
 import './BookingForm.css'
 
 /**
@@ -20,13 +19,10 @@ const EMPTY = {
 }
 
 /**
- * قائمة الموديلات في القائمة المنسدلة: الموديلات المميزة أولًا ثم كل موديلات الكتالوج 2026
- * (82 موديلًا مُتحقَّقًا منه) — بدون تكرار. القيمة المُرسلة للورقة تبقى اسم الموديل كنص كما هي.
+ * قائمة الموديلات في القائمة المنسدلة: كل موديلات الكتالوج 2026 (82 موديلًا مُتحقَّقًا منه).
+ * القيمة المُرسلة للورقة تبقى اسم الموديل كنص كما هو.
  */
-const ALL_MODEL_NAMES = [
-  ...FEATURED_MODELS.map((model) => model.name),
-  ...CATALOG.flatMap((group) => group.models.map((model) => model.name)),
-].filter((name, index, arr) => arr.indexOf(name) === index)
+const ALL_MODEL_NAMES = CATALOG.flatMap((group) => group.models.map((model) => model.name))
 
 /**
  * تحقق عربي بسيط وواضح — يرجع كائن أخطاء لكل حقل (فارغ = صحيح).
@@ -78,17 +74,28 @@ function BookingForm() {
   const refreshMinDate = () => setMinDate(computeMinDate())
 
   // لأن النموذج يبقى مُركَّبًا دائمًا في الصفحة: نفرض الموديل المُخزَّن عند أول تحميل
-  // وعند كل انتقال عبر hash إلى #book — دون المساس باختيار المستخدم الحالي.
+  // وعند كل انتقال عبر hash إلى #book — ومباشرة عند نقر بطاقة كتالوج (اختيار صريح).
   useEffect(() => {
-    const syncRequestedModel = () => {
+    const applyRequested = () => {
       const requested = readRequestedModel(ALL_MODEL_NAMES)
       if (requested) {
         setValues((prev) => (prev.motorcycleModel ? prev : { ...prev, motorcycleModel: requested }))
       }
     }
-    syncRequestedModel()
-    window.addEventListener('hashchange', syncRequestedModel)
-    return () => window.removeEventListener('hashchange', syncRequestedModel)
+    // نقر الصريح على "احجز معاينة" في بطاقة = نية مواضحة بطلب هذا الموديل بالتحديد
+    const applyClickedModel = () => {
+      const requested = readRequestedModel(ALL_MODEL_NAMES)
+      if (requested) {
+        setValues((prev) => ({ ...prev, motorcycleModel: requested }))
+      }
+    }
+    applyRequested()
+    window.addEventListener('hashchange', applyRequested)
+    window.addEventListener(REQUESTED_MODEL_EVENT, applyClickedModel)
+    return () => {
+      window.removeEventListener('hashchange', applyRequested)
+      window.removeEventListener(REQUESTED_MODEL_EVENT, applyClickedModel)
+    }
   }, [])
 
   const handleChange = (field) => (event) => {

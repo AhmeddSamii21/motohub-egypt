@@ -1,60 +1,17 @@
 /**
- * بيانات تجريبية (Placeholder) — أرقام وأسعار غير حقيقية للأغراض التجريبية فقط.
- * لا تمثل أي ارتباط رسمي بعلامات تجارية.
+ * بيانات الموقع العامة.
+ * الكتالوج الحقيقي (أسماء وأسعار 2026 مُتحقَّق منه) يعيش في src/data/catalog.js —
+ * كل ما في هذا الملف مشتق منه أو صياغة توضيحية واضحة بلا أي أسعار أو مواصفات مخترعة.
  */
+import { CATALOG } from './catalog'
 
-export const BRANDS = [
-  { id: 'zontes', name: 'Zontes' },
-  { id: 'keeway', name: 'Keeway' },
-  { id: 'sym', name: 'SYM' },
-  { id: 'benelli', name: 'Benelli' },
-  { id: 'haojing', name: 'Haojing' },
-]
-
-export const FEATURED_MODELS = [
-  {
-    id: 'zt-125',
-    name: 'Zontes ZT125-U',
-    category: 'موتسيكل شارع',
-    displacement: '125cc',
-    price: 86500,
-  },
-  {
-    id: 'rfs-150',
-    name: 'Keeway RKF 150',
-    category: 'موتسيكل شارع',
-    displacement: '150cc',
-    price: 72900,
-  },
-  {
-    id: 'sym-jet',
-    name: 'SYM Jet X 125',
-    category: 'سكوتر',
-    displacement: '125cc',
-    price: 68400,
-  },
-  {
-    id: 'bn-251',
-    name: 'Benelli 251S',
-    category: 'موتسيكل شارع',
-    displacement: '250cc',
-    price: 149000,
-  },
-  {
-    id: 'hj-150',
-    name: 'Haojing HJ150',
-    category: 'موتسيكل عملي',
-    displacement: '150cc',
-    price: 52000,
-  },
-  {
-    id: 'sym-fiddle',
-    name: 'SYM Fiddle IV',
-    category: 'سكوتر',
-    displacement: '125cc',
-    price: 61000,
-  },
-]
+/**
+ * الماركات مشتقة ديناميكيًا من الكتالوج (أسماء حقيقية كما وردت في قائمة أسعار 2026)
+ */
+export const BRANDS = CATALOG.map((group) => ({
+  id: group.brand.toLowerCase().replace(/\s+/g, '-'),
+  name: group.brand,
+}))
 
 export const FEATURES = [
   {
@@ -78,7 +35,3 @@ export const FEATURES = [
     text: 'عرض توضيحي — حجز المعاينة عبر النموذج في الموقع التجريبي فقط.',
   },
 ]
-
-// أرقام لاتينية بفواصل عادية — أوضح للعرض من الفواصل العربية في بعض الخطوط
-export const formatPrice = (value) =>
-  new Intl.NumberFormat('ar-EG-u-nu-latn', { maximumFractionDigits: 0 }).format(value)

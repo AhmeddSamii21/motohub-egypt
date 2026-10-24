@@ -8,7 +8,7 @@ function Brands() {
         <div className="section-head brands-head">
           <p className="section-kicker">الماركات</p>
           <h2 className="section-title">ماركات داخل المعرض</h2>
-          <p className="brands-note">أسماء العارضة تجريبية لأغراض العرض فقط ولا تعني أي ارتباط رسمي.</p>
+          <p className="brands-note">أسماء الماركات كما وردت في قائمة أسعار 2026 — دون أي ارتباط رسمي بعلامات تجارية.</p>
         </div>
 
         <ul className="brands-list">
