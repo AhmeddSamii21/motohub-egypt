@@ -1,9 +1,23 @@
 import { useState } from 'react'
 import { CATALOG } from '../data/catalog'
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
+import ModelCompare from './ModelCompare'
 import './Catalog.css'
 
 const ALL_BRANDS = 'all'
+
+/** حد أقصى للمقارنة في المرة الواحدة */
+const MAX_COMPARE = 3
+
+/** كل موديلات الكتالوج مفهرسة بمفتاح ماركة|اسم لثبات التحديد عبر التصفية والترتيب */
+const ALL_MODELS_INDEXED = CATALOG.flatMap((group) =>
+  group.models.map((model) => ({
+    ...model,
+    brand: group.brand,
+    key: `${group.brand}|${model.name}`,
+  }))
+)
+const MODEL_BY_KEY = new Map(ALL_MODELS_INDEXED.map((model) => [model.key, model]))
 
 /**
  * أسعار الكتالوج نصوص كما وردت في المصدر ("69,700" أو "229000") — تُحوَّل للأرقام
@@ -26,10 +40,21 @@ function sortModels(models, sort) {
   return models // الترتيب الأصلي كما في المصدر
 }
 
-function ModelCard({ brand, model }) {
+function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled }) {
   return (
     <li className="catalog-card">
-      <p className="catalog-card-brand">{brand}</p>
+      <div className="catalog-card-top">
+        <p className="catalog-card-brand">{brand}</p>
+        <button
+          type="button"
+          className={`catalog-card-compare ${compared ? 'is-selected' : ''}`}
+          aria-pressed={compared}
+          disabled={compareDisabled && !compared}
+          onClick={() => onToggleCompare(`${brand}|${model.name}`)}
+        >
+          قارن
+        </button>
+      </div>
       <h4 className="catalog-card-name">{model.name}</h4>
       <p className="catalog-card-price">
         <b>{model.price}</b> <span>ج.م</span>
@@ -67,6 +92,16 @@ function Catalog() {
   const [query, setQuery] = useState('')
   const [priceRange, setPriceRange] = useState('all')
   const [sort, setSort] = useState('default')
+  const [compareKeys, setCompareKeys] = useState([])
+  const [compareOpen, setCompareOpen] = useState(false)
+
+  const toggleCompare = (key) => {
+    setCompareKeys((prev) => {
+      if (prev.includes(key)) return prev.filter((k) => k !== key)
+      if (prev.length >= MAX_COMPARE) return prev
+      return [...prev, key]
+    })
+  }
 
   const normalizedQuery = query.trim().toLowerCase()
 
@@ -82,6 +117,8 @@ function Catalog() {
     .filter((group) => group.models.length > 0)
 
   const visibleCount = visibleGroups.reduce((sum, group) => sum + group.models.length, 0)
+
+  const compareItems = compareKeys.map((key) => MODEL_BY_KEY.get(key)).filter(Boolean)
 
   // عند تفعيل ترتيب سعري: قائمة واحدة مسطحة مرتبة عالميًا (البطاقة تعرض اسم الماركة دائمًا)
   const sortedFlatModels = sortModels(
@@ -194,7 +231,14 @@ function Catalog() {
                 </h3>
                 <ul className="catalog-grid">
                   {group.models.map((model) => (
-                    <ModelCard key={model.name} brand={group.brand} model={model} />
+                    <ModelCard
+                      key={model.name}
+                      brand={group.brand}
+                      model={model}
+                      compared={compareKeys.includes(`${group.brand}|${model.name}`)}
+                      onToggleCompare={toggleCompare}
+                      compareDisabled={compareKeys.length >= MAX_COMPARE}
+                    />
                   ))}
                 </ul>
               </div>
@@ -209,7 +253,14 @@ function Catalog() {
               </h3>
               <ul className="catalog-grid">
                 {sortedFlatModels.map((model) => (
-                  <ModelCard key={model.name} brand={model.brand} model={model} />
+                  <ModelCard
+                    key={model.name}
+                    brand={model.brand}
+                    model={model}
+                    compared={compareKeys.includes(model.key)}
+                    onToggleCompare={toggleCompare}
+                    compareDisabled={compareKeys.length >= MAX_COMPARE}
+                  />
                 ))}
               </ul>
             </div>
@@ -219,6 +270,52 @@ function Catalog() {
         <p className="disclaimer">
           بيانات الكتالوج مستخرجة من قائمة الأسعار المرفقة بالمشروع للعرض فقط — بدون إنفنتار أو أرقام مخزون فعلية.
         </p>
+
+        {compareItems.length > 0 && !compareOpen && (
+          <div className="compare-bar" role="region" aria-label="الموديلات المختارة للمقارنة">
+            <div className="compare-bar-chips">
+              {compareItems.map((item) => (
+                <span className="compare-chip" key={item.key}>
+                  <span className="compare-chip-name" title={item.brand}>{item.name}</span>
+                  <button
+                    type="button"
+                    className="compare-chip-remove"
+                    onClick={() => toggleCompare(item.key)}
+                    aria-label={`إزالة ${item.name} من المقارنة`}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="compare-bar-actions">
+              {compareKeys.length >= MAX_COMPARE && (
+                <span className="compare-bar-note">الحد الأقصى {MAX_COMPARE} موديلات</span>
+              )}
+              <button
+                type="button"
+                className="btn btn-primary compare-bar-open"
+                onClick={() => setCompareOpen(true)}
+              >
+                قارن ({compareItems.length})
+              </button>
+              <button type="button" className="btn btn-ghost compare-bar-clear" onClick={() => setCompareKeys([])}>
+                مسح
+              </button>
+            </div>
+          </div>
+        )}
+
+        <ModelCompare
+          open={compareOpen}
+          items={compareItems}
+          onClose={() => setCompareOpen(false)}
+          onRemove={(key) => toggleCompare(key)}
+          onClear={() => {
+            setCompareKeys([])
+            setCompareOpen(false)
+          }}
+        />
       </div>
     </section>
   )

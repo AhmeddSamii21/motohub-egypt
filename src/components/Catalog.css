@@ -182,7 +182,314 @@
   border-color: transparent;
 }
 
-/* ===== استجابة الشاشات ===== */
+/* ===== أداة المقارنة على البطاقة ===== */
+
+.catalog-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.catalog-card-compare {
+  padding: 0.25rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.catalog-card-compare:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--metal);
+}
+
+.catalog-card-compare.is-selected {
+  color: #1a0d02;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-color: transparent;
+}
+
+.catalog-card-compare:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ===== الشريط العائم للمقارنة ===== */
+
+.compare-bar {
+  position: fixed;
+  bottom: 0;
+  inset-inline: 0;
+  z-index: 90;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem calc(0.85rem + env(safe-area-inset-bottom));
+  background: rgba(14, 16, 19, 0.94);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.compare-bar-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.compare-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.4rem 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  max-width: 14rem;
+}
+
+.compare-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compare-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.compare-chip-remove:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.compare-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.compare-bar-note {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.compare-bar .btn {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.85rem;
+}
+
+/* ===== نافذة المقارنة ===== */
+
+.compare-modal-open body {
+  overflow: hidden;
+}
+
+.compare-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.6);
+  overflow-y: auto;
+}
+
+.compare-modal {
+  width: 100%;
+  max-width: 64rem;
+  margin-block: auto;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+.compare-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.compare-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.compare-title-count {
+  padding: 0.1rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  border: 1px solid rgba(255, 122, 26, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 122, 26, 0.08);
+}
+
+.compare-close {
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.compare-close:hover {
+  color: var(--text);
+  border-color: var(--metal);
+}
+
+.compare-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.compare-grid-1 { grid-template-columns: 1fr; }
+.compare-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.compare-grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+.compare-col {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  background: linear-gradient(180deg, var(--panel-2), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.compare-remove {
+  align-self: flex-start;
+  padding: 0;
+  margin-bottom: 0.75rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.compare-remove:hover {
+  color: var(--text);
+}
+
+.compare-col-brand {
+  color: var(--metal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.compare-col-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-top: 0.3rem;
+}
+
+.compare-col-price {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 0.4rem;
+}
+
+.compare-col-price b {
+  color: var(--accent-2);
+  font-size: 1.15rem;
+}
+
+.compare-col-price span {
+  font-size: 0.8rem;
+}
+
+.compare-col-cta {
+  margin-top: auto;
+  padding: 0.7rem 1.1rem;
+  font-size: 0.9rem;
+}
+
+.compare-foot {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.compare-clear {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 960px) {
+  .compare-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .compare-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .compare-bar-actions {
+    justify-content: flex-end;
+  }
+
+  .compare-grid-2,
+  .compare-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .compare-overlay {
+    padding: 0.75rem;
+  }
+
+  .compare-modal {
+    padding: 1.1rem;
+  }
+}
+
 
 @media (max-width: 960px) {
   .catalog-grid {
