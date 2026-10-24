@@ -1,5 +1,9 @@
-import { BRANDS, FEATURED_MODELS } from '../data/content'
+import { CATALOG } from '../data/catalog'
 import './Hero.css'
+
+// إحصائيات الـHero مشتقة ديناميكيًا من الكتالوج — تتحدث تلقائيًا لو تغيّرت البيانات
+const TOTAL_MODELS = CATALOG.reduce((sum, group) => sum + group.models.length, 0)
+const TOTAL_BRANDS = CATALOG.length
 
 function Hero() {
   return (
@@ -16,8 +20,8 @@ function Hero() {
           اختار <span>رحلتك القادمة</span>
         </h1>
         <p className="hero-sub">
-          تشكيلة متنوعة من الموتوسيكلات والسكوترات بمواصفات وسعر تقدره بوضوح.
-          كل المعلومات والأسعار هنا تجريبية وتستخدم للعرض فقط.
+          تشكيلة متنوعة من الموتوسيكلات والسكوترات بمواصفات وسعر تقدرها بوضوح.
+          الكتالوج مستخرج من قائمة أسعار 2026 — والمختارات المميزة تبقى بيانات توضيحية للعرض.
         </p>
 
         <div className="hero-actions">
@@ -27,16 +31,16 @@ function Hero() {
 
         <dl className="hero-stats">
           <div>
-            <dt>موديلات معروضة</dt>
-            <dd>{FEATURED_MODELS.length}</dd>
+            <dt>موديلات في الكتالوج</dt>
+            <dd>{TOTAL_MODELS}</dd>
           </div>
           <div>
-            <dt>ماركات</dt>
-            <dd>{BRANDS.length}</dd>
+            <dt>ماركة في الكتالوج</dt>
+            <dd>{TOTAL_BRANDS}</dd>
           </div>
           <div>
-            <dt>البيانات</dt>
-            <dd>توضيحية فقط</dd>
+            <dt>كتالوج أسعار</dt>
+            <dd>2026</dd>
           </div>
         </dl>
       </div>
