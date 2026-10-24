@@ -3,6 +3,7 @@ import Hero from './components/Hero'
 import Brands from './components/Brands'
 import FeaturedModels from './components/FeaturedModels'
 import Catalog from './components/Catalog'
+import InstallmentCalculator from './components/InstallmentCalculator'
 import Features from './components/Features'
 import CTA from './components/CTA'
 import BookingForm from './components/BookingForm'
@@ -21,6 +22,7 @@ function App() {
         <Brands />
         <FeaturedModels />
         <Catalog />
+        <InstallmentCalculator />
         <Features />
         <CTA />
         <BookingForm />

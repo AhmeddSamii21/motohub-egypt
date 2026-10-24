@@ -1,0 +1,250 @@
+/* ===== حاسبة الأقساط — ثيم داكن متوافق مع بقية الأقسام ===== */
+
+.calc-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.calc-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.calc-result {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel-2), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.calc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.calc-label {
+  color: var(--metal);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.calc-down-value {
+  color: var(--accent-2);
+  font-size: 1rem;
+}
+
+/* المدخلات — نفس لغة نموذج الحجز */
+
+.calc-select,
+.calc-input,
+.calc-num {
+  padding: 0.7rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease;
+}
+
+.calc-select:focus,
+.calc-input:focus,
+.calc-num:focus {
+  outline: none;
+  border-color: var(--metal);
+}
+
+.calc-select option,
+.calc-select optgroup {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+/* رقاقات نسب الدفعة الأولى والمدة */
+
+.calc-down-chips,
+.calc-tenor-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.calc-chip {
+  min-width: 3.2rem;
+  padding: 0.45rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.calc-chip:hover {
+  color: var(--text);
+  border-color: var(--metal);
+}
+
+.calc-chip.is-active {
+  color: #1a0d02;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-color: transparent;
+}
+
+/* السلايدر + الإدخال الرقمي المخصص */
+
+.calc-down-slider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.calc-range {
+  flex: 1;
+  height: 1.4rem;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.calc-num {
+  width: 5rem;
+  padding-block: 0.45rem;
+  /* إخفاء أسهم input[type=number] */
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.calc-num::-webkit-outer-spin-button,
+.calc-num::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+/* بطاقات النتيجة */
+
+.calc-result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.calc-stat {
+  padding: 0.9rem 1rem;
+  text-align: center;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.calc-stat-focus {
+  background: linear-gradient(160deg, var(--panel-2), var(--bg-2));
+  border-color: rgba(255, 122, 26, 0.45);
+  grid-column: 1 / -1;
+}
+
+.calc-stat-label {
+  color: var(--metal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.calc-stat-value {
+  color: var(--accent-2);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-top: 0.2rem;
+}
+
+.calc-stat:not(.calc-stat-focus) .calc-stat-value {
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.calc-stat-focus .calc-stat-value {
+  font-size: 2rem;
+}
+
+.calc-stat-unit {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
+}
+
+/* الملاحظات و CTA */
+
+.calc-note,
+.calc-disclaimer {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.calc-disclaimer {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.calc-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.calc-cta {
+  flex: none;
+}
+
+.calc-cta-hint {
+  color: var(--metal);
+  font-size: 0.78rem;
+}
+
+/* ===== استجابة الشاشات ===== */
+
+@media (max-width: 960px) {
+  .calc-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .calc-controls,
+  .calc-result {
+    padding: 1.1rem;
+  }
+
+  .calc-result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calc-stat-focus {
+    grid-column: auto;
+  }
+
+  .calc-down-slider {
+    flex-wrap: wrap;
+  }
+}
