@@ -5,6 +5,7 @@ const LINKS = [
   { href: '#home', label: 'الرئيسية' },
   { href: '#brands', label: 'الماركات' },
   { href: '#models', label: 'الموديلات' },
+  { href: '#catalog', label: 'الكتالوج' },
   { href: '#contact', label: 'تواصل معنا' },
 ]
 

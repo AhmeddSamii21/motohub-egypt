@@ -2,6 +2,7 @@ import Header from './components/Header'
 import Hero from './components/Hero'
 import Brands from './components/Brands'
 import FeaturedModels from './components/FeaturedModels'
+import Catalog from './components/Catalog'
 import Features from './components/Features'
 import CTA from './components/CTA'
 import BookingForm from './components/BookingForm'
@@ -19,6 +20,7 @@ function App() {
         <Hero />
         <Brands />
         <FeaturedModels />
+        <Catalog />
         <Features />
         <CTA />
         <BookingForm />

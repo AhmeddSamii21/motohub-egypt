@@ -1,0 +1,201 @@
+/* ===== أدوات البحث والتصفية ===== */
+
+.catalog-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.catalog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1 1 15rem;
+}
+
+.catalog-field-label {
+  color: var(--metal);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.catalog-search,
+.catalog-select {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.catalog-search::placeholder {
+  color: var(--metal);
+}
+
+.catalog-search:hover,
+.catalog-select:hover {
+  border-color: var(--metal);
+}
+
+.catalog-select {
+  cursor: pointer;
+}
+
+.catalog-results {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 1.75rem;
+}
+
+/* ===== حالة عدم وجود نتائج ===== */
+
+.catalog-empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+}
+
+.catalog-empty-title {
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.catalog-empty-sub {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.catalog-empty-reset {
+  margin-top: 1.25rem;
+}
+
+/* ===== مجموعات الماركات ===== */
+
+.catalog-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.catalog-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.catalog-brand-count {
+  padding: 0.1rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  border: 1px solid rgba(255, 122, 26, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 122, 26, 0.08);
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+/* ===== بطاقة الموديل ===== */
+
+.catalog-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.catalog-card:hover {
+  border-color: rgba(255, 122, 26, 0.5);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.catalog-card-brand {
+  color: var(--metal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.catalog-card-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-top: 0.3rem;
+}
+
+.catalog-card-price {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 0.6rem;
+}
+
+.catalog-card-price b {
+  color: var(--accent-2);
+  font-size: 1.15rem;
+}
+
+.catalog-card-price span {
+  font-size: 0.8rem;
+}
+
+.catalog-card-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding: 0.7rem 1.1rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.catalog-card-cta:hover {
+  color: #1a0d02;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-color: transparent;
+}
+
+/* ===== استجابة الشاشات ===== */
+
+@media (max-width: 960px) {
+  .catalog-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .catalog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog-tools {
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+}

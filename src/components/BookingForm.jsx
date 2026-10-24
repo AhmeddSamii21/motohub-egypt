@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FEATURED_MODELS } from '../data/content'
+import { CATALOG } from '../data/catalog'
+import { readRequestedModel, clearRequestedModel } from '../data/requestedModel'
 import './BookingForm.css'
 
 /**
@@ -16,6 +18,15 @@ const EMPTY = {
   preferredDate: '',
   notes: '',
 }
+
+/**
+ * قائمة الموديلات في القائمة المنسدلة: الموديلات المميزة أولًا ثم كل موديلات الكتالوج 2026
+ * (82 موديلًا مُتحقَّقًا منه) — بدون تكرار. القيمة المُرسلة للورقة تبقى اسم الموديل كنص كما هي.
+ */
+const ALL_MODEL_NAMES = [
+  ...FEATURED_MODELS.map((model) => model.name),
+  ...CATALOG.flatMap((group) => group.models.map((model) => model.name)),
+].filter((name, index, arr) => arr.indexOf(name) === index)
 
 /**
  * تحقق عربي بسيط وواضح — يرجع كائن أخطاء لكل حقل (فارغ = صحيح).
@@ -55,12 +66,30 @@ function computeMinDate() {
 }
 
 function BookingForm() {
-  const [values, setValues] = useState(EMPTY)
+  // نقبل أي موديل سُجِّل من بطاقة الكتالوج قبل أول وصول إلى النموذج (تحميل الصفحة ثم النقر مباشرة)
+  const [values, setValues] = useState(() => {
+    const requested = readRequestedModel(ALL_MODEL_NAMES)
+    return requested ? { ...EMPTY, motorcycleModel: requested } : EMPTY
+  })
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [minDate, setMinDate] = useState(() => computeMinDate())
 
   const refreshMinDate = () => setMinDate(computeMinDate())
+
+  // لأن النموذج يبقى مُركَّبًا دائمًا في الصفحة: نفرض الموديل المُخزَّن عند أول تحميل
+  // وعند كل انتقال عبر hash إلى #book — دون المساس باختيار المستخدم الحالي.
+  useEffect(() => {
+    const syncRequestedModel = () => {
+      const requested = readRequestedModel(ALL_MODEL_NAMES)
+      if (requested) {
+        setValues((prev) => (prev.motorcycleModel ? prev : { ...prev, motorcycleModel: requested }))
+      }
+    }
+    syncRequestedModel()
+    window.addEventListener('hashchange', syncRequestedModel)
+    return () => window.removeEventListener('hashchange', syncRequestedModel)
+  }, [])
 
   const handleChange = (field) => (event) => {
     setValues((prev) => ({ ...prev, [field]: event.target.value }))
@@ -95,6 +124,7 @@ function BookingForm() {
         body: payload,
       })
       // مع no-cors لا يمكن قراءة الرد؛ غياب الشذوذ يعتبر نجاحًا
+      clearRequestedModel()
       setValues(EMPTY)
       setStatus('success')
     } catch {
@@ -162,9 +192,9 @@ function BookingForm() {
               aria-describedby={errors.motorcycleModel ? 'error-motorcycle-model' : undefined}
             >
               <option value="">— اختر الموديل —</option>
-              {FEATURED_MODELS.map((model) => (
-                <option key={model.id} value={model.name}>
-                  {model.name}
+              {ALL_MODEL_NAMES.map((name) => (
+                <option key={name} value={name}>
+                  {name}
                 </option>
               ))}
               <option value="موديل آخر">موديل آخر / مش متأكد</option>
