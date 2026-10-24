@@ -27,3 +27,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# OS / Office junk (مثل ملفات القفل المؤقتة ~$Workbook.xlsx)
+Thumbs.db
+~$*
+
+# ملفات Excel المحلية: تظل مصدرًا مرجعيًا محليًا (docs/Vehicle_Price_List_2026.xlsx) —
+# البيانات المنشورة تحيًا تعيش في src/data/catalog.js، والملف الخام لا يُنشر في المستودع
+*.xlsx
