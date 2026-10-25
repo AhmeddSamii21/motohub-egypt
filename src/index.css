@@ -26,6 +26,39 @@
   line-height: 1.6;
 }
 
+/* ======== شرائط التمرير الرقيقة المطابقة للثيم الداكن ========
+ * Firefox: scrollbar-width/color — ويبكِت: الأصل الزائف ::-webkit-scrollbar.
+ * color-scheme: dark (أعلاه) يجعل القوائم المنسدلة الأصلية المربوطة بالنظام داكنة طبيعيًا.
+ */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--metal) var(--bg-2);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-2);
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--metal);
+  border: 2px solid var(--bg-2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--bg-2);
+}
+
 *,
 *::before,
 *::after {
