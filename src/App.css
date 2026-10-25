@@ -9,3 +9,36 @@
 .app-main {
   flex: 1;
 }
+
+/* ===== لوحات عروض التوجيه =====
+ * الأقسام تبقى مُركّبة جميعًا (حفظًا لحالات المقارنة والتصفية)، ويعرض منها لكل مظهر
+ * لوحته النشِطة فقط — والانتقال إليها بتلاشٍ وانزلاق ناعم (0.3 ثانية).
+ * ملاحظة: بلا fill-mode تعود الخصائص بعد الحركة إلى قيمها الطبيعية (transform: none)
+ * فلا يبقى أي سياق مواضع يوثر على العناصر fixed (شريط المقارنة).
+ */
+
+.view-panel {
+  display: none;
+}
+
+.view-panel.is-active {
+  display: block;
+  animation: view-in 0.3s ease;
+}
+
+@keyframes view-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-panel.is-active {
+    animation: none;
+  }
+}

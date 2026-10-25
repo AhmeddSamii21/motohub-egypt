@@ -72,6 +72,25 @@ function FeaturedModels() {
             </article>
           ))}
         </div>
+
+        <div className="models-more">
+          <a href="#catalog" className="btn btn-primary models-more-btn">
+            عرض كل الموديلات
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M19 12H5m7-7l-7 7 7 7" />
+            </svg>
+          </a>
+        </div>
       </div>
     </section>
   )

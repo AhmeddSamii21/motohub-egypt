@@ -154,6 +154,30 @@
   border-color: transparent;
 }
 
+/* زر "عرض كل الموديلات" — نقطة الانتقال إلى قسم الكتالوج */
+
+.models-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.75rem;
+}
+
+.models-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+}
+
+.models-more-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.models-more-btn:hover svg {
+  transform: translateX(-4px);
+}
+
 @media (max-width: 960px) {
   .models-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -163,9 +187,5 @@
 @media (max-width: 640px) {
   .models-grid {
     grid-template-columns: 1fr;
-  }
-
-  .model-visual {
-    height: 9rem;
   }
 }

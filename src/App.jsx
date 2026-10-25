@@ -70,20 +70,20 @@ function App() {
       </a>
       <Header view={view} />
       <main className="app-main" id="page">
-        <div hidden={view !== VIEWS.home}>
+        <div className={`view-panel ${view === VIEWS.home ? 'is-active' : ''}`}>
           <Hero />
           <FeaturedModels />
           <Features />
           <CTA />
         </div>
-        <div hidden={view !== VIEWS.catalog}>
+        <div className={`view-panel ${view === VIEWS.catalog ? 'is-active' : ''}`}>
           <Brands />
           <Catalog />
         </div>
-        <div hidden={view !== VIEWS.calc}>
+        <div className={`view-panel ${view === VIEWS.calc ? 'is-active' : ''}`}>
           <InstallmentCalculator />
         </div>
-        <div hidden={view !== VIEWS.book}>
+        <div className={`view-panel ${view === VIEWS.book ? 'is-active' : ''}`}>
           <BookingForm />
         </div>
       </main>
