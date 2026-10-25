@@ -37,9 +37,9 @@ function Footer() {
           <h3>روابط سريعة</h3>
           <ul>
             <li><a href="#home">الرئيسية</a></li>
-            <li><a href="#brands">الماركات</a></li>
-            <li><a href="#models">الموديلات</a></li>
-            <li><a href="#book">احجز معاينة</a></li>
+            <li><a href="#catalog">الكتالوج</a></li>
+            <li><a href="#calc">حاسبة الأقساط</a></li>
+            <li><a href="#book">حجز معاينة</a></li>
           </ul>
         </nav>
 

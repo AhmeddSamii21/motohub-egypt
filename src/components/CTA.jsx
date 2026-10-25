@@ -14,7 +14,7 @@ function CTA() {
           </p>
           <div className="cta-actions">
             <a href="#book" className="btn btn-primary">احجز معاينة</a>
-            <a href="#models" className="btn btn-ghost cta-ghost">استعرض الموديلات من جديد</a>
+            <a href="#calc" className="btn btn-ghost cta-ghost">احسب أقساط الدفعات</a>
           </div>
           <p className="disclaimer">كل الأسعار والبيانات في هذا الموقع تجريبية لأغراض العرض فقط.</p>
         </div>

@@ -25,8 +25,8 @@ function Hero() {
         </p>
 
         <div className="hero-actions">
-          <a href="#models" className="btn btn-primary">شاهد الموديلات</a>
-          <a href="#book" className="btn btn-ghost">احجز معاينة</a>
+          <a href="#catalog" className="btn btn-primary">شاهد الكتالوج</a>
+          <a href="#calc" className="btn btn-ghost">احسب الأقساط</a>
         </div>
 
         <dl className="hero-stats">

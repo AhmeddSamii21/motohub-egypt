@@ -1,15 +1,18 @@
 import { useState } from 'react'
 import './Header.css'
 
+/**
+ * روابط التنقل بين أقسام الموقع (توجيه الهاز في App):
+ * الرئيسية / الكتالوج / حاسبة الأقساط / حجز معاينة (زر مميز).
+ * القسم النشِط يُعلَّم بـ aria-current للوصولية وللتبويب المرئي.
+ */
 const LINKS = [
-  { href: '#home', label: 'الرئيسية' },
-  { href: '#brands', label: 'الماركات' },
-  { href: '#models', label: 'الموديلات' },
-  { href: '#catalog', label: 'الكتالوج' },
-  { href: '#contact', label: 'تواصل معنا' },
+  { href: '#home', label: 'الرئيسية', view: 'home' },
+  { href: '#catalog', label: 'الكتالوج', view: 'catalog' },
+  { href: '#calc', label: 'حاسبة الأقساط', view: 'calc' },
 ]
 
-function Header() {
+function Header({ view = 'home' }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -44,14 +47,23 @@ function Header() {
           <ul>
             {LINKS.map((link) => (
               <li key={link.href}>
-                <a href={link.href} onClick={() => setOpen(false)}>
+                <a
+                  href={link.href}
+                  aria-current={view === link.view ? 'page' : undefined}
+                  onClick={() => setOpen(false)}
+                >
                   {link.label}
                 </a>
               </li>
             ))}
             <li>
-              <a href="#book" className="btn btn-primary nav-cta" onClick={() => setOpen(false)}>
-                احجز معاينة
+              <a
+                href="#book"
+                className="btn btn-primary nav-cta"
+                aria-current={view === 'book' ? 'page' : undefined}
+                onClick={() => setOpen(false)}
+              >
+                حجز معاينة
               </a>
             </li>
           </ul>

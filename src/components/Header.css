@@ -68,6 +68,11 @@
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+.site-nav a:not(.nav-cta)[aria-current='page'] {
+  color: var(--accent-2);
+  background-color: rgba(255, 122, 26, 0.1);
+}
+
 .nav-cta {
   padding: 0.55rem 1.2rem !important;
   font-size: 0.9rem !important;
