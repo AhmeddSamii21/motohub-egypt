@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import FeaturedModels from './components/FeaturedModels'
-import Brands from './components/Brands'
 import Catalog from './components/Catalog'
 import InstallmentCalculator from './components/InstallmentCalculator'
 import Features from './components/Features'
@@ -53,11 +52,17 @@ function App() {
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
-  // عند التنقّل بين الأقسام: صُعد لأعلى، أو وصل لعنصر الهاز المستهدف إن كان معروضًا الآن
-  // (rAF يضمن التنفيذ بعد محاولة المتصفح الأصلية للتمرير للمرساة — فلا صور ولا قفزة مزدوجة)
+  // عند التنقّل بين الأقسام (أهداف الهاز على مستوى القسم): أعلى الصفحة تمامًا (0,0)
+  // لتلعب حركة view-in من الأعلى طبيعيًا — ما عدا مراسي عناصر داخلية نادرة
+  // (rAF يضمن التنفيذ بعد محاولة المتصفح الأصلية للتمرير للمرساة — فلا قفزات مزدوجة)
   useEffect(() => {
-    const target = document.getElementById(window.location.hash.slice(1))
+    const hash = window.location.hash
     requestAnimationFrame(() => {
+      if (HASH_TO_VIEW.has(hash)) {
+        window.scrollTo({ top: 0, behavior: 'instant' })
+        return
+      }
+      const target = document.getElementById(hash.slice(1))
       if (target && target.offsetParent !== null) target.scrollIntoView()
       else window.scrollTo({ top: 0, behavior: 'instant' })
     })
@@ -77,7 +82,6 @@ function App() {
           <CTA />
         </div>
         <div className={`view-panel ${view === VIEWS.catalog ? 'is-active' : ''}`}>
-          <Brands />
           <Catalog />
         </div>
         <div className={`view-panel ${view === VIEWS.calc ? 'is-active' : ''}`}>

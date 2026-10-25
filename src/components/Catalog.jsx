@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CATALOG } from '../data/catalog'
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
 import ModelCompare from './ModelCompare'
+import Brands from './Brands'
 import './Catalog.css'
 
 const ALL_BRANDS = 'all'
@@ -139,7 +140,10 @@ function Catalog() {
     brand !== ALL_BRANDS || query.trim() !== '' || priceRange !== 'all' || sort !== 'default'
 
   return (
-    <section className="section catalog" id="catalog">
+    <>
+      {/* قائمة الماركات أعلن قسم الكتالوج مباشرة — نظرة فورية على الماركات عند الوصول للقسم */}
+      <Brands />
+      <section className="section catalog" id="catalog">
       <div className="container">
         <div className="section-head">
           <p className="section-kicker">الكتالوج الكامل</p>
@@ -318,6 +322,7 @@ function Catalog() {
         />
       </div>
     </section>
+    </>
   )
 }
 
