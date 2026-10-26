@@ -24,9 +24,12 @@
   position: relative;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 6.5rem;
+  gap: 0.5rem;
+  text-align: center;
+  min-height: 7.5rem;
   padding: 1.25rem;
   background: linear-gradient(160deg, var(--panel-2), var(--panel));
   border: 1px solid var(--line);
@@ -49,6 +52,19 @@
 
 .brand-card:hover .brand-name {
   color: var(--text);
+}
+
+.brand-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.brand-stats b {
+  color: var(--text);
+  font-size: 0.88rem;
 }
 
 .brand-belt {
@@ -77,6 +93,10 @@
   }
 
   .brand-card {
-    min-height: 5.5rem;
+    min-height: 6.5rem;
+  }
+
+  .brand-stats {
+    font-size: 0.72rem;
   }
 }
