@@ -36,6 +36,7 @@
   color: var(--text);
 }
 
+
 .model-page-note {
   margin-top: 1rem;
   color: var(--muted);
@@ -44,4 +45,128 @@
 
 .model-page .container {
   width: 100%;
+}
+
+/* ===== مواصفات تقنية (من الملف المُولَّد — لا قيم مخترعة) ===== */
+
+.model-specs {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem 1.25rem;
+}
+
+.model-spec-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.model-spec-row dt {
+  color: var(--metal);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.model-spec-row dd {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .model-specs {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== معرض صور مباشر (files فقط وقابلة للفشل الهادئ) ===== */
+
+.model-gallery {
+  margin: 1.25rem 0 0;
+}
+
+.model-gallery-main {
+  display: block;
+  width: 100%;
+  max-height: 22rem;
+  object-fit: contain;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.model-gallery-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.model-gallery-controls button {
+  padding: 0.3rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.model-gallery-controls button:hover {
+  color: var(--text);
+  border-color: var(--metal);
+}
+
+.model-gallery-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  justify-content: center;
+}
+
+.model-gallery-thumbs button {
+  width: 3.25rem;
+  height: 3.25rem;
+  padding: 0;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.model-gallery-thumbs button.is-current {
+  border-color: var(--accent);
+}
+
+.model-gallery-thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.model-page-album {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--accent-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
