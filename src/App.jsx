@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import FeaturedModels from './components/FeaturedModels'
@@ -12,7 +12,7 @@ import './App.css'
 
 /**
  * توجيه بسيط قائم على الهاش بدون أي اعتماديات إضافية.
- * الأقسام تبقى جميعها مُركّبة مع إخفاء غير النشِط (attribute hidden) —
+ * الأقسام تبقى جميعها مُركّبة والغير نشِط مخفي بــ display:none عبر الأصناف —
  * بهذا تنجو حالات التصفية والترتيب ومفاتيح المقارنة من الضياع بين التنقّلات.
  */
 const VIEWS = {
@@ -53,19 +53,17 @@ function App() {
   }, [])
 
   // عند التنقّل بين الأقسام (أهداف الهاز على مستوى القسم): أعلى الصفحة تمامًا (0,0)
-  // لتلعب حركة view-in من الأعلى طبيعيًا — ما عدا مراسي عناصر داخلية نادرة
-  // (rAF يضمن التنفيذ بعد محاولة المتصفح الأصلية للتمرير للمرساة — فلا قفزات مزدوجة)
-  useEffect(() => {
+  // لتلعب حركة view-in من الأعلى طبيعيًا — useLayoutEffect يُطبِّق التمرير قبل أي رسم
+  // فلا وميض ولا اعتماد على إيقاع الإطارات، وما عدا مراسٍ عناصر داخلية نادرة
+  useLayoutEffect(() => {
     const hash = window.location.hash
-    requestAnimationFrame(() => {
-      if (HASH_TO_VIEW.has(hash)) {
-        window.scrollTo({ top: 0, behavior: 'instant' })
-        return
-      }
-      const target = document.getElementById(hash.slice(1))
-      if (target && target.offsetParent !== null) target.scrollIntoView()
-      else window.scrollTo({ top: 0, behavior: 'instant' })
-    })
+    if (HASH_TO_VIEW.has(hash)) {
+      window.scrollTo({ top: 0, behavior: 'instant' })
+      return
+    }
+    const target = document.getElementById(hash.slice(1))
+    if (target && target.offsetParent !== null) target.scrollIntoView()
+    else window.scrollTo({ top: 0, behavior: 'instant' })
   }, [view])
 
   return (
