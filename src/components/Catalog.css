@@ -160,6 +160,19 @@
   font-size: 0.8rem;
 }
 
+.catalog-card-availability {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 0.35rem;
+}
+
+.catalog-card-review {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-inline-start: 0.25rem;
+  cursor: help;
+}
+
 .catalog-card-cta {
   display: inline-flex;
   align-items: center;

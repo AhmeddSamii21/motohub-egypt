@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { CATALOG } from '../data/catalog'
+import { MODELS as GENERATED_MODELS, AVAILABILITY_NOTE } from '../data/generatedStock'
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
 import ModelCompare from './ModelCompare'
 import Brands from './Brands'
@@ -41,7 +42,21 @@ function sortModels(models, sort) {
   return models // الترتيب الأصلي كما في المصدر
 }
 
+// بيانات السعر والتوفّر المُولَّدة — مفتاح المطابقة نفس مفتاح المقارنة (brand|name)
+// الملف المُولَّد يغطي جميع موديلات الكتالوج؛ عند فشل مفتاح نرجع للعرض القديم كما هو.
+const GENERATED_BY_KEY = new Map(GENERATED_MODELS.map((m) => [`${m.brand}|${m.name}`, m]))
+
+// أسعار المصادر الجديدة في الكتاب ترد بلا فواصل الآلاف — نعرضها بأسلوب ج.م الحالي نفسه
+function formatDisplayPrice(display, source) {
+  if (source !== 'stock' && source !== 'price-list') return display
+  if (!/^\d+$/.test(display)) return display
+  return display.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
 function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled }) {
+  const info = GENERATED_BY_KEY.get(`${brand}|${model.name}`)
+  const availability = info && info.stockUnits > 0 ? AVAILABILITY_NOTE : null
+  const needsReview = Boolean(info && info.needsReview)
   return (
     <li className="catalog-card">
       <div className="catalog-card-top">
@@ -58,8 +73,10 @@ function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled })
       </div>
       <h4 className="catalog-card-name">{model.name}</h4>
       <p className="catalog-card-price">
-        <b>{model.price}</b> <span>ج.م</span>
+        <b>{formatDisplayPrice(info ? info.price : model.price, info && info.source)}</b> <span>ج.م</span>
+        {needsReview && <span className="catalog-card-review" title="سعر مصدره قائمة قديمة — قيد المراجعة مع المصدر">*</span>}
       </p>
+      {availability && <p className="catalog-card-availability">{availability}</p>}
       <a
         href="#book"
         className="catalog-card-cta"
