@@ -7,6 +7,7 @@ import InstallmentCalculator from './components/InstallmentCalculator'
 import Features from './components/Features'
 import CTA from './components/CTA'
 import BookingForm from './components/BookingForm'
+import ModelPage from './components/ModelPage'
 import Footer from './components/Footer'
 import './App.css'
 
@@ -20,7 +21,11 @@ const VIEWS = {
   catalog: 'catalog',
   calc: 'calc',
   book: 'book',
+  model: 'model',
 }
+
+/** بادئة روابط صفحات الموديل الفردية — لا ماركة/موديل داخل App؛ الحلّ الدقيق في ModelPage/modelSlug */
+const MODEL_ROUTE_PREFIX = '#/m/'
 
 /** الهاشات الحالية والقديمة معًا إلى قسم (view) — الهاش غير المعروف يحافظ على القسم الحالي */
 const HASH_TO_VIEW = new Map([
@@ -37,7 +42,12 @@ const HASH_TO_VIEW = new Map([
 ])
 
 function viewFromHash(hash) {
-  return HASH_TO_VIEW.get(hash) ?? null
+  const mapped = HASH_TO_VIEW.get(hash)
+  if (mapped) return mapped
+  // روابط الموديل المشاركة (#/m/...) تذهب لصفحة الموديل — الحلّ الدقيق والرجوع
+  // إلى #catalog عند عدم التطابق يُدار داخل ModelPage (بلا تخمين).
+  if (hash && hash.startsWith(MODEL_ROUTE_PREFIX)) return VIEWS.model
+  return null
 }
 
 function App() {
@@ -87,6 +97,9 @@ function App() {
         </div>
         <div className={`view-panel ${view === VIEWS.book ? 'is-active' : ''}`}>
           <BookingForm />
+        </div>
+        <div className={`view-panel ${view === VIEWS.model ? 'is-active' : ''}`}>
+          <ModelPage />
         </div>
       </main>
       <Footer />

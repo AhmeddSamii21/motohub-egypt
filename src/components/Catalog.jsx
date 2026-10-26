@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { CATALOG } from '../data/catalog'
-import { MODELS as GENERATED_MODELS, AVAILABILITY_NOTE, LAST_RECORDED_PRICE_NOTE } from '../data/generatedStock'
+import { AVAILABILITY_NOTE, LAST_RECORDED_PRICE_NOTE } from '../data/generatedStock'
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
+import { modelHref } from '../data/modelSlug'
+import { GENERATED_BY_KEY, formatDisplayPrice } from '../data/modelDisplay'
 import ModelCompare from './ModelCompare'
 import Brands from './Brands'
 import './Catalog.css'
@@ -44,14 +46,7 @@ function sortModels(models, sort) {
 
 // بيانات السعر والتوفّر المُولَّدة — مفتاح المطابقة نفس مفتاح المقارنة (brand|name)
 // الملف المُولَّد يغطي جميع موديلات الكتالوج؛ عند فشل مفتاح نرجع للعرض القديم كما هو.
-const GENERATED_BY_KEY = new Map(GENERATED_MODELS.map((m) => [`${m.brand}|${m.name}`, m]))
-
-// أسعار المصادر الجديدة في الكتاب ترد بلا فواصل الآلاف — نعرضها بأسلوب ج.م الحالي نفسه
-function formatDisplayPrice(display, source) {
-  if (source !== 'stock' && source !== 'price-list') return display
-  if (!/^\d+$/.test(display)) return display
-  return display.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
+// المنطق المشترك (المفتاح + تنسيق السعر) يعيش في src/data/modelDisplay.js لصفحة الموديل أيضًا.
 
 function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled }) {
   const info = GENERATED_BY_KEY.get(`${brand}|${model.name}`)
@@ -64,15 +59,20 @@ function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled })
     <li className="catalog-card">
       <div className="catalog-card-top">
         <p className="catalog-card-brand">{brand}</p>
-        <button
-          type="button"
-          className={`catalog-card-compare ${compared ? 'is-selected' : ''}`}
-          aria-pressed={compared}
-          disabled={compareDisabled && !compared}
-          onClick={() => onToggleCompare(`${brand}|${model.name}`)}
-        >
-          قارن
-        </button>
+        <div className="catalog-card-actions">
+          <a className="catalog-card-details" href={modelHref(brand, model.name)}>
+            التفاصيل
+          </a>
+          <button
+            type="button"
+            className={`catalog-card-compare ${compared ? 'is-selected' : ''}`}
+            aria-pressed={compared}
+            disabled={compareDisabled && !compared}
+            onClick={() => onToggleCompare(`${brand}|${model.name}`)}
+          >
+            قارن
+          </button>
+        </div>
       </div>
       <h4 className="catalog-card-name">{model.name}</h4>
       <p className="catalog-card-price">

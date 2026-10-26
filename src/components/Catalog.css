@@ -197,6 +197,24 @@
 
 /* ===== أداة المقارنة على البطاقة ===== */
 
+.catalog-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.catalog-card-details {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+}
+
+.catalog-card-details:hover {
+  color: var(--accent-2);
+}
+
 .catalog-card-top {
   display: flex;
   align-items: center;

@@ -1,5 +1,6 @@
 import { CATALOG } from '../data/catalog'
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
+import { modelHref } from '../data/modelSlug'
 import './FeaturedModels.css'
 
 /**
@@ -44,6 +45,9 @@ function FeaturedModels() {
                 <p className="model-price">
                   <b>{model.price}</b> <span>ج.م</span>
                 </p>
+                <a className="model-details" href={modelHref(model.brand, model.name)}>
+                  التفاصيل
+                </a>
               </div>
 
               <a

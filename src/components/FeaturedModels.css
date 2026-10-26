@@ -132,6 +132,19 @@
   font-size: 0.85rem;
 }
 
+.model-details {
+  display: inline-block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+}
+
+.model-details:hover {
+  color: var(--accent-2);
+}
+
 .model-cta {
   display: inline-flex;
   align-items: center;

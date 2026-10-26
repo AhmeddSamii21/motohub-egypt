@@ -1,0 +1,47 @@
+/* صفحة الموديل الفردي — تخطيط بسيط حول صنف بطاقة الكتالوج المعاد استخدامه */
+
+.model-page {
+  display: flex;
+  align-items: center;
+  min-height: 70vh;
+}
+
+.model-page-card {
+  width: min(34rem, 100%);
+  margin-inline: auto;
+  padding: 1.6rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.model-page-name {
+  margin-top: 0.35rem;
+  font-size: 1.5rem;
+}
+
+.model-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.model-page-back {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.model-page-back:hover {
+  color: var(--text);
+}
+
+.model-page-note {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.model-page .container {
+  width: 100%;
+}
