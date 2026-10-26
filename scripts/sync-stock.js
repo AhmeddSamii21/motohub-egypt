@@ -16,7 +16,9 @@ import zlib from 'node:zlib'
 const WORKBOOK = process.argv[2] || path.join(process.cwd(), 'IRIDE Stock.xlsx')
 const OUT_FILE = path.join(process.cwd(), 'src/data/generatedStock.js')
 const CATALOG_FILE = path.join(process.cwd(), 'src/data/catalog.js')
-const AVAIL_MSG = 'متوفر حسب آخر سجل، يُرجى تأكيد الكمية مع الفرع'
+const AVAIL_MSG = 'متاح'
+// تحذير موثّق يظهر تحت السعر لكل موديل ليس له سجل مُطابَق في تبويب Stock
+const NO_STOCK_MSG = 'ده آخر سعر مسجل، يُرجى التواصل مع الفرع للتأكد من التوفر والسعر الحالي'
 
 // ---------- zip reader (منطق مُثَبت من الفحص) ----------
 function readEntries(buf) {
@@ -283,10 +285,11 @@ const lines = []
 lines.push('/**')
 lines.push(` * ملف مُولَّد آليًا — لا تعدّل يدويًا. المصدر: ${path.basename(WORKBOOK)} عبر scripts/sync-stock.js`)
 lines.push(' * القاعدة المعتمدة: أولوية السعر Stock ← قائمة الأسعار (A/B) ← الكتالوج مع مراجعة؛')
-lines.push(' * استحقاق التوفّر يظهر فقط عند عدد وحدات مسجّل > 0؛ لوحة L مستبعدة؛ لا أسعار مخترعة.')
+lines.push(' * مؤشر «متاح» فقط عند سجل Stock مُطابَق بوحدات مسجّلة > 0؛ موديل بلا سجل Stock يظهر تحذير')
 lines.push(' */')
 lines.push('')
 lines.push(`export const AVAILABILITY_NOTE = '${AVAIL_MSG}'`)
+lines.push(`export const LAST_RECORDED_PRICE_NOTE = '${NO_STOCK_MSG}'`)
 lines.push('')
 lines.push('export const MODELS = [')
 for (const { brand, name, entry } of finalRows) {
@@ -296,8 +299,15 @@ for (const { brand, name, entry } of finalRows) {
     `source: '${entry.source}'`,
     `price: ${JSON.stringify(entry.price)}`,
   ]
-  if (entry.units != null) fields.push(`stockUnits: ${entry.units}`)
-  if (entry.units > 0) fields.push('availabilityNote: AVAILABILITY_NOTE')
+  if (entry.units != null) {
+    // سجل Stock مُطابَق بوحدات مسجّلة: سعر عادي + مؤشر «متاح» الموجز — بلا تحذير
+    fields.push(`stockUnits: ${entry.units}`)
+    fields.push('availabilityNote: AVAILABILITY_NOTE')
+  } else {
+    // لا سجل مُطابَق في Stock: الأنماط الظهرية/الكتالوج + تحذير آخر سعر مسجل
+    // (لا يُوصف الموديل بأنه غير متوفر — التوفر مجهول حتى يضبطه الفرع)
+    fields.push('lastPriceNote: NO_STOCK_NOTE')
+  }
   if (entry.review) fields.push('needsReview: true')
   lines.push('  {')
   lines.push('    ' + fields.join(', '))
@@ -305,7 +315,7 @@ for (const { brand, name, entry } of finalRows) {
 }
 lines.push(']')
 lines.push('')
-lines.push(`export const META = ${JSON.stringify({ generatedAt: new Date().toISOString(), workbook: path.basename(WORKBOOK), siteModels: finalRows.length, priceSources: report, stockUnitsRecorded: stockUnitsTotal, stockKeysTotal: stockByKey.size, stockKeysUnpublished: workbookOnly.length, priceList: { brandHeaders: plHeaders, pricedPairs: plPairs, unpricedX: plUnpriced, nameOnlyRows: plAOnly }, availabilityNote: AVAIL_MSG }, null, 2)}`)
+lines.push(`export const META = ${JSON.stringify({ generatedAt: new Date().toISOString(), workbook: path.basename(WORKBOOK), siteModels: finalRows.length, priceSources: report, stockUnitsRecorded: stockUnitsTotal, stockKeysTotal: stockByKey.size, stockKeysUnpublished: workbookOnly.length, priceList: { brandHeaders: plHeaders, pricedPairs: plPairs, unpricedX: plUnpriced, nameOnlyRows: plAOnly }, availabilityNote: AVAIL_MSG, lastRecordedPriceNote: NO_STOCK_MSG }, null, 2)}`)
 lines.push('')
 fs.writeFileSync(OUT_FILE, lines.join('\n'), 'utf8')
 

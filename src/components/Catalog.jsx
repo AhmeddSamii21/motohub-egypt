@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CATALOG } from '../data/catalog'
-import { MODELS as GENERATED_MODELS, AVAILABILITY_NOTE } from '../data/generatedStock'
+import { MODELS as GENERATED_MODELS, AVAILABILITY_NOTE, LAST_RECORDED_PRICE_NOTE } from '../data/generatedStock'
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
 import ModelCompare from './ModelCompare'
 import Brands from './Brands'
@@ -55,8 +55,11 @@ function formatDisplayPrice(display, source) {
 
 function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled }) {
   const info = GENERATED_BY_KEY.get(`${brand}|${model.name}`)
-  const availability = info && info.stockUnits > 0 ? AVAILABILITY_NOTE : null
   const needsReview = Boolean(info && info.needsReview)
+  // موديل بسجل Stock مُطابَق، وبه وحدات مسجّلة: مؤشر «متاح» الموجز (بلا تحذير)
+  // وسائر الحالات (قائمة الأسعار أو الكتالوج) | بلا سجل Stock: تحذير آخر سعر مسجل
+  // التوفر يبقى مجهولًا ولا يُوصف الموديل بأنه غير متوفر.
+  const availability = info && info.stockUnits > 0 ? AVAILABILITY_NOTE : LAST_RECORDED_PRICE_NOTE
   return (
     <li className="catalog-card">
       <div className="catalog-card-top">
@@ -76,7 +79,7 @@ function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled })
         <b>{formatDisplayPrice(info ? info.price : model.price, info && info.source)}</b> <span>ج.م</span>
         {needsReview && <span className="catalog-card-review" title="سعر مصدره قائمة قديمة — قيد المراجعة مع المصدر">*</span>}
       </p>
-      {availability && <p className="catalog-card-availability">{availability}</p>}
+      <p className="catalog-card-availability">{availability}</p>
       <a
         href="#book"
         className="catalog-card-cta"
