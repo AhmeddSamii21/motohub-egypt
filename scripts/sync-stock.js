@@ -306,7 +306,7 @@ for (const { brand, name, entry } of finalRows) {
   } else {
     // لا سجل مُطابَق في Stock: الأنماط الظهرية/الكتالوج + تحذير آخر سعر مسجل
     // (لا يُوصف الموديل بأنه غير متوفر — التوفر مجهول حتى يضبطه الفرع)
-    fields.push('lastPriceNote: NO_STOCK_NOTE')
+    fields.push('lastPriceNote: LAST_RECORDED_PRICE_NOTE')
   }
   if (entry.review) fields.push('needsReview: true')
   lines.push('  {')
