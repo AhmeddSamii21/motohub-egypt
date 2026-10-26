@@ -39,15 +39,17 @@ function FeaturedModels() {
         <div className="models-grid">
           {FEATURED.map((model) => (
             <article className="model-card" key={model.name}>
+              <a
+                className="model-card-overlay"
+                href={modelHref(model.brand, model.name)}
+                aria-label={`تفاصيل ${model.brand} ${model.name}`}
+              />
               <div className="model-body">
                 <p className="model-category">{model.brand}</p>
                 <h3 className="model-name">{model.name}</h3>
                 <p className="model-price">
                   <b>{model.price}</b> <span>ج.م</span>
                 </p>
-                <a className="model-details" href={modelHref(model.brand, model.name)}>
-                  التفاصيل
-                </a>
               </div>
 
               <a

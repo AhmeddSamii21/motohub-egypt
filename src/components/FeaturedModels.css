@@ -5,6 +5,7 @@
 }
 
 .model-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -18,6 +19,20 @@
   border-color: rgba(255, 122, 26, 0.5);
   transform: translateY(-4px);
   box-shadow: var(--shadow);
+}
+
+/* ===== سطح البطاقة قابل للنقر (بدون تفاعلات متداخلة) — نفس نمط بطاقات الكتالوج ===== */
+
+.model-card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.model-card-overlay:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 /* مساحة بصرية بدون صور: تدرجات معدنية + خطوط السرعة */
@@ -132,20 +147,9 @@
   font-size: 0.85rem;
 }
 
-.model-details {
-  display: inline-block;
-  font-size: 0.78rem;
-  color: var(--muted);
-  text-decoration: underline;
-  text-decoration-color: var(--line);
-  text-underline-offset: 3px;
-}
-
-.model-details:hover {
-  color: var(--accent-2);
-}
-
 .model-cta {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;

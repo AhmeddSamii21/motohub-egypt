@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CATALOG } from '../data/catalog'
 import { AVAILABILITY_NOTE, LAST_RECORDED_PRICE_NOTE } from '../data/generatedStock'
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
@@ -56,23 +56,23 @@ function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled })
   // التوفر يبقى مجهولًا ولا يُوصف الموديل بأنه غير متوفر.
   const availability = info && info.stockUnits > 0 ? AVAILABILITY_NOTE : LAST_RECORDED_PRICE_NOTE
   return (
-    <li className="catalog-card">
+    <li className="catalog-card" data-card-brand={brand}>
+      <a
+        className="catalog-card-overlay"
+        href={modelHref(brand, model.name)}
+        aria-label={`تفاصيل ${brand} ${model.name}`}
+      />
       <div className="catalog-card-top">
         <p className="catalog-card-brand">{brand}</p>
-        <div className="catalog-card-actions">
-          <a className="catalog-card-details" href={modelHref(brand, model.name)}>
-            التفاصيل
-          </a>
-          <button
-            type="button"
-            className={`catalog-card-compare ${compared ? 'is-selected' : ''}`}
-            aria-pressed={compared}
-            disabled={compareDisabled && !compared}
-            onClick={() => onToggleCompare(`${brand}|${model.name}`)}
-          >
-            قارن
-          </button>
-        </div>
+        <button
+          type="button"
+          className={`catalog-card-compare ${compared ? 'is-selected' : ''}`}
+          aria-pressed={compared}
+          disabled={compareDisabled && !compared}
+          onClick={() => onToggleCompare(`${brand}|${model.name}`)}
+        >
+          قارن
+        </button>
       </div>
       <h4 className="catalog-card-name">{model.name}</h4>
       <p className="catalog-card-price">
@@ -159,10 +159,32 @@ function Catalog() {
   const hasFilters =
     brand !== ALL_BRANDS || query.trim() !== '' || priceRange !== 'all' || sort !== 'default'
 
+  // ===== ماركات داخل المعرض → الكتالوج =====
+  // البطاق تعرض ماركة (وليس موديلًا)، لذا الهدف الموثوق: فلتر الماركة + تمرير إلى
+  // مجموعة الماركة (الترتيب الأصلي) أو أول بطاقة من موديلاتها (الترتيب السعري).
+  // المرجع يُستهلك مرة واحدة بعد إعادة التصيير فيصير التمرير بلا سباقات.
+  const pendingBrandScrollRef = useRef(null)
+
+  const handleBrandSelect = (brandName) => {
+    pendingBrandScrollRef.current = brandName
+    setBrand(brandName)
+  }
+
+  useEffect(() => {
+    const wanted = pendingBrandScrollRef.current
+    if (!wanted) return
+    pendingBrandScrollRef.current = null
+    const esc = window.CSS ? CSS.escape(wanted) : wanted.replace(/["\\]/g, '\\$&')
+    const groupEl = document.querySelector(`.catalog-group[data-brand="${esc}"]`)
+    const cardEl = document.querySelector(`.catalog-card[data-card-brand="${esc}"]`)
+    const target = sort === 'default' ? (groupEl || cardEl) : (cardEl || groupEl)
+    if (target) target.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  }, [brand, sort])
+
   return (
     <>
-      {/* قائمة الماركات أعلن قسم الكتالوج مباشرة — نظرة فورية على الماركات عند الوصول للقسم */}
-      <Brands />
+      {/* قائمة الماركات أعلى قسم الكتالوج مباشرة — نظرة فورية على الماركات عند الوصول للقسم */}
+      <Brands onBrandSelect={handleBrandSelect} />
       <section className="section catalog" id="catalog">
       <div className="container">
         <div className="section-head">
@@ -248,7 +270,7 @@ function Catalog() {
         ) : sort === 'default' ? (
           <div className="catalog-groups">
             {visibleGroups.map((group) => (
-              <div className="catalog-group" key={group.brand}>
+              <div className="catalog-group" key={group.brand} data-brand={group.brand}>
                 <h3 className="catalog-brand">
                   {group.brand}
                   <span className="catalog-brand-count">{group.models.length}</span>
