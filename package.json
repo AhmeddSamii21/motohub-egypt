@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
+    "sync:data": "node scripts/sync-stock.js && node scripts/sync-model-details.js && npm run lint",
     "preview": "vite preview"
   },
   "dependencies": {

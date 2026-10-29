@@ -257,7 +257,7 @@ export const MODELS = [
 ]
 
 export const META = {
-  "generatedAt": "2026-10-26T13:40:46.206Z",
+  "generatedAt": "2026-10-27T01:30:39.796Z",
   "workbook": "IRIDE Stock.xlsx",
   "siteModels": 82,
   "priceSources": {
