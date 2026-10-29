@@ -196,3 +196,8 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* زر «أضف إلى السلة» — نفس شكل catalog-card-cta لكنه button حقيقي */
+.model-page-cart-cta {
+  cursor: pointer;
+}

@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Header.css'
 
 /**
  * روابط التنقل بين أقسام الموقع (توجيه الهاز في App):
- * الرئيسية / الكتالوج / حاسبة الأقساط / حجز معاينة (زر مميز).
+ * الرئيسية / الكتالوج / حاسبة الأقساط / عربة الشراء (بشارة عدد القطع) / حجز معاينة (زر مميز).
  * القسم النشِط يُعلَّم بـ aria-current للوصولية وللتبويب المرئي.
  */
+import { CART_EVENT, cartCount } from '../data/cartStore'
+
 const LINKS = [
   { href: '#home', label: 'الرئيسية', view: 'home' },
   { href: '#catalog', label: 'الكتالوج', view: 'catalog' },
@@ -14,6 +16,14 @@ const LINKS = [
 
 function Header({ view = 'home' }) {
   const [open, setOpen] = useState(false)
+  // عدد القطع الإجمالي (مجموع الكميات) — يتحدّث فورًا عبر حدث السلة المخصص
+  const [cartItems, setCartItems] = useState(() => cartCount())
+
+  useEffect(() => {
+    const refresh = () => setCartItems(cartCount())
+    window.addEventListener(CART_EVENT, refresh)
+    return () => window.removeEventListener(CART_EVENT, refresh)
+  }, [])
 
   return (
     <header className="site-header" id="home">
@@ -56,6 +66,20 @@ function Header({ view = 'home' }) {
                 </a>
               </li>
             ))}
+            <li>
+              <a
+                href="#cart"
+                aria-current={view === 'cart' ? 'page' : undefined}
+                onClick={() => setOpen(false)}
+              >
+                عربة الشراء
+                {cartItems > 0 && (
+                  <span className="nav-cart-badge" aria-label={`${cartItems} قطعة في عربة الشراء`}>
+                    {cartItems}
+                  </span>
+                )}
+              </a>
+            </li>
             <li>
               <a
                 href="#book"

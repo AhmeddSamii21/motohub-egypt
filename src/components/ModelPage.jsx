@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { resolveModelUrl } from '../data/modelSlug'
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
+import { addItem } from '../data/cartStore'
 import { GENERATED_BY_KEY, formatDisplayPrice } from '../data/modelDisplay'
 import { AVAILABILITY_NOTE, LAST_RECORDED_PRICE_NOTE } from '../data/generatedStock'
 import { MODEL_DETAILS } from '../data/generatedModelDetails'
@@ -65,6 +66,8 @@ function ModelGallery({ images, altBase }) {
 
 function ModelPage() {
   const [hash, setHash] = useState(() => window.location.hash)
+  // تأكيد قصير بعد الإضافة إلى السلة (لا يغيّر أي سلوك قائم الحجز/الواتساب)
+  const [justAdded, setJustAdded] = useState(false)
   useEffect(() => {
     const onHashChange = () => setHash(window.location.hash)
     window.addEventListener('hashchange', onHashChange)
@@ -128,6 +131,17 @@ function ModelPage() {
             >
               احجز معاينة
             </a>
+            <button
+              type="button"
+              className="catalog-card-cta model-page-cart-cta"
+              onClick={() => {
+                addItem(brand, model.name)
+                setJustAdded(true)
+                window.setTimeout(() => setJustAdded(false), 1800)
+              }}
+            >
+              {justAdded ? 'تمت الإضافة ✓' : 'أضف إلى السلة'}
+            </button>
             <a
               className="model-page-whatsapp"
               href={whatsappModelLink(model.name)}

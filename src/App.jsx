@@ -8,6 +8,7 @@ import Features from './components/Features'
 import CTA from './components/CTA'
 import BookingForm from './components/BookingForm'
 import ModelPage from './components/ModelPage'
+import Cart from './components/Cart'
 import Footer from './components/Footer'
 import './App.css'
 
@@ -22,6 +23,7 @@ const VIEWS = {
   calc: 'calc',
   book: 'book',
   model: 'model',
+  cart: 'cart',
 }
 
 /** بادئة روابط صفحات الموديل الفردية — لا ماركة/موديل داخل App؛ الحلّ الدقيق في ModelPage/modelSlug */
@@ -39,6 +41,7 @@ const HASH_TO_VIEW = new Map([
   ['#calc', VIEWS.calc],
   ['#installments', VIEWS.calc],
   ['#book', VIEWS.book],
+  ['#cart', VIEWS.cart],
 ])
 
 function viewFromHash(hash) {
@@ -100,6 +103,9 @@ function App() {
         </div>
         <div className={`view-panel ${view === VIEWS.model ? 'is-active' : ''}`}>
           <ModelPage />
+        </div>
+        <div className={`view-panel ${view === VIEWS.cart ? 'is-active' : ''}`}>
+          <Cart />
         </div>
       </main>
       <Footer />

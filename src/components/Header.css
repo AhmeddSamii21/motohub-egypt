@@ -68,6 +68,21 @@
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+/* شارة عدد القطع في رابط عربة الشراء — مجموعة كميات لا عدد موديلات */
+.nav-cart-badge {
+  display: inline-block;
+  min-width: 1.3rem;
+  margin-inline-start: 0.35rem;
+  padding: 0.05rem 0.35rem;
+  color: #0e1013;
+  background-color: var(--accent);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  vertical-align: middle;
+}
+
 .site-nav a:not(.nav-cta)[aria-current='page'] {
   color: var(--accent-2);
   background-color: rgba(255, 122, 26, 0.1);

@@ -1,0 +1,224 @@
+/* عربة الشراء — نفس الثيم الداكن وبنفس متغيرات الموقع؛ RTL ومتوافقة مع الشاشات الصغيرة */
+
+.cart-title {
+  font-size: 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.cart-empty {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+  padding: 1.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+}
+
+.cart-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.cart-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  padding: 0.9rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.cart-line-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1 1 12rem;
+  min-width: 10rem;
+}
+
+.cart-line-brand {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.cart-line-name {
+  font-weight: 700;
+}
+
+.cart-line-price {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.cart-line-qty {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cart-line-qty button {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.cart-line-qty button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.cart-line-qty button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cart-line-qty-value {
+  min-width: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.cart-line-total {
+  font-weight: 700;
+}
+
+.cart-line-remove {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.cart-line-remove:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.cart-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.cart-summary-total {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.cart-summary-note {
+  width: 100%;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.cart-clear {
+  margin-inline-start: auto;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.cart-clear:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.cart-checkout {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 34rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.cart-checkout h3 {
+  font-size: 1.1rem;
+}
+
+.cart-checkout-status {
+  color: var(--accent-2);
+  font-size: 0.9rem;
+}
+
+.cart-checkout label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.cart-checkout input,
+.cart-checkout textarea {
+  padding: 0.55rem 0.7rem;
+  font-family: inherit;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.cart-checkout textarea {
+  resize: vertical;
+}
+
+.cart-checkout button[type='submit'] {
+  justify-self: start;
+  padding: 0.7rem 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.cart-checkout button[type='submit']:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cart-notice {
+  color: var(--accent-2);
+  font-size: 0.9rem;
+}
+
+.cart-policy {
+  margin-top: 1.25rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 480px) {
+  .cart-line {
+    align-items: flex-start;
+  }
+
+  .cart-line-total {
+    width: 100%;
+  }
+}
