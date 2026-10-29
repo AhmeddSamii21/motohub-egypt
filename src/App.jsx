@@ -4,6 +4,7 @@ import Hero from './components/Hero'
 import FeaturedModels from './components/FeaturedModels'
 import Catalog from './components/Catalog'
 import InstallmentCalculator from './components/InstallmentCalculator'
+import OwnershipCostCalculator from './components/OwnershipCostCalculator'
 import Features from './components/Features'
 import CTA from './components/CTA'
 import BookingForm from './components/BookingForm'
@@ -21,6 +22,7 @@ const VIEWS = {
   home: 'home',
   catalog: 'catalog',
   calc: 'calc',
+  cost: 'cost',
   book: 'book',
   model: 'model',
   cart: 'cart',
@@ -40,6 +42,7 @@ const HASH_TO_VIEW = new Map([
   ['#catalog', VIEWS.catalog],
   ['#calc', VIEWS.calc],
   ['#installments', VIEWS.calc],
+  ['#cost', VIEWS.cost],
   ['#book', VIEWS.book],
   ['#cart', VIEWS.cart],
 ])
@@ -97,6 +100,9 @@ function App() {
         </div>
         <div className={`view-panel ${view === VIEWS.calc ? 'is-active' : ''}`}>
           <InstallmentCalculator />
+        </div>
+        <div className={`view-panel ${view === VIEWS.cost ? 'is-active' : ''}`}>
+          <OwnershipCostCalculator />
         </div>
         <div className={`view-panel ${view === VIEWS.book ? 'is-active' : ''}`}>
           <BookingForm />

@@ -1,0 +1,147 @@
+/* ===== حاسبة تكلفة التشغيل — نفس لغة حاسبة الأقساط (`.calc-*`) ببدائل `.cost-*` ===== */
+
+.cost-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.cost-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.cost-result {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel-2), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.cost-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cost-label {
+  color: var(--metal);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* المدخلات — نفس لغة نموذج الحجز وحاسبة الأقساط */
+
+.cost-input {
+  padding: 0.7rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease;
+}
+
+.cost-input:focus {
+  outline: none;
+  border-color: var(--metal);
+}
+
+/* بطاقات النتيجة — شبكة 2×2 متوازنة؛ البطاقة المحورية (الإجمالي الشهري) تُميَّز داخل خليتها بلا امتداد أعمدة */
+
+.cost-result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.cost-stat {
+  padding: 0.9rem 1rem;
+  text-align: center;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.cost-stat-focus {
+  background: linear-gradient(160deg, var(--panel-2), var(--bg-2));
+  border-color: rgba(255, 122, 26, 0.45);
+}
+
+.cost-stat-label {
+  color: var(--metal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.cost-stat-value {
+  color: var(--accent-2);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-top: 0.2rem;
+}
+
+.cost-stat:not(.cost-stat-focus) .cost-stat-value {
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.cost-stat-unit {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
+}
+
+/* الملاحظات والتلميحات — بلا أي زر/CTA عمدًا (مسار الحجز لا يُمسّ) */
+
+.cost-note,
+.cost-disclaimer {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.cost-hint {
+  color: var(--metal);
+  font-size: 0.85rem;
+}
+
+.cost-disclaimer {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+/* ===== استجابة الشاشات ===== */
+
+@media (max-width: 960px) {
+  .cost-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .cost-controls,
+  .cost-result {
+    padding: 1.1rem;
+  }
+
+  .cost-result-grid {
+    grid-template-columns: 1fr;
+  }
+}
