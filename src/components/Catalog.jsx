@@ -4,6 +4,7 @@ import { AVAILABILITY_NOTE, LAST_RECORDED_PRICE_NOTE } from '../data/generatedSt
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
 import { modelHref } from '../data/modelSlug'
 import { GENERATED_BY_KEY, formatDisplayPrice } from '../data/modelDisplay'
+import { readFavorites, toggleFavorite, FAVORITES_EVENT } from '../data/favoritesStore'
 import ModelCompare from './ModelCompare'
 import Brands from './Brands'
 import './Catalog.css'
@@ -48,7 +49,7 @@ function sortModels(models, sort) {
 // الملف المُولَّد يغطي جميع موديلات الكتالوج؛ عند فشل مفتاح نرجع للعرض القديم كما هو.
 // المنطق المشترك (المفتاح + تنسيق السعر) يعيش في src/data/modelDisplay.js لصفحة الموديل أيضًا.
 
-function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled }) {
+function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled, fav, onToggleFav }) {
   const info = GENERATED_BY_KEY.get(`${brand}|${model.name}`)
   const needsReview = Boolean(info && info.needsReview)
   // موديل بسجل Stock مُطابَق، وبه وحدات مسجّلة: مؤشر «متاح» الموجز (بلا تحذير)
@@ -64,15 +65,39 @@ function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled })
       />
       <div className="catalog-card-top">
         <p className="catalog-card-brand">{brand}</p>
-        <button
-          type="button"
-          className={`catalog-card-compare ${compared ? 'is-selected' : ''}`}
-          aria-pressed={compared}
-          disabled={compareDisabled && !compared}
-          onClick={() => onToggleCompare(`${brand}|${model.name}`)}
-        >
-          قارن
-        </button>
+        <div className="catalog-card-tools">
+          <button
+            type="button"
+            className={`catalog-card-compare ${compared ? 'is-selected' : ''}`}
+            aria-pressed={compared}
+            disabled={compareDisabled && !compared}
+            onClick={() => onToggleCompare(`${brand}|${model.name}`)}
+          >
+            قارن
+          </button>
+          <button
+            type="button"
+            className={`catalog-card-fav ${fav ? 'is-active' : ''}`}
+            aria-pressed={fav}
+            aria-label={fav ? `إزالة ${brand} ${model.name} من المفضلة` : `إضافة ${brand} ${model.name} إلى المفضلة`}
+            title={fav ? 'في المفضلة' : 'أضف إلى المفضلة'}
+            onClick={() => onToggleFav(brand, model.name)}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill={fav ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" />
+            </svg>
+          </button>
+        </div>
       </div>
       <h4 className="catalog-card-name">{model.name}</h4>
       <p className="catalog-card-price">
@@ -115,6 +140,14 @@ function Catalog() {
   const [sort, setSort] = useState('default')
   const [compareKeys, setCompareKeys] = useState([])
   const [compareOpen, setCompareOpen] = useState(false)
+
+  // المفضلة: مجموعة المفاتيح الحالية — تُحدَّث عبر حدث المفضلة (نفس نمط شارة السلة)
+  const [favKeys, setFavKeys] = useState(() => new Set(readFavorites().map((item) => `${item.brand}|${item.name}`)))
+  useEffect(() => {
+    const refresh = () => setFavKeys(new Set(readFavorites().map((item) => `${item.brand}|${item.name}`)))
+    window.addEventListener(FAVORITES_EVENT, refresh)
+    return () => window.removeEventListener(FAVORITES_EVENT, refresh)
+  }, [])
 
   const toggleCompare = (key) => {
     setCompareKeys((prev) => {
@@ -284,6 +317,8 @@ function Catalog() {
                       compared={compareKeys.includes(`${group.brand}|${model.name}`)}
                       onToggleCompare={toggleCompare}
                       compareDisabled={compareKeys.length >= MAX_COMPARE}
+                      fav={favKeys.has(`${group.brand}|${model.name}`)}
+                      onToggleFav={toggleFavorite}
                     />
                   ))}
                 </ul>
@@ -306,6 +341,8 @@ function Catalog() {
                     compared={compareKeys.includes(model.key)}
                     onToggleCompare={toggleCompare}
                     compareDisabled={compareKeys.length >= MAX_COMPARE}
+                    fav={favKeys.has(model.key)}
+                    onToggleFav={toggleFavorite}
                   />
                 ))}
               </ul>

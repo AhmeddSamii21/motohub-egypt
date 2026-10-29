@@ -1,0 +1,149 @@
+/* ===== «تحديثات الأسعار» — نفس لغة الأقسام الحاسِبية (`.calc-*`/`.cost-*`/`.rec-*`) ===== */
+
+.upd-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.upd-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.upd-count {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.upd-timestamp {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.upd-timestamp span {
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
+.upd-note {
+  color: var(--muted);
+  font-size: 0.78rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+}
+
+/* صفوف التغيير — شبكة واحدة RTL */
+
+.upd-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.upd-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.upd-model {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.upd-brand {
+  color: var(--metal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.upd-name {
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.upd-prices {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+}
+
+.upd-old {
+  color: var(--muted);
+}
+
+.upd-old b {
+  font-weight: 700;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.upd-new {
+  color: var(--text);
+}
+
+.upd-new b {
+  color: var(--accent-2);
+  font-size: 1rem;
+}
+
+.upd-arrow {
+  font-size: 0.7rem;
+}
+
+.upd-arrow.is-up {
+  color: var(--accent-2);
+}
+
+.upd-arrow.is-down {
+  color: #7fd1a8;
+}
+
+.upd-disclaimer {
+  color: var(--muted);
+  font-size: 0.78rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+/* ===== استجابة الشاشات ===== */
+
+@media (max-width: 640px) {
+  .upd-panel {
+    padding: 1.1rem;
+  }
+
+  .upd-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

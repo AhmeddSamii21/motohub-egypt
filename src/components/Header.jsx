@@ -3,28 +3,40 @@ import './Header.css'
 
 /**
  * روابط التنقل بين أقسام الموقع (توجيه الهاز في App):
- * الرئيسية / الكتالوج / ساعدني أختار موتوسيكل / حاسبة الأقساط / حاسبة التشغيل / عربة الشراء (بشارة عدد القطع) / حجز معاينة (زر مميز).
+ * الرئيسية / الكتالوج / ساعدني أختار موتوسيكل / تحديثات الأسعار / حاسبة الأقساط / حاسبة التشغيل / عن المعرض / المفضلة (بشارة العدد) / عربة الشراء (بشارة عدد القطع) / حجز معاينة (زر مميز).
  * القسم النشِط يُعلَّم بـ aria-current للوصولية وللتبويب المرئي.
  */
 import { CART_EVENT, cartCount } from '../data/cartStore'
+import { FAVORITES_EVENT, favoritesCount } from '../data/favoritesStore'
 
 const LINKS = [
   { href: '#home', label: 'الرئيسية', view: 'home' },
   { href: '#catalog', label: 'الكتالوج', view: 'catalog' },
   { href: '#recommend', label: 'ساعدني أختار موتوسيكل', view: 'recommend' },
+  { href: '#updates', label: 'تحديثات الأسعار', view: 'updates' },
   { href: '#calc', label: 'حاسبة الأقساط', view: 'calc' },
   { href: '#cost', label: 'حاسبة التشغيل', view: 'cost' },
+  { href: '#showroom', label: 'عن المعرض', view: 'showroom' },
 ]
 
 function Header({ view = 'home' }) {
   const [open, setOpen] = useState(false)
   // عدد القطع الإجمالي (مجموع الكميات) — يتحدّث فورًا عبر حدث السلة المخصص
   const [cartItems, setCartItems] = useState(() => cartCount())
+  // عدد الموديلات المفضَّلة — يتحدّث فورًا عبر حدث المفضلة المخصص
+  const [favCount, setFavCount] = useState(() => favoritesCount())
 
   useEffect(() => {
-    const refresh = () => setCartItems(cartCount())
+    const refresh = () => {
+      setCartItems(cartCount())
+      setFavCount(favoritesCount())
+    }
     window.addEventListener(CART_EVENT, refresh)
-    return () => window.removeEventListener(CART_EVENT, refresh)
+    window.addEventListener(FAVORITES_EVENT, refresh)
+    return () => {
+      window.removeEventListener(CART_EVENT, refresh)
+      window.removeEventListener(FAVORITES_EVENT, refresh)
+    }
   }, [])
 
   return (
@@ -68,6 +80,20 @@ function Header({ view = 'home' }) {
                 </a>
               </li>
             ))}
+            <li>
+              <a
+                href="#favorites"
+                aria-current={view === 'favorites' ? 'page' : undefined}
+                onClick={() => setOpen(false)}
+              >
+                المفضلة
+                {favCount > 0 && (
+                  <span className="nav-cart-badge" aria-label={`${favCount} موديل في المفضلة`}>
+                    {favCount}
+                  </span>
+                )}
+              </a>
+            </li>
             <li>
               <a
                 href="#cart"

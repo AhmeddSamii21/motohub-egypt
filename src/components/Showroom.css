@@ -1,0 +1,117 @@
+/* ===== «عن المعرض» — نفس لغة الأقسام الحاسِبية وبطاقات الماركات ===== */
+
+.showroom-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.showroom-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.showroom-card h3 {
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.showroom-text {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.showroom-list {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.showroom-steps {
+  margin: 0;
+  padding-inline-start: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.showroom-steps li::marker {
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
+.showroom-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+/* زر واتساب — نفس لغة صفحة الموديل (.model-page-whatsapp) داخل بطاقة هنا */
+
+.showroom-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a0d02;
+  background: linear-gradient(135deg, #25d366, #128c4b);
+  border-radius: var(--radius-sm);
+  transition: filter 0.2s ease;
+}
+
+.showroom-whatsapp:hover {
+  filter: brightness(1.08);
+}
+
+.showroom-missing {
+  border-style: dashed;
+}
+
+.showroom-missing .showroom-list li {
+  color: var(--metal);
+}
+
+.showroom-disclaimer {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  background: var(--bg-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+/* ===== استجابة الشاشات ===== */
+
+@media (max-width: 960px) {
+  .showroom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .showroom-card {
+    padding: 1.1rem;
+  }
+}

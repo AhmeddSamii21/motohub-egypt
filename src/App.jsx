@@ -4,13 +4,16 @@ import Hero from './components/Hero'
 import FeaturedModels from './components/FeaturedModels'
 import Catalog from './components/Catalog'
 import Recommender from './components/Recommender'
+import CatalogUpdates from './components/CatalogUpdates'
 import InstallmentCalculator from './components/InstallmentCalculator'
 import OwnershipCostCalculator from './components/OwnershipCostCalculator'
+import Showroom from './components/Showroom'
 import Features from './components/Features'
 import CTA from './components/CTA'
 import BookingForm from './components/BookingForm'
 import ModelPage from './components/ModelPage'
 import Cart from './components/Cart'
+import Favorites from './components/Favorites'
 import Footer from './components/Footer'
 import './App.css'
 
@@ -23,11 +26,14 @@ const VIEWS = {
   home: 'home',
   catalog: 'catalog',
   recommend: 'recommend',
+  updates: 'updates',
   calc: 'calc',
   cost: 'cost',
+  showroom: 'showroom',
   book: 'book',
   model: 'model',
   cart: 'cart',
+  favorites: 'favorites',
 }
 
 /** بادئة روابط صفحات الموديل الفردية — لا ماركة/موديل داخل App؛ الحلّ الدقيق في ModelPage/modelSlug */
@@ -43,11 +49,14 @@ const HASH_TO_VIEW = new Map([
   ['#cta', VIEWS.home],
   ['#catalog', VIEWS.catalog],
   ['#recommend', VIEWS.recommend],
+  ['#updates', VIEWS.updates],
   ['#calc', VIEWS.calc],
   ['#installments', VIEWS.calc],
   ['#cost', VIEWS.cost],
+  ['#showroom', VIEWS.showroom],
   ['#book', VIEWS.book],
   ['#cart', VIEWS.cart],
+  ['#favorites', VIEWS.favorites],
 ])
 
 function viewFromHash(hash) {
@@ -104,11 +113,17 @@ function App() {
         <div className={`view-panel ${view === VIEWS.recommend ? 'is-active' : ''}`}>
           <Recommender />
         </div>
+        <div className={`view-panel ${view === VIEWS.updates ? 'is-active' : ''}`}>
+          <CatalogUpdates />
+        </div>
         <div className={`view-panel ${view === VIEWS.calc ? 'is-active' : ''}`}>
           <InstallmentCalculator />
         </div>
         <div className={`view-panel ${view === VIEWS.cost ? 'is-active' : ''}`}>
           <OwnershipCostCalculator />
+        </div>
+        <div className={`view-panel ${view === VIEWS.showroom ? 'is-active' : ''}`}>
+          <Showroom />
         </div>
         <div className={`view-panel ${view === VIEWS.book ? 'is-active' : ''}`}>
           <BookingForm />
@@ -118,6 +133,9 @@ function App() {
         </div>
         <div className={`view-panel ${view === VIEWS.cart ? 'is-active' : ''}`}>
           <Cart />
+        </div>
+        <div className={`view-panel ${view === VIEWS.favorites ? 'is-active' : ''}`}>
+          <Favorites />
         </div>
       </main>
       <Footer />

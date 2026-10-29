@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { resolveModelUrl } from '../data/modelSlug'
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
 import { addItem } from '../data/cartStore'
+import { isFavorite, toggleFavorite, FAVORITES_EVENT } from '../data/favoritesStore'
 import { GENERATED_BY_KEY, formatDisplayPrice } from '../data/modelDisplay'
 import { AVAILABILITY_NOTE, LAST_RECORDED_PRICE_NOTE } from '../data/generatedStock'
 import { MODEL_DETAILS } from '../data/generatedModelDetails'
@@ -75,6 +76,32 @@ function ModelPage() {
   }, [])
 
   const resolved = resolveModelUrl(hash)
+
+  // المفضلة: قيمة مشتقة من لقطة التخزين الدائم — تُعاد القراءة فورًا عند تغيّر الموديل
+  // المعروض (البطاقات تبقى مُركَّبة بين التنقّلات) وعند أي حدث مفضلة، بلا أي مساس بالسلة.
+  const favBrand = resolved ? resolved.brand : null
+  const favName = resolved ? resolved.model.name : null
+  const favKey = favBrand && favName ? `${favBrand}|${favName}` : null
+  const [favSnapshot, setFavSnapshot] = useState(() => ({
+    key: favKey,
+    value: favBrand && favName ? isFavorite(favBrand, favName) : false,
+  }))
+  // موديل مختلف عن اللقطة ⇒ قراءة جديدة من التخزين أثناء الرندر (قراءة حتمية آمنة)
+  const fav =
+    favSnapshot.key === favKey
+      ? favSnapshot.value
+      : favBrand && favName
+        ? isFavorite(favBrand, favName)
+        : false
+  useEffect(() => {
+    const refresh = () =>
+      setFavSnapshot({
+        key: favKey,
+        value: favBrand && favName ? isFavorite(favBrand, favName) : false,
+      })
+    window.addEventListener(FAVORITES_EVENT, refresh)
+    return () => window.removeEventListener(FAVORITES_EVENT, refresh)
+  }, [favBrand, favName, favKey])
   useEffect(() => {
     // توجيه بديل (بدون سجل تاريخ إضافي) حصرًا عندما يأتي التطبيق بروابط #/m/ غير صالحة
     if (!resolved && hash.startsWith('#/m/')) window.location.replace('#catalog')
@@ -141,6 +168,30 @@ function ModelPage() {
               }}
             >
               {justAdded ? 'تمت الإضافة ✓' : 'أضف إلى السلة'}
+            </button>
+            <button
+              type="button"
+              className={`model-page-fav-cta ${fav ? 'is-active' : ''}`}
+              aria-pressed={fav}
+              title={fav ? 'في المفضلة' : 'أضف إلى المفضلة'}
+              onClick={() => {
+                if (resolved) toggleFavorite(resolved.brand, resolved.model.name)
+              }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="15"
+                height="15"
+                fill={fav ? 'currentColor' : 'none'}
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" />
+              </svg>
+              {fav ? 'في المفضلة' : 'أضف إلى المفضلة'}
             </button>
             <a
               className="model-page-whatsapp"

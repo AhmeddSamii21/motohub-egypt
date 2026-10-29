@@ -1,0 +1,151 @@
+/* ===== «المفضلة» — نفس لغة بطاقات الكتالوج (قيم السعر/التوفر/المراجعة) ببدلة `.fav-*` ===== */
+
+.fav-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.fav-count {
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.fav-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  background: var(--bg-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.fav-empty-title {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.fav-empty-sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.fav-empty-link {
+  margin-top: 0.5rem;
+}
+
+/* بطاقات المفضلة — نفس قيم بطاقة الكتالوج */
+
+.fav-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.fav-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0.9rem 1rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.fav-card-brand {
+  color: var(--metal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.fav-card-name {
+  color: var(--text);
+  font-size: 1.02rem;
+  font-weight: 800;
+  margin-top: 0.3rem;
+}
+
+.fav-card-price {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 0.6rem;
+}
+
+.fav-card-price b {
+  color: var(--accent-2);
+  font-size: 1.15rem;
+}
+
+.fav-card-price span {
+  font-size: 0.8rem;
+}
+
+.fav-card-availability {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 0.35rem;
+}
+
+.fav-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.7rem;
+}
+
+.fav-card-link {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.fav-card-link:hover {
+  color: var(--accent-2);
+}
+
+.fav-card-remove {
+  padding: 0.3rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.fav-card-remove:hover {
+  color: var(--text);
+  border-color: var(--metal);
+}
+
+/* ===== استجابة الشاشات ===== */
+
+@media (max-width: 640px) {
+  .fav-panel {
+    padding: 1.1rem;
+  }
+}
