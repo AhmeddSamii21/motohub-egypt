@@ -3,7 +3,7 @@ import './Header.css'
 
 /**
  * روابط التنقل بين أقسام الموقع (توجيه الهاز في App):
- * الرئيسية / الكتالوج / حاسبة الأقساط / حاسبة التشغيل / عربة الشراء (بشارة عدد القطع) / حجز معاينة (زر مميز).
+ * الرئيسية / الكتالوج / ساعدني أختار موتوسيكل / حاسبة الأقساط / حاسبة التشغيل / عربة الشراء (بشارة عدد القطع) / حجز معاينة (زر مميز).
  * القسم النشِط يُعلَّم بـ aria-current للوصولية وللتبويب المرئي.
  */
 import { CART_EVENT, cartCount } from '../data/cartStore'
@@ -11,6 +11,7 @@ import { CART_EVENT, cartCount } from '../data/cartStore'
 const LINKS = [
   { href: '#home', label: 'الرئيسية', view: 'home' },
   { href: '#catalog', label: 'الكتالوج', view: 'catalog' },
+  { href: '#recommend', label: 'ساعدني أختار موتوسيكل', view: 'recommend' },
   { href: '#calc', label: 'حاسبة الأقساط', view: 'calc' },
   { href: '#cost', label: 'حاسبة التشغيل', view: 'cost' },
 ]

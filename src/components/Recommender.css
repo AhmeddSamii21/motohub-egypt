@@ -1,0 +1,233 @@
+/* ===== «ساعدني أختار موتوسيكل» — نفس لغة الحاسبات (`.calc-*`/`.cost-*`) وبطاقات الكتالوج ===== */
+
+.rec-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.rec-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.rec-results {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel-2), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.rec-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.rec-label {
+  color: var(--metal);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* المدخلات — نفس لغة نموذج الحجز والحاسبات */
+
+.rec-input,
+.rec-select {
+  padding: 0.7rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease;
+}
+
+.rec-input:focus,
+.rec-select:focus {
+  outline: none;
+  border-color: var(--metal);
+}
+
+.rec-select option {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+/* رقاقات شريحة السعة — نفس لغة رقاقات مدة التقسيط */
+
+.rec-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rec-chip {
+  padding: 0.45rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.rec-chip:hover {
+  color: var(--text);
+  border-color: var(--metal);
+}
+
+.rec-chip.is-active {
+  color: #1a0d02;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-color: transparent;
+}
+
+/* العدّاد والملاحظات */
+
+.rec-count {
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.rec-note {
+  color: var(--accent-2);
+  font-size: 0.8rem;
+}
+
+.rec-hint {
+  color: var(--metal);
+  font-size: 0.85rem;
+}
+
+.rec-empty {
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.rec-usage-tip {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.rec-usage-tip a {
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
+/* بطاقات النتائج — قيم بطاقات الكتالوج نفسها (السعر/المراجعة/التوفر) بشبد `.rec-*` */
+
+.rec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 0.75rem;
+}
+
+.rec-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0.9rem 1rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.rec-card-brand {
+  color: var(--metal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.rec-card-name {
+  font-size: 1.02rem;
+  font-weight: 800;
+  margin-top: 0.3rem;
+}
+
+.rec-card-price {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 0.6rem;
+}
+
+.rec-card-price b {
+  color: var(--accent-2);
+  font-size: 1.15rem;
+}
+
+.rec-card-price span {
+  font-size: 0.8rem;
+}
+
+.rec-card-review {
+  position: relative;
+  z-index: 2;
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-inline-start: 0.25rem;
+  cursor: help;
+}
+
+.rec-card-availability {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 0.35rem;
+}
+
+.rec-card-link {
+  margin-top: auto;
+  padding-top: 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.rec-card-link:hover {
+  color: var(--accent-2);
+}
+
+.rec-disclaimer {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  background: var(--bg-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+/* ===== استجابة الشاشات ===== */
+
+@media (max-width: 960px) {
+  .rec-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .rec-controls,
+  .rec-results {
+    padding: 1.1rem;
+  }
+}
