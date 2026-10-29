@@ -87,8 +87,37 @@
   border-style: dashed;
 }
 
+/* صفوف «بانتظار التأكيد» — اسم البند ثم وسم حالة موحّد (RTL آمن، بلا أي بيانات مُخترعة) */
+
+.showroom-pending-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px dashed var(--line);
+}
+
+.showroom-pending-list li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
 .showroom-missing .showroom-list li {
   color: var(--metal);
+}
+
+.showroom-pending-tag {
+  flex-shrink: 0;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 .showroom-disclaimer {
