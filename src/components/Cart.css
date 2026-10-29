@@ -222,3 +222,97 @@
     width: 100%;
   }
 }
+
+/* طلباتك الأخيرة — سجل محلي بعد نجاح الإرسال (بلا أي اتصال)؛ نفس لغة الثيم */
+
+.cart-history {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.cart-history h3 {
+  font-size: 1.1rem;
+}
+
+.cart-history-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.cart-history-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.cart-history-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 0.7rem 0.9rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.cart-history-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1 1 14rem;
+  min-width: 12rem;
+}
+
+.cart-history-ref {
+  direction: ltr;
+  unicode-bidi: embed;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-family: ui-monospace, 'Cascadia Mono', 'Courier New', monospace;
+}
+
+.cart-history-meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.cart-history-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cart-history-copy {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.cart-history-copy:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.cart-history-followup {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease;
+}
+
+.cart-history-followup:hover {
+  border-color: var(--accent);
+}

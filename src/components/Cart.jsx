@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CART_EVENT, readCart, updateQty, removeItem, clearCart } from '../data/cartStore'
 import { GENERATED_BY_KEY, formatDisplayPrice } from '../data/modelDisplay'
 import { CATALOG } from '../data/catalog'
 import { generateOrderRef, submitOrder } from '../data/ordersApi'
+import { readOrderHistory, saveOrderRecord } from '../data/orderHistory'
+import { WHATSAPP_NUMBER } from '../data/contact'
 import './Cart.css'
 
 /**
@@ -35,6 +37,25 @@ function formatTotal(total) {
   return String(total).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
+/** تاريخ/وقت الإرسال بصيغة ثابتة (بدون Intl — نفس الشكل على كل الأجهزة) */
+function formatOrderDateTime(iso) {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return ''
+  const pad = (value) => String(value).padStart(2, '0')
+  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+/** نص الحالة المعروض — ترجمة مضبوطة لـ Pending فقط؛ أي حالة أخرى تُعرض كما وردت من الخادم */
+function statusLabel(status) {
+  return status === 'Pending' ? 'قيد المراجعة (Pending)' : status
+}
+
+/** رابط متابعة الطلب عبر واتساب — الرقم المعتمد من contact.js (قراءة فقط، الملف لا يُعدَّل) */
+function orderFollowUpLink(orderRef) {
+  const message = `أهلاً، بخصوص طلبي رقم ${orderRef} من MotoHub Egypt — ممكن آخر تحديث؟`
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
+}
+
 function Cart() {
   const [items, setItems] = useState(() => readCart())
   const [form, setForm] = useState({ name: '', phone: '', address: '', notes: '' })
@@ -42,12 +63,42 @@ function Cart() {
   // حالة إرسال الطلب: idle | sending | success | error | unknown
   // refForRetry يُحتفظ به عند الفشل/عدم التأكد — إعادة المحاولة تستخدم نفس المرجع لمنع صفوف مكررة
   const [order, setOrder] = useState({ phase: 'idle', refForRetry: null, message: '', success: null })
+  // سجل الطلبات المحلي — يُحدَّث بعد نجاح الإرسال فقط؛ عرضه يمنع ضياع مرجع الطلب بعد إغلاق الصفحة
+  const [history, setHistory] = useState(() => readOrderHistory())
+  const [copiedRef, setCopiedRef] = useState('')
+  const copyTimerRef = useRef(null)
 
   useEffect(() => {
     const refresh = () => setItems(readCart())
     window.addEventListener(CART_EVENT, refresh)
     return () => window.removeEventListener(CART_EVENT, refresh)
   }, [])
+
+  useEffect(() => () => clearTimeout(copyTimerRef.current), [])
+
+  /** نسخ المرجع إلى الحافظة مع احتياطي للمتصفحات القديمة — عملية محلية فقط */
+  const copyOrderRef = async (orderRef) => {
+    let copied = false
+    try {
+      await navigator.clipboard.writeText(orderRef)
+      copied = true
+    } catch {
+      try {
+        const helper = document.createElement('textarea')
+        helper.value = orderRef
+        document.body.appendChild(helper)
+        helper.select()
+        copied = document.execCommand('copy')
+        helper.remove()
+      } catch {
+        copied = false
+      }
+    }
+    if (!copied) return
+    setCopiedRef(orderRef)
+    clearTimeout(copyTimerRef.current)
+    copyTimerRef.current = setTimeout(() => setCopiedRef(''), 2000)
+  }
 
   const subtotal = items.reduce((sum, item) => {
     const price = linePrice(item)
@@ -90,6 +141,14 @@ function Cart() {
             depositPaid: result.depositPaid,
           },
         })
+        // نسخة قيادية محلية قبل تفريغ السلة — لا اتصال ولا كتابة خارجية، وفشلها لا يمس نجاح الإرسال
+        saveOrderRecord({
+          orderRef: result.orderRef,
+          status: typeof result.status === 'string' && result.status ? result.status : 'Pending',
+          depositRequired: result.depositRequired ?? 5000,
+          items,
+        })
+        setHistory(readOrderHistory())
         clearCart()
         setForm({ name: '', phone: '', address: '', notes: '' })
       } else {
@@ -118,6 +177,53 @@ function Cart() {
             (غير محصّلة إلكترونيًا — تُدفع عند تأكيد المعرض). سيراجع المعرض التوفر والسعر النهائي
             ورسوم التوصيل ثم يتواصل معك.
           </p>
+        )}
+
+        {history.length > 0 && (
+          <div className="cart-history">
+            <h3>طلباتك الأخيرة</h3>
+            <p className="cart-history-note">
+              محفوظة في هذا المتصفح فقط — الحالة المعروضة كما كانت لحظة الإرسال، والمعرض يتواصل معك
+              لتأكيد الحالة النهائية.
+            </p>
+            <ul className="cart-history-list">
+              {history.map((record) => {
+                const recordDate = formatOrderDateTime(record.createdAt)
+                return (
+                  <li key={record.orderRef} className="cart-history-item">
+                    <div className="cart-history-info">
+                      <span className="cart-history-ref">{record.orderRef}</span>
+                      <span className="cart-history-meta">
+                        {recordDate && `${recordDate} · `}
+                        {record.items.map((item) => `${item.name} ×${item.qty}`).join('، ')} · الحالة:{' '}
+                        {statusLabel(record.status)}
+                        {record.depositRequired != null &&
+                          ` · دفعة مقدمة: ${formatTotal(record.depositRequired)} ج.م`}
+                      </span>
+                    </div>
+                    <div className="cart-history-actions">
+                      <button
+                        type="button"
+                        className="cart-history-copy"
+                        aria-label={`نسخ مرجع الطلب ${record.orderRef}`}
+                        onClick={() => copyOrderRef(record.orderRef)}
+                      >
+                        {copiedRef === record.orderRef ? 'تم النسخ ✓' : 'نسخ المرجع'}
+                      </button>
+                      <a
+                        className="cart-history-followup"
+                        href={orderFollowUpLink(record.orderRef)}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        متابعة عبر واتساب
+                      </a>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         )}
 
         {items.length === 0 ? (
