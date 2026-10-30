@@ -53,6 +53,14 @@
   color: var(--accent-2);
 }
 
+/* رابط واتساب المؤكَّد — محاذاة الأيقونة والرقم في سطر واحد مع التفاف آمن */
+.footer-whatsapp {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .footer-bar {
   border-top: 1px solid var(--line);
   padding-block: 1.25rem;

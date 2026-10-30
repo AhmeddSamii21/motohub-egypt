@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { WHATSAPP_NUMBER } from '../data/contact'
 import './Footer.css'
 
 /**
@@ -46,9 +47,20 @@ function Footer() {
         <div className="footer-col">
           <h3>تواصل</h3>
           <ul>
-            <li><span aria-hidden="true">📍</span> القاهرة — مناطق تجريبية</li>
-            <li><span aria-hidden="true">☎️</span> <span dir="ltr">+20 10 000 0000</span></li>
-            <li><span aria-hidden="true">✉️</span> hello@motohub.example</li>
+            <li>
+              {/* القناة الوحيدة المؤكَّدة (contact.js) — بلا هاتف/بريد/عنوان تجريبي */}
+              <a
+                className="footer-whatsapp"
+                href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span aria-hidden="true">💬</span>
+                واتساب المعرض
+                <span dir="ltr">{WHATSAPP_NUMBER}</span>
+              </a>
+            </li>
+            <li><a href="#showroom">عن المعرض</a></li>
           </ul>
         </div>
       </div>
