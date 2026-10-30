@@ -146,6 +146,18 @@
   border-color: var(--accent);
 }
 
+.cart-line-remove:disabled,
+.cart-clear:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cart-line-remove:disabled:hover,
+.cart-clear:disabled:hover {
+  color: var(--muted);
+  border-color: var(--line);
+}
+
 .cart-checkout {
   display: grid;
   gap: 0.75rem;
@@ -199,6 +211,68 @@
 .cart-checkout button[type='submit']:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* محاولة إرسال غير محسومة — لوحة استئناف/تجاهل صريح، لا تُنشئ طلبًا جديدًا */
+.cart-recovery {
+  max-width: 44rem;
+  border-style: dashed;
+}
+
+.cart-recovery p {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.cart-recovery .cart-checkout-status {
+  color: var(--accent-2);
+  font-size: 0.9rem;
+}
+
+.cart-recovery-items {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.cart-recovery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cart-recovery-confirm {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.cart-recovery button {
+  padding: 0.6rem 1rem;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.cart-recovery button:hover {
+  color: var(--accent-2);
+  border-color: var(--accent);
+}
+
+.cart-recovery .cart-recovery-retry {
+  color: #1a0d02;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-color: transparent;
+}
+
+.cart-recovery .cart-recovery-retry:hover {
+  color: #1a0d02;
 }
 
 .cart-notice {

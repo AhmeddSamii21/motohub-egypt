@@ -19,13 +19,11 @@ export function generateOrderRef() {
 }
 
 /**
- * إرسال الطلب. النتيجة دائمًا كائن واحد:
- * - {ok:true, orderRef, status, duplicate, depositRequired, depositPaid}
- * - {ok:false, unknown:true, error}  → لم يتأكد الوصول (شبكة/رد غير متوقع) — آمن إعادة المحاولة بنفس المرجع
- * - {ok:false, unknown:false, error} → رفض من الخادم (تحقق/منتج غير معروف...)
+ * بناء الحِمل المُرسَل بالضبط — دالة واحدة يستخدمها الإرسال وحفظ المحاولة
+ * حتى تكون إعادة المحاولة بنفس البيانات حرفيًا (لا نسختين تتفرّقان مع الوقت).
  */
-export async function submitOrder(orderRef, customerInfo, cartItems) {
-  const payload = {
+export function buildOrderPayload(orderRef, customerInfo, cartItems) {
+  return {
     orderRef,
     customerName: customerInfo.name,
     phone: customerInfo.phone,
@@ -34,6 +32,16 @@ export async function submitOrder(orderRef, customerInfo, cartItems) {
     // الأسماء والكميات فقط — السعر يُحسب على الخادم من ورقة Products
     items: cartItems.map((item) => ({ brand: item.brand, name: item.name, qty: item.qty })),
   }
+}
+
+/**
+ * إرسال الطلب. النتيجة دائمًا كائن واحد:
+ * - {ok:true, orderRef, status, duplicate, depositRequired, depositPaid}
+ * - {ok:false, unknown:true, error}  → لم يتأكد الوصول (شبكة/رد غير متوقع) — آمن إعادة المحاولة بنفس المرجع
+ * - {ok:false, unknown:false, error} → رفض من الخادم (تحقق/منتج غير معروف...)
+ */
+export async function submitOrder(orderRef, customerInfo, cartItems) {
+  const payload = buildOrderPayload(orderRef, customerInfo, cartItems)
 
   let response
   try {
