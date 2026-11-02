@@ -18,6 +18,7 @@
 import { CATALOG } from './catalog.js'
 import { MODEL_DETAILS } from './generatedModelDetails.js'
 import { MODELS as GENERATED_MODELS } from './generatedStock.js'
+import { SPEC_GROUPS, MISSING_VALUE_LABEL } from './specGroups.js'
 
 // أسعار المصادر الجديدة ترد بلا فواصل — نفس منطق العرض المستخدم في الكتالوج وصفحة الموديل
 export function formatDisplayPrice(display, source) {
@@ -29,8 +30,8 @@ export function formatDisplayPrice(display, source) {
 /** عنوان الصفحة المطلوب حرفيًا */
 export const COMPARE_PAGE_TITLE = 'مقارنة الموتوسيكلات'
 
-/** نص الخلية عند غياب المواصفة */
-export const MISSING_VALUE_LABEL = 'غير متاح'
+/** نص الخلية عند غياب المواصفة — معرَّف في specGroups (المصدر الوحيد للمجموعات) */
+export { MISSING_VALUE_LABEL, SPEC_GROUPS }
 
 /** نصوص مفتاح التمييز (legend) */
 export const LEGEND_BETTER = 'الأفضل في هذه النقطة'
@@ -42,38 +43,6 @@ export const PRICE_REVIEW_NOTE = '* سعر من قائمة قديمة قيد ا�
 
 /** ملخص موديل بلا نقطة تفوق موضوعية */
 export const SUMMARY_NONE = 'لا توجد نقطة يتفوق فيها موضوعيًا من البيانات المعروضة.'
-
-/** تعريف مجموعات المواصفات وصفوفها بترتيب ثابت — فقط الصفوف الموجودة فعلًا في التحديد تُعرض */
-export const SPEC_GROUPS = [
-  {
-    id: 'engine',
-    title: 'المحرك والأداء',
-    rows: [
-      { label: 'نوع المركبة' },
-      { label: 'سعة المحرك / القدرة' },
-      { label: 'نوع المحرك' },
-      { label: 'ناقل الحركة' },
-      { label: 'السرعة القصوى', rule: 'higher-better', winLabel: 'سرعة قصوى أعلى' },
-      { label: 'نوع تبريد الحرارة' },
-      { label: 'نظام حقن الوقود' },
-    ],
-  },
-  {
-    id: 'brakes',
-    title: 'الفرامل والتعليق',
-    rows: [{ label: 'نوع الفرامل' }, { label: 'عدد المساعدين' }],
-  },
-  {
-    id: 'wheels',
-    title: 'العجلات والإطارات',
-    rows: [{ label: 'مقاس الإطار الأمامي' }, { label: 'مقاس الإطار الخلفي' }],
-  },
-  {
-    id: 'extras',
-    title: 'التجهيزات والمواصفات الإضافية',
-    rows: [{ label: 'نوع العداد' }, { label: 'نوع الإضائة' }, { label: 'الضمان' }],
-  },
-]
 
 /** صف السعر: قاعدة موضوعية واحدة — الأقل أفضل */
 const PRICE_ROW = { id: 'price', label: 'السعر', rule: 'lower-better', winLabel: 'سعر أقل' }

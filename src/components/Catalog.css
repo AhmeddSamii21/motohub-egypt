@@ -54,6 +54,165 @@
   margin-bottom: 1.75rem;
 }
 
+/* بحث مع زر مسح داخلي */
+
+.catalog-field-search {
+  flex: 2 1 16rem;
+}
+
+.catalog-search-wrap {
+  position: relative;
+  display: flex;
+}
+
+.catalog-search {
+  padding-inline-end: 2.2rem;
+}
+
+.catalog-search-clear {
+  position: absolute;
+  inset-inline-end: 0.55rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.catalog-search-clear:hover,
+.catalog-search-clear:focus-visible {
+  color: var(--text);
+  border-color: var(--metal);
+}
+
+/* نطاق سعري: من — إلى */
+
+.catalog-price-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+}
+
+.catalog-input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.7rem 0.8rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease;
+}
+
+.catalog-input::placeholder {
+  color: var(--metal);
+}
+
+.catalog-input:hover,
+.catalog-input:focus-visible {
+  border-color: var(--metal);
+}
+
+/* شرائح الفلاتر (سعة المحرك/النوع) */
+
+.catalog-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.catalog-chip {
+  padding: 0.45rem 0.8rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.catalog-chip:hover,
+.catalog-chip:focus-visible {
+  border-color: var(--metal);
+  color: var(--text);
+}
+
+.catalog-chip.is-active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* شريط الفلاتر المفعّلة */
+
+.catalog-active {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.catalog-active-title {
+  color: var(--metal);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.catalog-active-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.catalog-active-chip:hover,
+.catalog-active-chip:focus-visible {
+  background: var(--panel);
+}
+
+.catalog-active-clear {
+  padding: 0.35rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: var(--accent);
+  background: none;
+  border: none;
+  border-bottom: 1px dashed var(--accent);
+  cursor: pointer;
+}
+
+/* ملاحظة الاستبعاد الشفافة (قيم غير منشورة) */
+
+.catalog-excluded-note {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: -0.9rem 0 1.4rem;
+}
+
+@media (max-width: 640px) {
+  .catalog-active {
+    align-items: flex-start;
+  }
+}
+
 /* ===== حالة عدم وجود نتائج ===== */
 
 .catalog-empty {

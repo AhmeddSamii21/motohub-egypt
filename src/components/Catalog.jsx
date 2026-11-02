@@ -12,6 +12,15 @@ import {
   COMPARE_EVENT,
   COMPARE_LIMIT,
 } from '../data/compareStore'
+import {
+  buildDiscoveryModels,
+  applyDiscoveryFilters,
+  sortDiscovery,
+  activeFilterChips,
+  TYPE_VALUES,
+  AVAILABILITY_OPTIONS,
+  SORT_OPTIONS,
+} from '../data/catalogDiscovery.js'
 import ModelCompare from './ModelCompare'
 import Brands from './Brands'
 import './Catalog.css'
@@ -32,29 +41,17 @@ const ALL_MODELS_INDEXED = CATALOG.flatMap((group) =>
 const MODEL_BY_KEY = new Map(ALL_MODELS_INDEXED.map((model) => [model.key, model]))
 
 /**
- * أسعار الكتالوج نصوص كما وردت في المصدر ("69,700" أو "229000") — تُحوَّل للأرقام
- * للترتيب/التصفية فقط، والنص الأصلي يبقى كما هو للعرض.
+ * بيانات الاكتشاف المُثراة (سعر رقمي/سعة/سرعة/نوع/توفر) — تُحسب مرة من المصادر
+ * المُجمَّدة نفسها (كتالوج + مخزون مُولَّد + مواصفات مُولَّدة) — بلا تكرار لمصدر الحقيقة.
  */
-function parsePrice(price) {
-  return Number(String(price).replace(/,/g, ''))
-}
+const DISCOVERY_MODELS = buildDiscoveryModels()
 
-const PRICE_FILTERS = {
-  all: () => true,
-  under60: (num) => num < 60000,
-  '60to100': (num) => num >= 60000 && num <= 100000,
-  above100: (num) => num > 100000,
-}
-
-function sortModels(models, sort) {
-  if (sort === 'asc') return [...models].sort((a, b) => parsePrice(a.price) - parsePrice(b.price))
-  if (sort === 'desc') return [...models].sort((a, b) => parsePrice(b.price) - parsePrice(a.price))
-  return models // الترتيب الأصلي كما في المصدر
-}
-
-// بيانات السعر والتوفّر المُولَّدة — مفتاح المطابقة نفس مفتاح المقارنة (brand|name)
-// الملف المُولَّد يغطي جميع موديلات الكتالوج؛ عند فشل مفتاح نرجع للعرض القديم كما هو.
-// المنطق المشترك (المفتاح + تنسيق السعر) يعيش في src/data/modelDisplay.js لصفحة الموديل أيضًا.
+const CC_BANDS = [
+  { id: '', label: 'كل السعات', min: null, max: null },
+  { id: 'small', label: 'حتى 150cc', min: null, max: 150 },
+  { id: 'mid', label: 'أكبر من 150 حتى 200cc', min: 150, max: 200 },
+  { id: 'big', label: 'أكبر من 200cc', min: 200, max: null },
+]
 
 function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled, fav, onToggleFav }) {
   const info = GENERATED_BY_KEY.get(`${brand}|${model.name}`)
@@ -143,7 +140,12 @@ function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled, f
 function Catalog() {
   const [brand, setBrand] = useState(ALL_BRANDS)
   const [query, setQuery] = useState('')
-  const [priceRange, setPriceRange] = useState('all')
+  const [priceMin, setPriceMin] = useState('')
+  const [priceMax, setPriceMax] = useState('')
+  const [ccBand, setCcBand] = useState('')
+  const [types, setTypes] = useState([])
+  const [availability, setAvailability] = useState('all')
+  const [speedMin, setSpeedMin] = useState('')
   const [sort, setSort] = useState('default')
   const [compareOpen, setCompareOpen] = useState(false)
 
@@ -168,40 +170,64 @@ function Catalog() {
     toggleCompareKey(key) // المخزن يطلق الحدث فتتحدث الحالة المحلية بالمعالج أعلاه
   }
 
-  const normalizedQuery = query.trim().toLowerCase()
-
-  const visibleGroups = CATALOG.filter((group) => brand === ALL_BRANDS || group.brand === brand)
-    .map((group) => {
-      let models = group.models.filter((model) => model.name.toLowerCase().includes(normalizedQuery))
-      if (priceRange !== 'all') {
-        models = models.filter((model) => PRICE_FILTERS[priceRange](parsePrice(model.price)))
-      }
-      models = sortModels(models, sort)
-      return { ...group, models }
-    })
-    .filter((group) => group.models.length > 0)
-
-  const visibleCount = visibleGroups.reduce((sum, group) => sum + group.models.length, 0)
-
-  const compareItems = compareKeys.map((key) => MODEL_BY_KEY.get(key)).filter(Boolean)
-
-  // عند تفعيل ترتيب سعري: قائمة واحدة مسطحة مرتبة عالميًا (البطاقة تعرض اسم الماركة دائمًا)
-  const sortedFlatModels = sortModels(
-    visibleGroups.flatMap((group) =>
-      group.models.map((model) => ({ ...model, brand: group.brand }))
-    ), 
-    sort
-  )
-
+  // ===== منطق الاكتشاف: فلاتر مجمَّعة + ترتيب — المنطق النقي في catalogDiscovery.js =====
+  const numeric = (value) => {
+    if (value === '' || value == null) return null
+    const parsed = Number(String(value).replace(/,/g, ''))
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null
+  }
+  const band = CC_BANDS.find((b) => b.id === ccBand)
+  const filters = {
+    query,
+    brand,
+    priceMin: numeric(priceMin),
+    priceMax: numeric(priceMax),
+    ccMin: band ? band.min : null,
+    ccMax: band ? band.max : null,
+    types,
+    availability,
+    speedMin: numeric(speedMin),
+  }
+  const { items: filteredModels, excludedNoValue } = applyDiscoveryFilters(DISCOVERY_MODELS, filters)
+  const results = sortDiscovery(filteredModels, sort)
+  const chips = activeFilterChips(filters)
+  const clearChip = (clear) => {
+    if ('query' in clear) setQuery(clear.query)
+    if ('brand' in clear) setBrand(clear.brand)
+    if ('priceMin' in clear) { setPriceMin(clear.priceMin == null ? '' : String(clear.priceMin)); setPriceMax(clear.priceMax == null ? '' : String(clear.priceMax)) }
+    if ('ccMin' in clear) setCcBand('')
+    if ('types' in clear) setTypes(clear.types)
+    if ('availability' in clear) setAvailability(clear.availability)
+    if ('speedMin' in clear) setSpeedMin(clear.speedMin == null ? '' : String(clear.speedMin))
+  }
   const resetFilters = () => {
     setBrand(ALL_BRANDS)
     setQuery('')
-    setPriceRange('all')
-    setSort('default')
+    setPriceMin('')
+    setPriceMax('')
+    setCcBand('')
+    setTypes([])
+    setAvailability('all')
+    setSpeedMin('')
   }
+  const filtersActive = chips.length > 0
 
-  const hasFilters =
-    brand !== ALL_BRANDS || query.trim() !== '' || priceRange !== 'all' || sort !== 'default'
+  // العرض المجمَّع بالماركة يبقى افتراضيًا حين لا فلاتر ولا ترتيب سعري (نفس سلوك التمرير للماركة)؛
+  // وإلا قائمة مسطحة من نتائج الاكتشاف (البطاقة تعرض اسم الماركة دائمًا)
+  const visibleGroups =
+    !filtersActive && sort === 'default'
+      ? CATALOG.map((group) => ({
+          ...group,
+          models: results.filter((model) => model.brand === group.brand),
+        })).filter((group) => group.models.length > 0)
+      : []
+  const visibleCount = results.length
+
+  const compareItems = compareKeys.map((key) => MODEL_BY_KEY.get(key)).filter(Boolean)
+
+  const sortedFlatModels = results
+
+  const hasFilters = filtersActive || sort !== 'default'
 
   // ===== ماركات داخل المعرض → الكتالوج =====
   // البطاق تعرض ماركة (وليس موديلًا)، لذا الهدف الموثوق: فلتر الماركة + تمرير إلى
@@ -240,19 +266,31 @@ function Catalog() {
         </div>
 
         <div className="catalog-tools">
-          <label className="catalog-field">
-            <span className="catalog-field-label">ابحث عن موديل</span>
-            <input
-              type="search"
-              className="catalog-search"
-              placeholder="اكتب اسم الموديل…"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
+          <label className="catalog-field catalog-field-search">
+            <span className="catalog-field-label">ابحث عن موديل أو ماركة</span>
+            <div className="catalog-search-wrap">
+              <input
+                type="search"
+                className="catalog-search"
+                placeholder="مثال: سكوتر SYM أو Jet 150…"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+              {query && (
+                <button
+                  type="button"
+                  className="catalog-search-clear"
+                  aria-label="مسح البحث"
+                  onClick={() => setQuery('')}
+                >
+                  ×
+                </button>
+              )}
+            </div>
           </label>
 
           <label className="catalog-field">
-            <span className="catalog-field-label">تصفية حسب الماركة</span>
+            <span className="catalog-field-label">الماركة</span>
             <select
               className="catalog-select"
               value={brand}
@@ -267,39 +305,142 @@ function Catalog() {
             </select>
           </label>
 
+          <div className="catalog-field catalog-field-price">
+            <span className="catalog-field-label" id="catalog-price-label">السعر (ج.م)</span>
+            <div className="catalog-price-inputs" role="group" aria-labelledby="catalog-price-label">
+              <input
+                type="text"
+                inputMode="numeric"
+                className="catalog-input"
+                dir="ltr"
+                placeholder="من"
+                aria-label="أقل سعر"
+                value={priceMin}
+                onChange={(event) => setPriceMin(event.target.value.replace(/[^\d]/g, ''))}
+              />
+              <span aria-hidden="true">—</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                className="catalog-input"
+                dir="ltr"
+                placeholder="إلى"
+                aria-label="أعلى سعر"
+                value={priceMax}
+                onChange={(event) => setPriceMax(event.target.value.replace(/[^\d]/g, ''))}
+              />
+            </div>
+          </div>
+
+          <div className="catalog-field">
+            <span className="catalog-field-label" id="catalog-cc-label">سعة المحرك</span>
+            <div className="catalog-chips" role="group" aria-labelledby="catalog-cc-label">
+              {CC_BANDS.map((b) => (
+                <button
+                  key={b.id || 'any'}
+                  type="button"
+                  className={`catalog-chip ${ccBand === b.id ? 'is-active' : ''}`}
+                  aria-pressed={ccBand === b.id}
+                  onClick={() => setCcBand(b.id)}
+                >
+                  {b.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="catalog-field">
+            <span className="catalog-field-label" id="catalog-type-label">نوع المركبة</span>
+            <div className="catalog-chips" role="group" aria-labelledby="catalog-type-label">
+              <button
+                type="button"
+                className={`catalog-chip ${types.length === 0 ? 'is-active' : ''}`}
+                aria-pressed={types.length === 0}
+                onClick={() => setTypes([])}
+              >
+                كل الأنواع
+              </button>
+              {TYPE_VALUES.map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  className={`catalog-chip ${types.includes(type) ? 'is-active' : ''}`}
+                  aria-pressed={types.includes(type)}
+                  onClick={() =>
+                    setTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]))
+                  }
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <label className="catalog-field">
-            <span className="catalog-field-label">نطاق السعر</span>
+            <span className="catalog-field-label">التوفر</span>
             <select
               className="catalog-select"
-              value={priceRange}
-              onChange={(event) => setPriceRange(event.target.value)}
+              value={availability}
+              onChange={(event) => setAvailability(event.target.value)}
             >
-              <option value="all">كل الأسعار</option>
-              <option value="under60">أقل من 60 ألف ج.م</option>
-              <option value="60to100">60 إلى 100 ألف ج.م</option>
-              <option value="above100">أعلى من 100 ألف ج.م</option>
+              {AVAILABILITY_OPTIONS.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </label>
 
           <label className="catalog-field">
-            <span className="catalog-field-label">الترتيب حسب السعر</span>
+            <span className="catalog-field-label">الترتيب</span>
             <select
               className="catalog-select"
               value={sort}
               onChange={(event) => setSort(event.target.value)}
             >
-              <option value="default">الترتيب الأصلي</option>
-              <option value="asc">من الأقل للأعلى</option>
-              <option value="desc">من الأعلى للأقل</option>
+              {SORT_OPTIONS.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </label>
         </div>
 
         <p className="catalog-results" aria-live="polite">
-          {visibleCount} موديل من {CATALOG.reduce((sum, group) => sum + group.models.length, 0)}
+          {visibleCount} موديل مطابق من {CATALOG.reduce((sum, group) => sum + group.models.length, 0)}
         </p>
 
-        {visibleGroups.length === 0 ? (
+        {chips.length > 0 && (
+          <div className="catalog-active" role="group" aria-label="الفلاتر المفعّلة">
+            <span className="catalog-active-title">الفلاتر المفعّلة:</span>
+            {chips.map((chip) => (
+              <button
+                key={chip.id}
+                type="button"
+                className="catalog-active-chip"
+                onClick={() => clearChip(chip.clear)}
+                aria-label={`إزالة فلتر ${chip.label}`}
+              >
+                {chip.label} <span aria-hidden="true">×</span>
+              </button>
+            ))}
+            <button type="button" className="catalog-active-clear" onClick={resetFilters}>
+              مسح كل الفلاتر
+            </button>
+          </div>
+        )}
+
+        {filtersActive && excludedNoValue.cc + excludedNoValue.type + excludedNoValue.topSpeed > 0 && (
+          <p className="catalog-excluded-note">
+            موديلات مستبعدة لأن القيمة غير منشورة في البيانات:
+            {excludedNoValue.cc > 0 && ` سعة المحرك ${excludedNoValue.cc}`}
+            {excludedNoValue.type > 0 && ` · نوع المركبة ${excludedNoValue.type}`}
+            {excludedNoValue.topSpeed > 0 && ` · السرعة القصوى ${excludedNoValue.topSpeed}`} — لا يُعامل الناقص صفرًا.
+          </p>
+        )}
+
+        {visibleCount === 0 ? (
           <div className="catalog-empty">
             <p className="catalog-empty-title">لا توجد نتائج مطابقة</p>
             <p className="catalog-empty-sub">
@@ -311,7 +452,7 @@ function Catalog() {
               </button>
             )}
           </div>
-        ) : sort === 'default' ? (
+        ) : !filtersActive && sort === 'default' ? (
           <div className="catalog-groups">
             {visibleGroups.map((group) => (
               <div className="catalog-group" key={group.brand} data-brand={group.brand}>
@@ -340,7 +481,9 @@ function Catalog() {
           <div className="catalog-groups">
             <div className="catalog-group">
               <h3 className="catalog-brand">
-                {sort === 'asc' ? 'مرتبة من الأقل للأعلى' : 'مرتبة من الأعلى للأقل'}
+                {sort !== 'default'
+                  ? (SORT_OPTIONS.find((option) => option.id === sort)?.label ?? 'النتائج المطابقة')
+                  : 'النتائج المطابقة'}
                 <span className="catalog-brand-count">{visibleCount}</span>
               </h3>
               <ul className="catalog-grid">

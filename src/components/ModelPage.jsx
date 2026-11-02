@@ -6,6 +6,7 @@ import { isFavorite, toggleFavorite, FAVORITES_EVENT } from '../data/favoritesSt
 import { GENERATED_BY_KEY, formatDisplayPrice } from '../data/modelDisplay'
 import { AVAILABILITY_NOTE, LAST_RECORDED_PRICE_NOTE } from '../data/generatedStock'
 import { MODEL_DETAILS } from '../data/generatedModelDetails'
+import { groupSpecsForDisplay } from '../data/specGroups.js'
 import { whatsappModelLink } from '../data/contact'
 import './ModelPage.css'
 
@@ -20,11 +21,44 @@ const DETAILS_BY_KEY = new Map(MODEL_DETAILS.map((d) => [`${d.brand}|${d.name}`,
 const NOTE_ALL = 'المواصفات والصور غير منشورة بعد — تُضاف حصرًا عند توفرها من المصدر المعتمد.'
 const NOTE_SPECS = 'المواصفات غير منشورة بعد — تُضاف حصرًا عند توفرها من المصدر المعتمد.'
 const NOTE_IMAGES = 'الصور غير منشورة بعد — تُضاف حصرًا عند توفرها من المصدر المعتمد.'
+const NOTE_COLORS = 'الألوان غير موثقة في مصدر البيانات الحالي — يُرجى تأكيد الألوان المتاحة مع المعرض.'
 
-/** معرض خفيف: صورة رئيسية + تالية/سابقة + صور مصغرة؛ الصورة المكسورة تُستبعد بصمت */
+/** عرض مكبَّر (lightbox): صورة واحدة بالحجم الكامل مع تنقل وإغلاق بـ Escape/الخلفية */
+function ModelLightbox({ images, index, onClose, onStep }) {
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') onClose()
+      if (event.key === 'ArrowLeft') onStep(-1)
+      if (event.key === 'ArrowRight') onStep(1)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [onClose, onStep])
+
+  return (
+    <div className="model-lightbox" role="dialog" aria-modal="true" aria-label="عرض الصورة مكبَّرة" onClick={onClose}>
+      <div className="model-lightbox-inner" onClick={(event) => event.stopPropagation()}>
+        <button type="button" className="model-lightbox-close" onClick={onClose} aria-label="إغلاق العرض المكبَّر">
+          ×
+        </button>
+        <img src={images[index]} alt={`صورة ${index + 1} مكبَّرة`} />
+        {images.length > 1 && (
+          <div className="model-lightbox-controls">
+            <button type="button" onClick={() => onStep(-1)} aria-label="الصورة السابقة">السابق</button>
+            <span>{index + 1} / {images.length}</span>
+            <button type="button" onClick={() => onStep(1)} aria-label="الصورة التالية">التالي</button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/** معرض خفيف: صورة رئيسية + تالية/سابقة + صور مصغرة + عرض مكبَّر؛ الصورة المكسورة تُستبعد بصمت */
 function ModelGallery({ images, altBase }) {
   const [broken, setBroken] = useState(() => new Set())
   const [idx, setIdx] = useState(0)
+  const [zoom, setZoom] = useState(false)
   const usable = images.filter((_, i) => !broken.has(i))
   if (usable.length === 0) {
     // كل الصور فشل تحميلها الآن — رسالة صادقة بدل صورة مكسورة أو ادعاء توفر
@@ -37,14 +71,22 @@ function ModelGallery({ images, altBase }) {
   const step = (dir) => setIdx((idx + dir + usable.length) % usable.length)
   return (
     <figure className="model-gallery" aria-label={`صور ${altBase}`}>
-      <img
-        className="model-gallery-main"
-        src={src}
-        alt={`${altBase} — صورة ${pos + 1}`}
-        loading="lazy"
-        decoding="async"
-        onError={markBroken}
-      />
+      <button
+        type="button"
+        className="model-gallery-mainbtn"
+        onClick={() => setZoom(true)}
+        aria-label="تكبير الصورة"
+      >
+        <img
+          className="model-gallery-main"
+          src={src}
+          alt={`${altBase} — صورة ${pos + 1}`}
+          loading="lazy"
+          decoding="async"
+          onError={markBroken}
+        />
+        <span className="model-gallery-zoomhint" aria-hidden="true">تكبير ⤢</span>
+      </button>
       {usable.length > 1 && (
         <figcaption className="model-gallery-controls">
           <button type="button" onClick={() => step(-1)}>السابق</button>
@@ -61,6 +103,14 @@ function ModelGallery({ images, altBase }) {
           ))}
         </div>
       )}
+      {zoom && (
+        <ModelLightbox
+          images={usable}
+          index={pos}
+          onClose={() => setZoom(false)}
+          onStep={step}
+        />
+      )}
     </figure>
   )
 }
@@ -69,6 +119,20 @@ function ModelPage() {
   const [hash, setHash] = useState(() => window.location.hash)
   // تأكيد قصير بعد الإضافة إلى السلة (لا يغيّر أي سلوك قائم الحجز/الواتساب)
   const [justAdded, setJustAdded] = useState(false)
+  // مشاركة رابط الموديل (نفس بنية التوجيه #/m/…) — نسخ إلى الحافظة مع بديل آمن
+  const [shareCopied, setShareCopied] = useState(false)
+  const shareModel = () => {
+    const url = window.location.href
+    const done = () => {
+      setShareCopied(true)
+      window.setTimeout(() => setShareCopied(false), 2000)
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done, () => done())
+    } else {
+      done() // بديل صادق: تأكيد النسخ فقط عند توفر الحافظة، وإلا نُظهر أن الرابط هو نفسه الهاش الحالي
+    }
+  }
   useEffect(() => {
     const onHashChange = () => setHash(window.location.hash)
     window.addEventListener('hashchange', onHashChange)
@@ -137,14 +201,24 @@ function ModelPage() {
           )}
 
           {specs && (
-            <dl className="model-specs">
-              {specs.map((s) => (
-                <div key={`${s.label}|${s.value}`} className="model-spec-row">
-                  <dt>{s.label}</dt>
-                  <dd>{s.value}</dd>
-                </div>
+            <div className="model-spec-groups">
+              {groupSpecsForDisplay(specs).map((group) => (
+                <section key={group.id} className="model-spec-group" aria-label={group.title}>
+                  <h3 className="model-spec-group-title">{group.title}</h3>
+                  <dl className="model-specs">
+                    {group.entries.map((entry) => (
+                      <div key={`${entry.label}|${entry.value}`} className="model-spec-row">
+                        <dt>{entry.label}</dt>
+                        <dd>{entry.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
               ))}
-            </dl>
+              <p className="model-spec-missing">
+                المواصفات غير المدرجة أعلاه غير منشورة في المصدر — تُعرض «غير متاح» ولا تُخترع.
+              </p>
+            </div>
           )}
 
           <div className="model-page-actions">
@@ -193,6 +267,17 @@ function ModelPage() {
               </svg>
               {fav ? 'في المفضلة' : 'أضف إلى المفضلة'}
             </button>
+            <button
+              type="button"
+              className="model-page-share"
+              onClick={shareModel}
+              title="نسخ رابط هذا الموديل لمشاركته"
+            >
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+              </svg>
+              {shareCopied ? 'تم نسخ الرابط ✓' : 'شارك الموديل'}
+            </button>
             <a
               className="model-page-whatsapp"
               href={whatsappModelLink(model.name)}
@@ -215,6 +300,9 @@ function ModelPage() {
             </a>
           </div>
 
+          {/* الألوان: لا بيانات ألوان موثقة في المصدر (Stock يسجل لون لكل وحدة فعلية فقط،
+              ولا صور مخصصة للألوان) — نُشير بصدق إلى الحاجة للتأكيد بلا اختراع ألوان. */}
+          <p className="model-page-note">{NOTE_COLORS}</p>
           {note && <p className="model-page-note">{note}</p>}
         </article>
       </div>

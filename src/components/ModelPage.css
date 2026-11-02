@@ -22,6 +22,7 @@
 
 .model-page-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
   margin-top: 1.25rem;
@@ -74,6 +75,30 @@
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
+/* مشاركة رابط الموديل — نفس لغة الأزرار الحالية، بلا لون واتساب */
+.model-page-share {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.1rem;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.model-page-share:hover,
+.model-page-share:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .model-page-whatsapp:hover {
   color: #0b1410;
   background: #25d366;
@@ -95,7 +120,28 @@
   width: 100%;
 }
 
-/* ===== مواصفات تقنية (من الملف المُولَّد — لا قيم مخترعة) ===== */
+/* ===== مواصفات تقنية مُجمَّعة (من الملف المُولَّد — لا قيم مخترعة) ===== */
+
+.model-spec-groups {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.model-spec-group-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--accent);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.35rem;
+}
+
+.model-spec-missing {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin: 0.25rem 0 0;
+}
 
 .model-specs {
   margin: 1.25rem 0 0;
@@ -150,6 +196,100 @@
   background: var(--bg-2);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
+}
+
+/* زر فتح الصورة الرئيسية (تكبير) — نفس مساحة الصورة السابقة تمامًا */
+
+.model-gallery-mainbtn {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: zoom-in;
+}
+
+.model-gallery-zoomhint {
+  position: absolute;
+  inset-inline-end: 0.6rem;
+  top: 0.6rem;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.72rem;
+  color: var(--text);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+/* العرض المكبَّر (lightbox) */
+
+.model-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.model-lightbox-inner {
+  position: relative;
+  max-width: min(56rem, 100%);
+  max-height: 100%;
+}
+
+.model-lightbox-inner img {
+  display: block;
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.model-lightbox-close {
+  position: absolute;
+  inset-inline-start: -0.5rem;
+  top: -2.4rem;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.model-lightbox-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.model-lightbox-controls button {
+  padding: 0.4rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.model-lightbox-controls button:hover,
+.model-lightbox-controls button:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .model-gallery-controls {

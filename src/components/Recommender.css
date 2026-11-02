@@ -231,3 +231,205 @@
     padding: 1.1rem;
   }
 }
+
+/* ===== الاستبيان خطوة-بخطوة (اكتشف موتوسيكلك المناسب) ===== */
+
+.rec-panel {
+  grid-template-columns: 1fr;
+}
+
+.rec-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-width: 42rem;
+}
+
+.rec-step-count {
+  margin: 0;
+  color: var(--metal);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.rec-progress {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.rec-progress-dot {
+  width: 2.2rem;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: var(--line);
+  transition: background-color 0.2s ease;
+}
+
+.rec-progress-dot.is-done {
+  background: var(--accent);
+}
+
+.rec-step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.rec-hint {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.rec-label-km {
+  margin-top: 0.4rem;
+}
+
+.rec-input-km {
+  max-width: 10rem;
+}
+
+.rec-step-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.rec-step-actions-top {
+  justify-content: flex-end;
+  margin: 0 0 0.25rem;
+}
+
+.rec-next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* نتيجة فارغة: أسباب حقيقية معدودة بلا ادعاء */
+
+.rec-empty {
+  display: grid;
+  gap: 0.6rem;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.rec-empty ul {
+  margin: 0;
+  padding-inline-start: 1.2rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+/* بطاقة النتيجة: شرح + مواصفات مفتاحية + أفعال المسارات القائمة نفسها */
+
+.rec-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.1rem;
+  background: linear-gradient(180deg, var(--panel-2), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.rec-card-reasons {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.rec-card-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.rec-card-spec {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.75rem;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.rec-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rec-card-link {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--accent);
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.rec-card-tool {
+  padding: 0.45rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.rec-card-tool:hover,
+.rec-card-tool:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.rec-card-tool.is-active,
+.rec-card-tool:checked {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.rec-card-tool:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.rec-card-book {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .rec-steps {
+    padding: 1.1rem;
+  }
+
+  .rec-card-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rec-card-actions .rec-card-link,
+  .rec-card-actions .rec-card-tool {
+    text-align: center;
+  }
+}
