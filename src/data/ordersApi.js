@@ -9,6 +9,8 @@
  * طلب بسيط بلا preflight والرد يُقرأ طبيعيًا. لا يُستخدم mode:"no-cors" حتى تُقرأ النتيجة الفعلية.
  * الرابط ثابت هنا فقط (مثل WEB_APP_URL في BookingForm) — لا يُنسخ إلى التوثيق أو التقارير.
  */
+import { normalizeDepositPaid, normalizeDepositRequired, normalizeStatus } from './orderResult.js'
+
 export const ORDERS_WEB_APP_URL =
   'https://script.google.com/macros/s/AKfycby9Do8QuvJ8lmcqomrJSLE4VUZd4PLlxS7pqOlaxezyur20VT99OjY4phdUcRKluR-N/exec'
 
@@ -37,6 +39,7 @@ export function buildOrderPayload(orderRef, customerInfo, cartItems) {
 /**
  * إرسال الطلب. النتيجة دائمًا كائن واحد:
  * - {ok:true, orderRef, status, duplicate, depositRequired, depositPaid}
+ *   حيث status/depositRequired/depositPaid = null إن لم يرسلها الخادم (لا قيم افتراضية ولا تخمين)
  * - {ok:false, unknown:true, error}  → لم يتأكد الوصول (شبكة/رد غير متوقع) — آمن إعادة المحاولة بنفس المرجع
  * - {ok:false, unknown:false, error} → رفض من الخادم (تحقق/منتج غير معروف...)
  */
@@ -67,10 +70,11 @@ export async function submitOrder(orderRef, customerInfo, cartItems) {
     return {
       ok: true,
       orderRef: data.orderRef || orderRef,
-      status: data.status || 'Pending',
+      // لا تُخترع حالة/قيم غير موجودة في الرد — الواجهة تعرض «غير متاحة» بوضوح
+      status: normalizeStatus(data.status),
       duplicate: Boolean(data.duplicate),
-      depositRequired: typeof data.depositRequired === 'number' ? data.depositRequired : null,
-      depositPaid: Boolean(data.depositPaid),
+      depositRequired: normalizeDepositRequired(data.depositRequired),
+      depositPaid: normalizeDepositPaid(data.depositPaid),
     }
   }
   return { ok: false, unknown: false, error: (data && data.error) || 'لم يتم حفظ الطلب.' }

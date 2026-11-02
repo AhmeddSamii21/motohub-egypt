@@ -7,7 +7,8 @@
  *
  * قواعد صارمة:
  * - لا طلبات ولا كتابة خارجية من هنا — هذا سجل قراءة/كتابة محلي فقط.
- * - لا تُخمَّن أي تحديثات حالة لاحقة: الحالة المحفوظة = كما وردت من الخادم لحظة الإرسال.
+ * - لا تُخمَّن أي تحديثات حالة لاحقة: الحالة المحفوظة = كما وردت من الخادم لحظة الإرسال،
+ *   وإن لم يُرسل الخادم حالة صالحة تُخزَّن null بدل اختراع قيمة.
  * - القراءة آمنة دائمًا: بيانات تالفة/ناقصة/مجهولة البنية ⇒ تُتجاهَل بصمت ولا يُرمى استثناء أبدًا.
  * - سقف 10 سجلات (الأحدث أولًا) والمرجع مفتاح فريد — مطبَّقان على الكتابة والقراءة معًا؛
  *   إعادة حفظ نفس المرجع تستبدل سجله.
@@ -36,7 +37,7 @@ function sanitizeRecord(value) {
   const createdAt =
     typeof value.createdAt === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value.createdAt) ? value.createdAt : ''
   if (!createdAt) return null
-  const status = typeof value.status === 'string' && value.status ? value.status.slice(0, 32) : 'Pending'
+  const status = typeof value.status === 'string' && value.status.trim() ? value.status.trim().slice(0, 32) : null
   const depositRequired =
     Number.isInteger(value.depositRequired) && value.depositRequired >= 0 ? value.depositRequired : null
   const items = (Array.isArray(value.items) ? value.items : [])

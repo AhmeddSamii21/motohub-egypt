@@ -5,6 +5,15 @@ import { CATALOG } from '../data/catalog'
 import { generateOrderRef, buildOrderPayload, submitOrder } from '../data/ordersApi'
 import { readOrderHistory, saveOrderRecord } from '../data/orderHistory'
 import {
+  HISTORY_NOTE,
+  RETRY_EXPLANATION,
+  STATUS_UNKNOWN_LABEL,
+  clearStaleResult,
+  formatAmount,
+  statusLabel,
+  successLines,
+} from '../data/orderResult'
+import {
   applySubmissionOutcome,
   buildPendingAttempt,
   clearPendingAttempt,
@@ -40,22 +49,12 @@ function linePrice(item) {
   return { display, numeric, needsReview: Boolean(info && info.needsReview) }
 }
 
-/** تنسيق رقم مخزَّن كأرقام قياسية بأسلوب ج.م نفسه */
-function formatTotal(total) {
-  return String(total).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
-
 /** تاريخ/وقت الإرسال بصيغة ثابتة (بدون Intl — نفس الشكل على كل الأجهزة) */
 function formatOrderDateTime(iso) {
   const date = new Date(iso)
   if (Number.isNaN(date.getTime())) return ''
   const pad = (value) => String(value).padStart(2, '0')
   return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
-
-/** نص الحالة المعروض — ترجمة مضبوطة لـ Pending فقط؛ أي حالة أخرى تُعرض كما وردت من الخادم */
-function statusLabel(status) {
-  return status === 'Pending' ? 'قيد المراجعة (Pending)' : status
 }
 
 /** رابط متابعة الطلب عبر واتساب — الرقم المعتمد من contact.js (قراءة فقط، الملف لا يُعدَّل) */
@@ -158,16 +157,18 @@ function Cart() {
       message: '',
       success: {
         orderRef: result.orderRef,
+        status: result.status ?? null,
         duplicate: result.duplicate,
-        depositRequired: result.depositRequired,
-        depositPaid: result.depositPaid,
+        depositRequired: result.depositRequired ?? null,
+        depositPaid: result.depositPaid ?? null,
       },
     })
     // نسخة قيادية محلية قبل تفريغ السلة — لا اتصال ولا كتابة خارجية، وفشلها لا يمس نجاح الإرسال
     saveOrderRecord({
       orderRef: result.orderRef,
-      status: typeof result.status === 'string' && result.status ? result.status : 'Pending',
-      depositRequired: result.depositRequired ?? 5000,
+      // تُحفظ الحالة كما وردت فقط؛ غيابها يبقى null بدل اختراع «قيد المراجعة»
+      status: result.status ?? null,
+      depositRequired: result.depositRequired ?? null,
       items: submittedItems,
     })
     setHistory(readOrderHistory())
@@ -194,6 +195,8 @@ function Cart() {
     event.preventDefault()
     // لا طلب جديد قبل حسم المحاولة السابقة (حتى لو استُدعي المعالج برمجيًا)
     if (order.phase === 'sending' || pendingAttempt) return
+    // أي محاولة جديدة تُلغي لافتة فشل/عدم تأكد قديمة — المحاولة المعلّقة نفسها لا تُمس
+    setOrder((prev) => clearStaleResult(prev))
     setNotice('')
     const name = form.name.trim()
     const phone = form.phone.trim().replace(/[\s-]/g, '')
@@ -287,22 +290,23 @@ function Cart() {
         <h2 className="cart-title">عربة الشراء</h2>
 
         {order.phase === 'success' && order.success && (
-          <p className="cart-notice">
-            تم استلام طلبك ✅ مرجع الطلب: {order.success.orderRef} — الحالة: قيد المراجعة (Pending).
-            {order.success.duplicate && ' تنبيه: هذا المرجع وصل النظام من قبل.'}{' '}
-            الدفعة المقدمة المطلوبة: {order.success.depositRequired ?? 5000} ج.م
-            (غير محصّلة إلكترونيًا — تُدفع عند تأكيد المعرض). سيراجع المعرض التوفر والسعر النهائي
-            ورسوم التوصيل ثم يتواصل معك.
-          </p>
+          <div className="cart-result">
+            <p className="cart-result-title">
+              تم استلام طلبك ✅ مرجع الطلب: {order.success.orderRef}
+              {order.success.duplicate && ' — تنبيه: هذا المرجع وصل النظام من قبل.'}
+            </p>
+            {successLines(order.success).map((line) => (
+              <p key={line} className="cart-result-line">
+                {line}
+              </p>
+            ))}
+          </div>
         )}
 
         {history.length > 0 && (
           <div className="cart-history">
             <h3>طلباتك الأخيرة</h3>
-            <p className="cart-history-note">
-              محفوظة في هذا المتصفح فقط — الحالة المعروضة كما كانت لحظة الإرسال، والمعرض يتواصل معك
-              لتأكيد الحالة النهائية.
-            </p>
+            <p className="cart-history-note">{HISTORY_NOTE}</p>
             <ul className="cart-history-list">
               {history.map((record) => {
                 const recordDate = formatOrderDateTime(record.createdAt)
@@ -313,9 +317,9 @@ function Cart() {
                       <span className="cart-history-meta">
                         {recordDate && `${recordDate} · `}
                         {record.items.map((item) => `${item.name} ×${item.qty}`).join('، ')} · الحالة:{' '}
-                        {statusLabel(record.status)}
+                        {statusLabel(record.status) || STATUS_UNKNOWN_LABEL}
                         {record.depositRequired != null &&
-                          ` · دفعة مقدمة: ${formatTotal(record.depositRequired)} ج.م`}
+                          ` · دفعة مقدمة: ${formatAmount(record.depositRequired)} ج.م`}
                       </span>
                     </div>
                     <div className="cart-history-actions">
@@ -350,10 +354,7 @@ function Cart() {
               لم يتأكد وصول الطلب السابق (<span dir="ltr">{pendingAttempt.orderRef}</span>) إلى المعرض —
               قد يكون وصل بالفعل وسُجِّل هناك. لن نُنشئ طلبًا جديدًا حتى تُحسم هذه المحاولة.
             </p>
-            <p>
-              إعادة الإرسال تستخدم نفس المرجع ونفس البيانات تمامًا. لا يستطيع المتصفح ضمان عدم تكرار
-              الطلب — هذا يعتمد على نظام الطلبات في المعرض.
-            </p>
+            <p>{RETRY_EXPLANATION}</p>
             {!attemptPersisted && (
               <p className="cart-notice">
                 تعذر حفظ هذه المحاولة على هذا المتصفح — إن أعدت تحميل الصفحة ستفقد إمكانية إعادة
@@ -445,7 +446,7 @@ function Cart() {
                       </button>
                     </div>
                     <div className="cart-line-total">
-                      {lineTotal != null ? formatTotal(lineTotal) : '—'} <span>ج.م</span>
+                      {lineTotal != null ? formatAmount(lineTotal) : '—'} <span>ج.م</span>
                     </div>
                     <button
                       type="button"
@@ -463,7 +464,7 @@ function Cart() {
             <div className="cart-summary">
               <span className="cart-summary-count">عدد القطع: {items.reduce((sum, item) => sum + item.qty, 0)}</span>
               <span className="cart-summary-total">
-                الإجمالي التقريبي: {formatTotal(subtotal)} <span>ج.م</span>
+                الإجمالي التقريبي: {formatAmount(subtotal)} <span>ج.م</span>
               </span>
               <button
                 type="button"
@@ -482,8 +483,9 @@ function Cart() {
               <form className="cart-checkout" onSubmit={onSubmit}>
               <h3>بيانات التسليم</h3>
               <p className="cart-checkout-status">
-                عند الإرسال يُسجَّل طلبك في نظام طلبات المعرض بحالة «قيد المراجعة» — لا دفع إلكتروني،
-                والسعر النهائي والتوفر ورسوم التوصيل يتأكدون مع المعرض، والمتبقي يُسدَّد عند التسليم.
+                عند الإرسال يُسجَّل طلبك في نظام طلبات المعرض، وتظهر في تأكيد الطلب الحالة التي يرجعها
+                النظام فعليًا. لا دفع إلكتروني عبر الموقع، والسعر النهائي والتوفر ورسوم التوصيل
+                يتأكدون مع المعرض، والمتبقي يُسدَّد عند التسليم.
               </p>
               <label>
                 الاسم

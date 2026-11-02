@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "test": "node --test tests/order-attempt.test.js",
+    "test": "node --test tests/*.test.js",
     "sync:data": "node scripts/sync-stock.js && node scripts/sync-model-details.js && npm run lint",
     "preview": "vite preview"
   },
