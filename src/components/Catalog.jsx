@@ -38,7 +38,7 @@ const ALL_MODELS_INDEXED = CATALOG.flatMap((group) =>
     key: `${group.brand}|${model.name}`,
   }))
 )
-const MODEL_BY_KEY = new Map(ALL_MODELS_INDEXED.map((model) => [model.key, model]))
+const _MODEL_BY_KEY = new Map(ALL_MODELS_INDEXED.map((model) => [model.key, model]))
 
 /**
  * بيانات الاكتشاف المُثراة (سعر رقمي/سعة/سرعة/نوع/توفر) — تُحسب مرة من المصادر
