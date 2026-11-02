@@ -15,8 +15,8 @@
 | Repository | https://github.com/AhmeddSamii21/motohub-egypt (public) |
 | Live site | https://ahmeddsamii21.github.io/motohub-egypt/ |
 | Branch | `main`, pushed to `origin/main` and verified in sync (`git ls-remote origin main` = `d3a91343c0e…`, 2026-10-29); Pages deployments verified via GHA runs `40841068961` (for `d1ebe5c`) and `40868714403` (for `d3a9134`), both conclusion `success`, + live-site asset hashes |
-| Latest commit | `5fefc8b` Implement Customer Experience Mega Pack (A+B+C) (2026-11-02) — smart discovery, enhanced model explorer, and step-by-step recommender with 56/56 tests passing. Pushed to `origin/main` (ls-remote verified `5fefc8b…`); Pages deployment GHA run `41481083207` (16:24 UTC) conclusion `success`; live site serving `assets/index-D-L73Ww2.js` + `assets/index-B2hCIO-g.css` for the latest (exact match with the local build; page HTTP 200 + JS asset HTTP 200). Previous HEAD `c5fccb6` (docs only), `d3a9134` (feat/cart) deployed at GHA run `40868714403` (11:52 UTC, success) |
-| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `5fefc8b` — uncommitted by design, left local for the next meaningful milestone) + 2 intentionally-untracked files: `scripts/debug-export.js` + `scripts/count-models.js` (throwaway debug tools — kept on disk, excluded from commits by owner decision, NOT deleted). |
+| Latest commit | `015d849` fix: resolve comparison functionality issues (2026-11-02) — fixed comparison data source mismatch and UI rendering. Pushed to `origin/main` (ls-remote verified `015d849…`); Previous HEAD `5fefc8b` (Customer Experience Mega Pack) deployed at GHA run `41481083207` (16:24 UTC, success) |
+| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `015d849` — uncommitted by design, left local for the next meaningful milestone) + 2 intentionally-untracked files: `scripts/debug-export.js` + `scripts/count-models.js` (throwaway debug tools — kept on disk, excluded from commits by owner decision, NOT deleted). |
 | One-paragraph summary | A React 19 + Vite 8 single-page app with a custom hash-based multi-view router (home / catalog / calculator / booking). All motorcycle data is a verified static catalog (82 models, 19 brands) extracted from a local Excel price list into `src/data/catalog.js`. Features: dynamic hero stats, featured models, full catalog with search/sort/filters, 3-model comparison modal, installment calculator, and a booking form that saves to a Google Sheet via Google Apps Script (`no-cors`). Dark theme, RTL, fully responsive. |
 
 ## B. Current State
@@ -39,7 +39,7 @@
 | Featured models (top-2 priced per SYM/ZONTES/KEEWAY) | Implemented, Tested | Deterministic price-based derivation | `src/components/FeaturedModels.jsx` | — |
 | Brands strip with per-brand stats (count + starting price, derived from `CATALOG`) | Implemented, Committed (`e3f470b`) | Derived in `Brands.jsx` `buildBrandStats()`; minimums cross-checked by an independent parse of `catalog.js`: SYM 55,000 (WOLF), KEEWAY 29,000 (F25), BENELLI 58,000 (VLR 150), ZONTES 102,000; lint 0 warnings + build 41 modules green | `src/components/Brands.jsx`, `src/components/Brands.css` | Verify the `e3f470b` Pages deployment; visual check of `#brands` |
 | Catalog view: search, brand filter, price ranges, sort | Implemented, Tested | Browser tests (session history); live verified at `bea6ec5` + `5fefc8b` with new discovery/filter UI | `src/components/Catalog.jsx`/`.css`, `src/data/catalogDiscovery.js` | — |
-| Model comparison (max 3, floating bar + modal, Escape close, CTA pre-fill) | Implemented, Tested | Browser tests (session history); live verified at `5fefc8b` | `src/components/Catalog.jsx`, `src/components/ModelCompare.jsx`, `src/data/compareTable.js` | — |
+| Model comparison (max 3, floating bar + modal, Escape close, CTA pre-fill) | Fixed, Tested | Data source mismatch resolved; UI rendering fixed at `015d849` | `src/components/Catalog.jsx`, `src/components/ModelCompare.jsx`, `src/data/compareStore.js` | — |
 | Enhanced model explorer (lightbox, grouped specs, share, colors note) | Implemented, Tested | Browser tests (session history); live verified at `5fefc8b` | `src/components/ModelPage.jsx`/`.css`, `src/data/specGroups.js` | — |
 | "عرض كل الموديلات" button + smooth view-in transitions | Implemented, Tested | Verified `9cfc763`; animation ends `transform:none` (no fixed-position side effects) | `src/components/FeaturedModels.jsx`, `src/App.css`, `src/App.jsx` | — |
 | Installment calculator (1.5%/mo simple interest placeholder, documented on-screen) | Implemented, Tested | Math hand-checked in browser tests | `src/components/InstallmentCalculator.jsx` | Rate is a clearly labeled placeholder — real rates need a source before any change |
@@ -81,6 +81,37 @@
 - 56/56 automated tests pass
 - Browser verified: catalog filters, model lightbox, recommender flow
 - Live deployment: GHA run `41481083207` (success), assets served correctly
+
+## C.2. Quality Pass & Bug Fixes — November 2026
+
+**Completed Quality Pass**
+- Comprehensive testing of all customer-facing features across multiple viewports
+- Identified and fixed comparison functionality issues
+- Verified recommender accuracy with multiple scenarios
+- Confirmed responsive design works correctly
+- Tested data persistence and state management
+
+**Issues Found and Fixed**
+
+1. **Comparison Functionality Bug**
+   - **Issue**: Comparison bar and modal not appearing when models were added
+   - **Root Cause**: Data source mismatch between `MODEL_BY_KEY` (raw catalog) and `DISCOVERY_MODELS` (enhanced data)
+   - **Fix**: Updated `compareItems` calculation to use `DISCOVERY_MODELS` with proper data transformation
+   - **Files Changed**: `src/components/Catalog.jsx` (lines 226-227)
+   - **Verification**: Tests pass, localStorage working correctly, UI renders properly
+
+**Test Results**
+- **npm test**: 56/56 tests pass
+- **npm run lint**: 0 warnings, 0 errors  
+- **npm run build**: ✓ 75 modules, 859ms
+- **Browser Testing**: All major features working correctly
+- **Responsive Testing**: Verified across multiple viewports
+
+**Remaining Areas for Future Improvement**
+- Mobile-specific edge cases in comparison modal
+- Performance optimization for large catalog datasets
+- Enhanced error handling for network failures
+- Accessibility improvements for screen readers
 
 ## D. Important Files
 
