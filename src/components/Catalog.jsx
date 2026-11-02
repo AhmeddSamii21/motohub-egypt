@@ -151,9 +151,14 @@ function Catalog() {
 
   // تحديد المقارنة: مخزن مشترك دائم (localStorage) تشاركه صفحة المقارنة الكاملة —
   // نفس نمط شارة المفضلة: حالة محلية + حدث مخصص للتحديث الفوري بين المكوّنات
-  const [compareKeys, setCompareKeys] = useState(readCompareKeys)
+  const [compareKeys, setCompareKeys] = useState([])
+  
   useEffect(() => {
-    const refresh = () => setCompareKeys(readCompareKeys())
+    const refresh = () => {
+      console.log('Refreshing compareKeys:', readCompareKeys())
+      setCompareKeys(readCompareKeys())
+    }
+    refresh() // Initial load
     window.addEventListener(COMPARE_EVENT, refresh)
     return () => window.removeEventListener(COMPARE_EVENT, refresh)
   }, [])
