@@ -5,14 +5,21 @@ import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedMod
 import { modelHref } from '../data/modelSlug'
 import { GENERATED_BY_KEY, formatDisplayPrice } from '../data/modelDisplay'
 import { readFavorites, toggleFavorite, FAVORITES_EVENT } from '../data/favoritesStore'
+import {
+  readCompareKeys,
+  toggleCompareKey,
+  clearCompareKeys,
+  COMPARE_EVENT,
+  COMPARE_LIMIT,
+} from '../data/compareStore'
 import ModelCompare from './ModelCompare'
 import Brands from './Brands'
 import './Catalog.css'
 
 const ALL_BRANDS = 'all'
 
-/** حد أقصى للمقارنة في المرة الواحدة */
-const MAX_COMPARE = 3
+/** حد أقصى للمقارنة في المرة الواحدة — من المخزن المشترك (يُستخدم في صفحة المقارنة أيضًا) */
+const MAX_COMPARE = COMPARE_LIMIT
 
 /** كل موديلات الكتالوج مفهرسة بمفتاح ماركة|اسم لثبات التحديد عبر التصفية والترتيب */
 const ALL_MODELS_INDEXED = CATALOG.flatMap((group) =>
@@ -138,8 +145,16 @@ function Catalog() {
   const [query, setQuery] = useState('')
   const [priceRange, setPriceRange] = useState('all')
   const [sort, setSort] = useState('default')
-  const [compareKeys, setCompareKeys] = useState([])
   const [compareOpen, setCompareOpen] = useState(false)
+
+  // تحديد المقارنة: مخزن مشترك دائم (localStorage) تشاركه صفحة المقارنة الكاملة —
+  // نفس نمط شارة المفضلة: حالة محلية + حدث مخصص للتحديث الفوري بين المكوّنات
+  const [compareKeys, setCompareKeys] = useState(readCompareKeys)
+  useEffect(() => {
+    const refresh = () => setCompareKeys(readCompareKeys())
+    window.addEventListener(COMPARE_EVENT, refresh)
+    return () => window.removeEventListener(COMPARE_EVENT, refresh)
+  }, [])
 
   // المفضلة: مجموعة المفاتيح الحالية — تُحدَّث عبر حدث المفضلة (نفس نمط شارة السلة)
   const [favKeys, setFavKeys] = useState(() => new Set(readFavorites().map((item) => `${item.brand}|${item.name}`)))
@@ -150,11 +165,7 @@ function Catalog() {
   }, [])
 
   const toggleCompare = (key) => {
-    setCompareKeys((prev) => {
-      if (prev.includes(key)) return prev.filter((k) => k !== key)
-      if (prev.length >= MAX_COMPARE) return prev
-      return [...prev, key]
-    })
+    toggleCompareKey(key) // المخزن يطلق الحدث فتتحدث الحالة المحلية بالمعالج أعلاه
   }
 
   const normalizedQuery = query.trim().toLowerCase()
@@ -382,7 +393,10 @@ function Catalog() {
               >
                 قارن ({compareItems.length})
               </button>
-              <button type="button" className="btn btn-ghost compare-bar-clear" onClick={() => setCompareKeys([])}>
+              <a className="btn btn-ghost compare-bar-page" href="#compare">
+                صفحة المقارنة الكاملة
+              </a>
+              <button type="button" className="btn btn-ghost compare-bar-clear" onClick={() => clearCompareKeys()}>
                 مسح
               </button>
             </div>
@@ -395,7 +409,7 @@ function Catalog() {
           onClose={() => setCompareOpen(false)}
           onRemove={(key) => toggleCompare(key)}
           onClear={() => {
-            setCompareKeys([])
+            clearCompareKeys()
             setCompareOpen(false)
           }}
         />

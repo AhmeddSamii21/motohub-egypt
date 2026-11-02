@@ -66,6 +66,10 @@ function ModelCompare({ open, items, onClose, onRemove, onClear }) {
         </div>
 
         <div className="compare-foot">
+          {/* رابط صفحة المقارنة الكاملة: الجدول المفصّل جنبًا إلى جنب — الإغلاق لا يمسّ التحديد */}
+          <a className="btn btn-ghost compare-page-link" href="#compare" onClick={onClose}>
+            صفحة المقارنة الكاملة
+          </a>
           <button type="button" className="btn btn-ghost compare-clear" onClick={onClear}>
             مسح المقارنة
           </button>

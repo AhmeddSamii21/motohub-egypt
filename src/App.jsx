@@ -12,6 +12,7 @@ import Features from './components/Features'
 import CTA from './components/CTA'
 import BookingForm from './components/BookingForm'
 import ModelPage from './components/ModelPage'
+import ComparePage from './components/ComparePage'
 import Cart from './components/Cart'
 import Favorites from './components/Favorites'
 import Footer from './components/Footer'
@@ -32,6 +33,7 @@ const VIEWS = {
   showroom: 'showroom',
   book: 'book',
   model: 'model',
+  compare: 'compare',
   cart: 'cart',
   favorites: 'favorites',
 }
@@ -57,6 +59,7 @@ const HASH_TO_VIEW = new Map([
   ['#book', VIEWS.book],
   ['#cart', VIEWS.cart],
   ['#favorites', VIEWS.favorites],
+  ['#compare', VIEWS.compare],
 ])
 
 function viewFromHash(hash) {
@@ -136,6 +139,9 @@ function App() {
         </div>
         <div className={`view-panel ${view === VIEWS.favorites ? 'is-active' : ''}`}>
           <Favorites />
+        </div>
+        <div className={`view-panel ${view === VIEWS.compare ? 'is-active' : ''}`}>
+          <ComparePage />
         </div>
       </main>
       <Footer />

@@ -3,7 +3,7 @@
  * المنطق واحد (لا تكرار): المفتاح brand|name نفسه، والتنسيق بأسلوب ج.م الحالي نفسه.
  * استخرج من Catalog.jsx ليغيب تحذير fast-refresh (مكوّن واحد لكل ملف تصدير).
  */
-import { MODELS as GENERATED_MODELS } from './generatedStock'
+import { MODELS as GENERATED_MODELS } from './generatedStock.js'
 
 export const GENERATED_BY_KEY = new Map(GENERATED_MODELS.map((m) => [`${m.brand}|${m.name}`, m]))
 

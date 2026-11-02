@@ -1,0 +1,205 @@
+/* صفحة المقارنة الكاملة — جدول حقيقي بعمود تسميات مثبّت وتمرير أفقي آمن على الجوال */
+
+.compare-page-title {
+  font-size: 1.9rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
+.compare-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-2, inherit);
+  align-items: center;
+}
+
+.compare-legend .compare-cell {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.compare-note {
+  font-size: 0.85rem;
+  color: var(--text-2, inherit);
+  opacity: 0.85;
+  margin-bottom: 1.25rem;
+  max-width: 46rem;
+}
+
+/* حاوية التمرير الأفقي — تسمح بالتصفح على الجوال دون كسر محاذاة الصفوف */
+.compare-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel, transparent);
+  -webkit-overflow-scrolling: touch;
+}
+
+.compare-scroll:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.compare-table {
+  border-collapse: collapse;
+  min-width: 40rem; /* أقل عرض قبل التمرير — يضمن بقاء الأعمدة مقروءة */
+  width: max-content;
+}
+
+.compare-table th,
+.compare-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 0.7rem 0.9rem;
+  text-align: start;
+  vertical-align: top;
+}
+
+.compare-table tbody tr:last-child th,
+.compare-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* عمود التسميات المثبّت — يلاحق التمرير الأفقي على الجوال */
+.compare-table .compare-label,
+.compare-table .compare-corner,
+.compare-table .compare-summary-label,
+.compare-table .compare-group-cell:first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 2;
+  background: var(--panel-2, var(--panel, #14161a));
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  border-inline-end: 1px solid var(--line);
+}
+
+.compare-table .compare-corner {
+  min-width: 8.5rem;
+}
+
+.compare-group-row .compare-group-cell {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--accent);
+  background: var(--panel, #101216);
+  padding-block: 0.5rem;
+  white-space: nowrap;
+}
+
+/* رأس الأعمدة — اسم الموديل + زر الإزالة */
+
+.compare-head {
+  background: var(--panel-2, var(--panel, #14161a));
+  min-width: 11rem;
+}
+
+.compare-head-brand {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin: 0 0 0.15rem;
+}
+
+.compare-head-name {
+  font-weight: 800;
+  font-size: 1rem;
+  color: inherit;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.compare-head-name:hover,
+.compare-head-name:focus-visible {
+  color: var(--accent);
+}
+
+.compare-head-remove {
+  float: inline-end;
+  font-size: 0.78rem;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text-2, inherit);
+  cursor: pointer;
+  padding: 0.15rem 0.55rem;
+}
+
+.compare-head-remove:hover,
+.compare-head-remove:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* خلايا القيم — تمييز الأفضل والتساوي */
+
+.compare-cell {
+  font-size: 0.92rem;
+}
+
+.compare-cell.is-better {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.compare-cell.is-equal {
+  font-weight: 600;
+}
+
+/* الملخص والCTA */
+
+.compare-summary-label {
+  min-width: 8.5rem;
+}
+
+.compare-summary p {
+  margin: 0 0 0.6rem;
+  font-size: 0.88rem;
+}
+
+.compare-cta {
+  font-size: 0.85rem;
+}
+
+/* حالتا الفناء: بلا تحديد أو تحديد أقل من اثنين */
+
+.compare-empty {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  max-width: 34rem;
+  display: grid;
+  gap: 0.75rem;
+  justify-items: center;
+  margin-inline: auto;
+}
+
+.compare-empty-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.compare-empty a {
+  color: var(--accent);
+}
+
+@media (max-width: 700px) {
+  .compare-page-title {
+    font-size: 1.5rem;
+  }
+
+  .compare-head-name {
+    font-size: 0.9rem;
+  }
+}
