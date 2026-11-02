@@ -172,10 +172,7 @@ function Catalog() {
   }, [])
 
   const toggleCompare = (key) => {
-    console.log('toggleCompare called with key:', key)
-    const result = toggleCompareKey(key) // المخزن يطلق الحدث فتتحدث الحالة المحلية بالمعالج أعلاه
-    console.log('toggleCompare result:', result)
-    return result
+    toggleCompareKey(key) // المخزن يطلق الحدث فتتحدث الحالة المحلية بالمعالج أعلاه
   }
 
   // ===== منطق الاكتشاف: فلاتر مجمَّعة + ترتيب — المنطق النقي في catalogDiscovery.js =====
