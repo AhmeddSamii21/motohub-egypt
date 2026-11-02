@@ -223,7 +223,15 @@ function Catalog() {
       : []
   const visibleCount = results.length
 
-  const compareItems = compareKeys.map((key) => MODEL_BY_KEY.get(key)).filter(Boolean)
+  const compareItems = compareKeys.map((key) => {
+    const model = DISCOVERY_MODELS.find(m => m.key === key)
+    return model ? {
+      ...model,
+      brand: model.brand,
+      name: model.name,
+      key: model.key
+    } : null
+  }).filter(Boolean)
 
   const sortedFlatModels = results
 

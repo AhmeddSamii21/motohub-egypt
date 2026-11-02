@@ -15,8 +15,8 @@
 | Repository | https://github.com/AhmeddSamii21/motohub-egypt (public) |
 | Live site | https://ahmeddsamii21.github.io/motohub-egypt/ |
 | Branch | `main`, pushed to `origin/main` and verified in sync (`git ls-remote origin main` = `d3a91343c0e…`, 2026-10-29); Pages deployments verified via GHA runs `40841068961` (for `d1ebe5c`) and `40868714403` (for `d3a9134`), both conclusion `success`, + live-site asset hashes |
-| Latest commit | `d3a9134` feat(cart): local order-receipt history and WhatsApp follow-up (2026-10-29) — after the 2026-10-29 series `06791dc` feat(calculator): financing Task A rework and sync:data refresh script · `a1315ad` feat(cart): shopping cart wired to Orders API with checkout form · `8223486` chore(scripts): product CSV export tooling for Orders sheet import · `d1ebe5c` docs(handoff): record financing, cart-to-orders, and export milestones. All pushed to `origin/main` (ls-remote verified `d3a91343c0e…`); Pages deployments: GHA run `40841068961` for `d1ebe5c` (08:18 UTC) + GHA run `40868714403` for `d3a9134` (11:52 UTC), both conclusion `success`; live site serving `assets/index-7BG91fOL.js` + `assets/index-C-_jPB8U.css` for the latest (exact match with the local build of the pushed tree; page HTTP 200 + JS asset HTTP 200). Previous HEAD `d77f8d0` (its deploy: GHA run `40357182851`, success) |
-| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `d3a9134` — uncommitted by design, left local for the next meaningful milestone) + 2 intentionally-untracked files: `scripts/debug-export.js` + `scripts/count-models.js` (throwaway debug tools — kept on disk, excluded from commits by owner decision, NOT deleted). The byte-identical duplicate `docs/motohub-orders-products-20261029.csv` was deleted earlier with owner approval after SHA-256 verification |
+| Latest commit | `5fefc8b` Implement Customer Experience Mega Pack (A+B+C) (2026-11-02) — smart discovery, enhanced model explorer, and step-by-step recommender with 56/56 tests passing. Pushed to `origin/main` (ls-remote verified `5fefc8b…`); Pages deployment GHA run `41481083207` (16:24 UTC) conclusion `success`; live site serving `assets/index-D-L73Ww2.js` + `assets/index-B2hCIO-g.css` for the latest (exact match with the local build; page HTTP 200 + JS asset HTTP 200). Previous HEAD `c5fccb6` (docs only), `d3a9134` (feat/cart) deployed at GHA run `40868714403` (11:52 UTC, success) |
+| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `5fefc8b` — uncommitted by design, left local for the next meaningful milestone) + 2 intentionally-untracked files: `scripts/debug-export.js` + `scripts/count-models.js` (throwaway debug tools — kept on disk, excluded from commits by owner decision, NOT deleted). |
 | One-paragraph summary | A React 19 + Vite 8 single-page app with a custom hash-based multi-view router (home / catalog / calculator / booking). All motorcycle data is a verified static catalog (82 models, 19 brands) extracted from a local Excel price list into `src/data/catalog.js`. Features: dynamic hero stats, featured models, full catalog with search/sort/filters, 3-model comparison modal, installment calculator, and a booking form that saves to a Google Sheet via Google Apps Script (`no-cors`). Dark theme, RTL, fully responsive. |
 
 ## B. Current State
@@ -38,16 +38,49 @@
 | Hero stats dynamic from catalog (82/19/2026) | Implemented | Derives from `CATALOG` | `src/components/Hero.jsx` | — |
 | Featured models (top-2 priced per SYM/ZONTES/KEEWAY) | Implemented, Tested | Deterministic price-based derivation | `src/components/FeaturedModels.jsx` | — |
 | Brands strip with per-brand stats (count + starting price, derived from `CATALOG`) | Implemented, Committed (`e3f470b`) | Derived in `Brands.jsx` `buildBrandStats()`; minimums cross-checked by an independent parse of `catalog.js`: SYM 55,000 (WOLF), KEEWAY 29,000 (F25), BENELLI 58,000 (VLR 150), ZONTES 102,000; lint 0 warnings + build 41 modules green | `src/components/Brands.jsx`, `src/components/Brands.css` | Verify the `e3f470b` Pages deployment; visual check of `#brands` |
-| Catalog view: search, brand filter, price ranges, sort | Implemented, Tested | Browser tests (session history); live verified at `bea6ec5` | `src/components/Catalog.jsx`/`.css` | — |
-| Model comparison (max 3, floating bar + modal, Escape close, CTA pre-fill) | Implemented, Tested | Browser tests (session history) | `src/components/Catalog.jsx`, `src/components/ModelCompare.jsx` | — |
+| Catalog view: search, brand filter, price ranges, sort | Implemented, Tested | Browser tests (session history); live verified at `bea6ec5` + `5fefc8b` with new discovery/filter UI | `src/components/Catalog.jsx`/`.css`, `src/data/catalogDiscovery.js` | — |
+| Model comparison (max 3, floating bar + modal, Escape close, CTA pre-fill) | Implemented, Tested | Browser tests (session history); live verified at `5fefc8b` | `src/components/Catalog.jsx`, `src/components/ModelCompare.jsx`, `src/data/compareTable.js` | — |
+| Enhanced model explorer (lightbox, grouped specs, share, colors note) | Implemented, Tested | Browser tests (session history); live verified at `5fefc8b` | `src/components/ModelPage.jsx`/`.css`, `src/data/specGroups.js` | — |
 | "عرض كل الموديلات" button + smooth view-in transitions | Implemented, Tested | Verified `9cfc763`; animation ends `transform:none` (no fixed-position side effects) | `src/components/FeaturedModels.jsx`, `src/App.css`, `src/App.jsx` | — |
 | Installment calculator (1.5%/mo simple interest placeholder, documented on-screen) | Implemented, Tested | Math hand-checked in browser tests | `src/components/InstallmentCalculator.jsx` | Rate is a clearly labeled placeholder — real rates need a source before any change |
 | Multi-view hash router + persistent view state | Implemented, Tested | Verified `024ea32`; `useLayoutEffect` scroll upgrade committed `6cc4dbd` (lint + build green) | `src/App.jsx` | — |
+| Step-by-step motorcycle recommender | Implemented, Tested | 56/56 tests pass; browser verified end-to-end flow at `5fefc8b` | `src/components/Recommender.jsx`/`.css`, `src/data/recommender.js` | — |
 | Catalog scroll reset (0,0) + Brands at top of catalog view | Implemented, Tested | `6cc4dbd` — synchronous `useLayoutEffect` reset verified in browser on dev server; Brands-first committed in `bea6ec5` | `src/App.jsx`, `src/components/Catalog.jsx` | Verify the `6cc4dbd` Pages deployment |
 | Booking form → Google Sheets | Implemented | Source verified; **manually tested historically by user** (submission reached the sheet) | `src/components/BookingForm.jsx` | Sheet-side structure NOT inspected — see §F/J |
 | Session pre-selection (`sessionStorage` + custom event) | Implemented, Tested | Module + listeners verified in source | `src/data/requestedModel.js`, `src/components/BookingForm.jsx` | — |
 | Dark scrollbars, RTL, responsive, `prefers-reduced-motion` | Implemented, Verified visually partially | CSS verified; full visual pass on real devices NOT done | `src/index.css`, `src/App.css` | Optional polish |
 | Spare-parts catalog / inventory / reservation status / payments | **Not Implemented** | Nothing in code | — | Roadmap only (§I) |
+
+## C.1. Customer Experience Mega Pack (A+B+C) — Implemented at `5fefc8b`
+
+**Package A: Smart Discovery & Advanced Filters**
+- Smart search with Arabic normalization (hamza→ا, ة→ه, ى→ي, diacritics stripped)
+- Advanced filters: price range (min/max), CC band, brand, type (سكوتر/موتوسيكل/بيتش باجي/جولف كار), availability, speed min
+- Sort options: default, price (asc/desc), CC (asc), speed (desc)
+- Active filter chips with individual removal and clear-all
+- Transparent handling of missing data (shows excluded counts)
+- Mobile responsive with overflow fixes
+
+**Package B: Enhanced Motorcycle Explorer**
+- Lightbox gallery with keyboard navigation (Escape/arrows/backdrop)
+- Grouped specifications by category (engine, brakes, wheels, extras)
+- Share button with clipboard feedback ("تم نسخ الرابط ✓")
+- Honest color availability note ("الألوان غير موثقة...")
+- Mobile overflow fix for action buttons
+
+**Package C: Step-by-Step Recommender**
+- 4-step questionnaire: budget → purpose → type → CC/daily km (all skippable)
+- Rule-based scoring: commute (automatic +3, scooter +2), delivery (fuel ≥6L +2), touring (speed ≥110 +3, water cooling +2)
+- Transparent explanations tied to actual specs
+- No-match scenarios with actionable reasons
+- Results include: details, compare, favorite, booking CTAs
+
+**Architecture & Testing**
+- Pure data modules: `catalogDiscovery.js`, `specGroups.js`
+- Node-testable logic, separate from presentation
+- 56/56 automated tests pass
+- Browser verified: catalog filters, model lightbox, recommender flow
+- Live deployment: GHA run `41481083207` (success), assets served correctly
 
 ## D. Important Files
 
@@ -57,13 +90,18 @@
 | `src/components/BookingForm.jsx` | Booking form + the Apps Script integration (`WEB_APP_URL` const, `no-cors` POST). Fields: `fullName`, `phone`, `motorcycleModel`, `preferredDate`, `notes`; syncs the session pre-selected model. **Frozen integration — see §H.** |
 | `src/data/requestedModel.js` | Session pre-selection: `motohub.requestedModel` session key, `motohub:model-requested` custom event, store/read/clear helpers. Every "احجز معاينة" CTA writes here. |
 | `src/App.jsx` | Hash router, view panels (mounted-but-hidden), synchronous `useLayoutEffect` scroll reset (committed `6cc4dbd`). |
-| `src/components/Catalog.jsx` | Catalog view composition: Brands section first, then search/filter/sort tools, groups grid, compare bar/modal. |
+| `src/components/Catalog.jsx` | Catalog view with smart discovery: search, filters, sort; uses `catalogDiscovery.js` for logic; compare bar/modal integration. |
 | `src/components/ModelCompare.jsx` | Compare modal (max 3, `MAX_COMPARE = 3` in Catalog.jsx), Escape close + scroll lock; CTA pre-fills booking. |
+| `src/components/ModelPage.jsx` | Model details with lightbox gallery, grouped specs (via `specGroups.js`), share button, honest color note. |
+| `src/components/Recommender.jsx` | Step-by-step questionnaire with recommender engine; shows explanations and no-match scenarios. |
 | `src/components/InstallmentCalculator.jsx` | Calculator; `MONTHLY_RATE = 0.015` documented as illustrative; CTA "احجز معاينة بتمويل". |
 | `src/components/Header.jsx` | Nav tabs (الرئيسية/الكتالوج/حاسبة الأقساط) + booking CTA; `view` prop drives `aria-current`. Mobile menu logic unchanged since original design. |
 | `src/data/content.js` | `BRANDS` derived from `CATALOG`; `FEATURES` display copy (labeled non-binding). No product data. |
 | `src/index.css` | Design tokens (`--panel`, `--accent`, `--line`, `--radius…`) + global dark scrollbars (`color-scheme: dark` matters for native dropdowns). |
 | `.github/workflows/deploy.yml` | Pages deploy on push to `main`. Node 20, `npm ci`, `npm run build`. |
+| `src/data/catalogDiscovery.js` | Smart discovery logic: search normalization, filters, sorting; pure Node-testable module. |
+| `src/data/specGroups.js` | Shared spec grouping for model pages and comparison; single source of truth for categories. |
+| `src/data/recommender.js` | Recommendation algorithms; both legacy `recommendModels` and new `recommendPerfectModels` with purpose-based scoring. |
 | `docs/Vehicle_Price_List_2026.xlsx` | **Local-only** (`.gitignore` has `*.xlsx`), referenced by `catalog.js` header. The published data lives in `catalog.js`. 167 rows with "X" prices and 24 brand headers exist in the workbook but only eligible rows were exported. |
 
 ## E. Development Environment
@@ -90,6 +128,7 @@
 - `9cfc763` view-more button + view-in transitions (live JS fetch verified)
 - `bea6ec5` scroll reset v1 + Brands-top (live verified: Pages workflow success; live site serves `index-D4syzpMp.js` / `index-wi6VrVsC.css` — matching HEAD artifacts; re-fetched during THIS inspection: HTTP 200 ✓)
 - `6cc4dbd` `useLayoutEffect` scroll-upgrade commit (verified THIS session: lint 0 warnings/errors, build ✓ 41 modules `index-CbIa7mN2.js`; push verified via `git ls-remote origin main` → `6cc4dbd...`; **Pages deployment for this commit NOT verified**)
+- `5fefc8b` Customer Experience Mega Pack (A+B+C): 56/56 tests pass, browser verification of all new features, live deployment success (GHA run `41481083207`) |
 
 **Booking integration:** user reported the full submission flow reaching the Google Sheet manually in an earlier phase. Recorded as **historical, user-reported**. During this handoff nothing was submitted and the sheet was not touched.
 
@@ -98,6 +137,9 @@
 2. **No unit/API tests exist.** All functional evidence is manual-browser-based; nothing is automated.
 3. Model cards expose only brand/name/price. No specs, years, images, stock, or availability — **none of that may be invented** (see §H).
 4. Browser environment artifact discovered during testing: occluded windows suspend compositor CSS animations (opacity/transform) — affects testing methodology only, not the app.
+5. **15/82 models lack detailed specifications**: these show "المواصفات غير منشورة بعد" and are excluded from filtering/sorting that requires specs — no data is invented.
+6. **No color data exists**: model pages show "الألوان غير موثقة في مصدر البيانات الحالي" — no colors are invented.
+7. **Weight/dimensions not available**: not present in source data, so not displayed.
 
 ## G. Git and Data Safety
 
