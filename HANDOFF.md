@@ -120,6 +120,28 @@
 - Enhanced error handling for network failures
 - Accessibility improvements for screen readers
 
+## C.3. Ownership Companion Mega Pack (A–D) — 2026-11-03
+
+Customer-facing «رفيق الملكية» view (`#garage`, header link after «حاسبة التشغيل») for post-purchase ownership: maintenance planner, service history, expense tracker, care guide. Header link addition required moving the tested mobile-menu breakpoint `1400px → 1460px` (the 13-link desktop row now needs ~1452px; verified no overflow at 1440/1460 menu + 1461+ desktop).
+
+**A. Maintenance Planner** — vehicle from the frozen catalog (key `brand|name`), current odometer, customer reminders with task name, last service date/odometer, next due date and/or odometer, notes; edit/delete (two-step confirm); statuses computed from customer dates/odometer only: `overdue`, `due`, `soon` (≤14 days or ≤500 km), `need-odometer`, `upcoming`. **No manufacturer intervals exist in project data** — every reminder is badged «من إعدادك» and the UI states «توصية مصنّع موثّقة: غير متوفرة في مصادر المشروع» with a pointer to the owner's manual/authorized service.
+
+**B. Service History** — date, odometer, type, description, optional cost/notes; chronological newest-first; edit/delete; total of recorded costs only (records without cost are not counted as zero); explicitly labeled «سجل شخصي» / not official showroom records.
+
+**C. Expense Tracker** — fuel/maintenance/parts/repairs/insurance-licensing/other; date, category, amount, notes; filters by motorcycle + inclusive date range; totals, category breakdown (no chart), monthly/yearly groups; clearly distinguished from the existing ownership-cost calculator (recorded invoices vs hypothetical estimates).
+
+**D. Care Guide** — six general-guidance sections (pre-ride check, tires, brakes, chain, cleaning/storage, safe riding) with explicit disclaimers; no model-specific pressures/intervals; directs to the owner's manual or authorized service and states it is not a substitute for professional inspection.
+
+**Persistence & privacy:** single new key `motohub.garage` (`{version:1, vehicles, reminders, services, expenses}`) + `motohub:garage-changed` event; existing keys untouched; no accounts/cloud/Sheets/external calls; strict sanitize drops corrupt/orphaned records and returns an empty state without throwing; deleting a vehicle cascades its reminders/services/expenses; UI states records are browser-local and may not transfer between devices. Active vehicle/tab are session UI state only (default: first vehicle).
+
+**Files:** `src/data/garageStore.js`, `garageStats.js`, `careGuide.js`; `src/components/OwnershipCompanion.jsx`/`.css`, `MaintenancePlanner.jsx`, `ServiceHistory.jsx`, `ExpenseTracker.jsx`, `CareGuide.jsx`; `src/App.jsx` (view + `#garage`), `src/components/Header.jsx` + `Header.css` (link + breakpoint); `tests/garage.test.js`.
+
+**Verified (2026-11-03):** `npm test` **129/129 pass** (26 new); `npm run lint` 0 warnings/errors; `npm run build` ✓ 94 modules (`index-C379t43Z.js` 499.71 kB / `index-DsKyu2CA.css` 77.18 kB). Browser (dev server, DOM-driven): empty state → add vehicle; reminder add/edit/delete + validation; date/odometer status flips after odometer update; service ordering/totals/edit/delete; expense totals, category %, monthly/yearly groups, date-range and motorcycle filters, zero-amount rejection; second motorcycle fully isolated; reload persisted all records; corrupt JSON and malformed/partial records sanitized with no crash/console errors; fixed-width iframe checks at **1440/1280/1024/768/390/360** across all four tabs — no horizontal overflow, console 0 warnings/errors. Fixed during testing: odometer hint escaping its card in the ≤640px column layout.
+
+**Limits:** no manufacturer service data or guaranteed notifications (none claimed); records are device-local; only catalog models can be added; expense summaries reflect the current filtered set by design.
+
+**Not done / limits at write time:** nothing committed/pushed/deployed yet — commit hash + Pages run recorded in the deployment entry below after verification.
+
 ## D. Important Files
 
 | File | Responsibility / why it matters |
@@ -140,6 +162,10 @@
 | `src/data/catalogDiscovery.js` | Smart discovery logic: search normalization, filters, sorting; pure Node-testable module. |
 | `src/data/specGroups.js` | Shared spec grouping for model pages and comparison; single source of truth for categories. |
 | `src/data/recommender.js` | Recommendation algorithms; both legacy `recommendModels` and new `recommendPerfectModels` with purpose-based scoring. |
+| `src/data/garageStore.js` | Ownership Companion local CRUD: `motohub.garage` (vehicles/reminders/services/expenses), `motohub:garage-changed` event, strict sanitize, vehicle cascade delete. |
+| `src/data/garageStats.js` | Pure reminder status/ordering, service totals, expense filtering + category/monthly/yearly summaries. |
+| `src/data/careGuide.js` | General-only care guidance + disclaimers (no model-specific values). |
+| `src/components/OwnershipCompanion.jsx` | `#garage` view: vehicle add/select/odometer/remove, dashboard, four tabs (planner/history/expenses/guide). |
 | `docs/Vehicle_Price_List_2026.xlsx` | **Local-only** (`.gitignore` has `*.xlsx`), referenced by `catalog.js` header. The published data lives in `catalog.js`. 167 rows with "X" prices and 24 brand headers exist in the workbook but only eligible rows were exported. |
 
 ## E. Development Environment
@@ -149,9 +175,9 @@
 - **Commands (VERIFIED in `package.json`)**
   - Dev server: `npm run dev` (Vite, `http://localhost:5173/`)
   - Lint: `npm run lint` (oxlint) — expect **0 warnings / 0 errors**; it is the acceptance bar for every change
-  - Build: `npm run build` — expect ✓ 41 modules
+  - Build: `npm run build` — expect ✓ 94 modules (2026-11-03 tree)
   - Preview: `npm run preview`
-- **No test framework/runner exists.** Verification method used historically: `npm run lint` + `npm run build` + manual browser checks (dev server and/or live site).
+- **Tests**: `npm test` runs `node --test tests/*.test.js` — **129/129 pass** on 2026-11-03 (11 files; pure Node modules). UI and integrations are still verified manually in a browser.
 - **Environment variables**: only `GITHUB_ACTIONS` (set by Actions, read by `vite.config.js` for the base path). No `.env` needed; none contains secrets.
 - **Git on this machine**: use `C:\Program Files\Git\cmd\git.exe`. PowerShell quirk: `git push ... 2>&1` prints a false `Exited with code 1` — **confirm pushes via the `main -> main` ref-update line**, not the exit code.
 
@@ -167,6 +193,7 @@
 - `bea6ec5` scroll reset v1 + Brands-top (live verified: Pages workflow success; live site serves `index-D4syzpMp.js` / `index-wi6VrVsC.css` — matching HEAD artifacts; re-fetched during THIS inspection: HTTP 200 ✓)
 - `6cc4dbd` `useLayoutEffect` scroll-upgrade commit (verified THIS session: lint 0 warnings/errors, build ✓ 41 modules `index-CbIa7mN2.js`; push verified via `git ls-remote origin main` → `6cc4dbd...`; **Pages deployment for this commit NOT verified**)
 - `5fefc8b` Customer Experience Mega Pack (A+B+C): 56/56 tests pass, browser verification of all new features, live deployment success (GHA run `41481083207`) |
+- `2026-11-03` Ownership Companion Mega Pack (A–D): 129/129 tests pass (26 new), lint 0 warnings/errors, build ✓ 94 modules; browser journeys + responsive 1440/1280/1024/768/390/360 verified — details in §C.3. Commit/deploy facts recorded in the entry below after verification.
 
 **Booking integration:** user reported the full submission flow reaching the Google Sheet manually in an earlier phase. Recorded as **historical, user-reported**. During this handoff nothing was submitted and the sheet was not touched.
 
@@ -302,3 +329,5 @@ pm run build ✓ 85 modules, index-BNO8J25l.js 444.58 kB. Browser (dev server, D
 **Formulas (authoritative):** zero-interest monthly = P÷n; annuity r=annual%÷100÷12, monthly=P·r÷(1−(1+r)^−n); ownership monthly liters = monthlyKm ÷ km/L, fuel = liters × price, total = fuel + maintenance + other, annual = ×12; running cost per model = shared monthlyKm ÷ (customer km/L) × shared fuelPrice.
 
 **Not done / limits:** no verified financing terms (Sheets source still unconfigured — Phase 2 wiring blocked on owner data); no verified offers (empty state is final until owner supplies them); no model consumption data (customer estimates only). Nothing committed/pushed/deployed yet — sequence below.
+
+**Committed & deployed (2026-11-03):** single commit `149ac8a` «Financial & Buying Experience Mega Pack (A-E)» — 22 exact files staged (never `git add .`; working-tree-only deletions of stale root `test-*.js` files and untracked `debug-comparison.js`/`.opencode/` deliberately NOT staged), pushed to `origin/main` (ref update `7b48871..149ac8a`; ls-remote = `149ac8a0514…`); Pages deploy GHA run `41566156471` conclusion `success`; live site serves `assets/index-BNO8J25l.js` — exact match with the local build of the pushed tree. Live verification (github.io, DOM-driven): budget 80,000 ⇒ 45 fits cheapest-first w/ remaining-budget lines + compare actions present; calc 66,000/down 10,000/12% ⇒ annuity 4,976×12=59,712, total 69,712, interest-scenario note ✓; ownership monthly 780/25/14 ⇒ 437 fuel, +200+100 other ⇒ 737/8,844 ✓; running cost (2 models via shared compare store) Orbit 30 km/L ⇒ 364/4,368, Jet 35 ⇒ 312/3,744, badge on cheaper, diff 52/624 ✓; offers ⇒ truthful empty state, zero fake cards; header shows «مخطط الميزانية» + «العروض». Background dev server (shell `sh_19f33dbef0014sKMRavKnmHQNH`, port 5173) left running pending cleanup approval.

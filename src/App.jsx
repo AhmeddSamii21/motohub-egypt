@@ -9,6 +9,7 @@ import InstallmentCalculator from './components/InstallmentCalculator'
 import OwnershipCostCalculator from './components/OwnershipCostCalculator'
 import RunningCostComparison from './components/RunningCostComparison'
 import BudgetPlanner from './components/BudgetPlanner'
+import OwnershipCompanion from './components/OwnershipCompanion'
 import OffersCenter from './components/OffersCenter'
 import Showroom from './components/Showroom'
 import Features from './components/Features'
@@ -34,6 +35,7 @@ const VIEWS = {
   budget: 'budget',
   calc: 'calc',
   cost: 'cost',
+  garage: 'garage',
   offers: 'offers',
   showroom: 'showroom',
   book: 'book',
@@ -61,6 +63,7 @@ const HASH_TO_VIEW = new Map([
   ['#calc', VIEWS.calc],
   ['#installments', VIEWS.calc],
   ['#cost', VIEWS.cost],
+  ['#garage', VIEWS.garage],
   ['#offers', VIEWS.offers],
   ['#showroom', VIEWS.showroom],
   ['#book', VIEWS.book],
@@ -135,6 +138,9 @@ function App() {
         <div className={`view-panel ${view === VIEWS.cost ? 'is-active' : ''}`}>
           <OwnershipCostCalculator />
           <RunningCostComparison />
+        </div>
+        <div className={`view-panel ${view === VIEWS.garage ? 'is-active' : ''}`}>
+          <OwnershipCompanion />
         </div>
         <div className={`view-panel ${view === VIEWS.offers ? 'is-active' : ''}`}>
           <OffersCenter />
