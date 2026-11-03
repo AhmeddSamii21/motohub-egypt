@@ -1,0 +1,88 @@
+/* ===== مركز العروض — نفس اللغة البصرية، حالة فراغ صادقة بلا زخرفة تحفّز قرارًا وهميًا ===== */
+
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.9rem;
+  list-style: none;
+  padding: 0;
+  margin-top: 1.5rem;
+}
+
+.offers-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1.1rem;
+  background: linear-gradient(180deg, var(--panel-2), var(--bg-2));
+  border: 1px solid rgba(255, 122, 26, 0.35);
+  border-radius: var(--radius);
+}
+
+.offers-card-brand {
+  color: var(--metal);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.offers-card-name {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.offers-card-details {
+  color: var(--metal);
+  font-size: 0.85rem;
+}
+
+.offers-card-validity {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.offers-card-terms {
+  color: var(--muted);
+  font-size: 0.78rem;
+  border-top: 1px dashed var(--line);
+  padding-top: 0.5rem;
+}
+
+.offers-empty {
+  margin-top: 1.5rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: var(--bg-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+}
+
+.offers-empty-title {
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.offers-empty-sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.6rem;
+  max-width: 60ch;
+  margin-inline: auto;
+}
+
+.offers-empty-sub a {
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .offers-card {
+    padding: 1rem;
+  }
+
+  .offers-empty {
+    padding: 1.5rem 1.1rem;
+  }
+}

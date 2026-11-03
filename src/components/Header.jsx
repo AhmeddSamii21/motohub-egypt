@@ -13,9 +13,11 @@ const LINKS = [
   { href: '#home', label: 'الرئيسية', view: 'home' },
   { href: '#catalog', label: 'الكتالوج', view: 'catalog' },
   { href: '#recommend', label: 'ساعدني أختار موتوسيكل', view: 'recommend' },
+  { href: '#budget', label: 'مخطط الميزانية', view: 'budget' },
   { href: '#updates', label: 'تحديثات الأسعار', view: 'updates' },
   { href: '#calc', label: 'حاسبة الأقساط', view: 'calc' },
   { href: '#cost', label: 'حاسبة التشغيل', view: 'cost' },
+  { href: '#offers', label: 'العروض', view: 'offers' },
   { href: '#showroom', label: 'عن المعرض', view: 'showroom' },
 ]
 

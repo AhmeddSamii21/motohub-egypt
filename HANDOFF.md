@@ -15,8 +15,8 @@
 | Repository | https://github.com/AhmeddSamii21/motohub-egypt (public) |
 | Live site | https://ahmeddsamii21.github.io/motohub-egypt/ |
 | Branch | `main`, pushed to `origin/main` and verified in sync (`git ls-remote origin main` = `d3a91343c0e…`, 2026-10-29); Pages deployments verified via GHA runs `40841068961` (for `d1ebe5c`) and `40868714403` (for `d3a9134`), both conclusion `success`, + live-site asset hashes |
-| Latest commit | `015d849` fix: resolve comparison functionality issues (2026-11-02) — fixed comparison data source mismatch and UI rendering. Pushed to `origin/main` (ls-remote verified `015d849…`); Previous HEAD `5fefc8b` (Customer Experience Mega Pack) deployed at GHA run `41481083207` (16:24 UTC, success) |
-| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `015d849` — uncommitted by design, left local for the next meaningful milestone) + 2 intentionally-untracked files: `scripts/debug-export.js` + `scripts/count-models.js` (throwaway debug tools — kept on disk, excluded from commits by owner decision, NOT deleted). |
+| Latest commit | See entry below — Financial & Buying Experience Mega Pack (this session) | |
+| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `7b48871` — uncommitted by design, left local for the next meaningful milestone) + 2 intentionally-untracked files: `scripts/debug-export.js` + `scripts/count-models.js` (throwaway debug tools — kept on disk, excluded from commits by owner decision, NOT deleted). |
 | One-paragraph summary | A React 19 + Vite 8 single-page app with a custom hash-based multi-view router (home / catalog / calculator / booking). All motorcycle data is a verified static catalog (82 models, 19 brands) extracted from a local Excel price list into `src/data/catalog.js`. Features: dynamic hero stats, featured models, full catalog with search/sort/filters, 3-model comparison modal, installment calculator, and a booking form that saves to a Google Sheet via Google Apps Script (`no-cors`). Dark theme, RTL, fully responsive. |
 
 ## B. Current State
@@ -39,7 +39,7 @@
 | Featured models (top-2 priced per SYM/ZONTES/KEEWAY) | Implemented, Tested | Deterministic price-based derivation | `src/components/FeaturedModels.jsx` | — |
 | Brands strip with per-brand stats (count + starting price, derived from `CATALOG`) | Implemented, Committed (`e3f470b`) | Derived in `Brands.jsx` `buildBrandStats()`; minimums cross-checked by an independent parse of `catalog.js`: SYM 55,000 (WOLF), KEEWAY 29,000 (F25), BENELLI 58,000 (VLR 150), ZONTES 102,000; lint 0 warnings + build 41 modules green | `src/components/Brands.jsx`, `src/components/Brands.css` | Verify the `e3f470b` Pages deployment; visual check of `#brands` |
 | Catalog view: search, brand filter, price ranges, sort | Implemented, Tested | Browser tests (session history); live verified at `bea6ec5` + `5fefc8b` with new discovery/filter UI | `src/components/Catalog.jsx`/`.css`, `src/data/catalogDiscovery.js` | — |
-| Model comparison (max 3, floating bar + modal, Escape close, CTA pre-fill) | Fixed, Tested | Data source mismatch resolved; UI rendering fixed at `015d849` | `src/components/Catalog.jsx`, `src/components/ModelCompare.jsx`, `src/data/compareStore.js` | — |
+| Model comparison (max 3, floating bar + modal, Escape close, CTA pre-fill) | Fixed, Tested | UI rendering issue resolved at `7b48871`; comparison bar appears correctly when models are added | `src/components/Catalog.jsx`, `src/components/ModelCompare.jsx`, `src/data/compareStore.js` | — |
 | Enhanced model explorer (lightbox, grouped specs, share, colors note) | Implemented, Tested | Browser tests (session history); live verified at `5fefc8b` | `src/components/ModelPage.jsx`/`.css`, `src/data/specGroups.js` | — |
 | "عرض كل الموديلات" button + smooth view-in transitions | Implemented, Tested | Verified `9cfc763`; animation ends `transform:none` (no fixed-position side effects) | `src/components/FeaturedModels.jsx`, `src/App.css`, `src/App.jsx` | — |
 | Installment calculator (1.5%/mo simple interest placeholder, documented on-screen) | Implemented, Tested | Math hand-checked in browser tests | `src/components/InstallmentCalculator.jsx` | Rate is a clearly labeled placeholder — real rates need a source before any change |
@@ -95,10 +95,17 @@
 
 1. **Comparison Functionality Bug**
    - **Issue**: Comparison bar and modal not appearing when models were added
-   - **Root Cause**: Data source mismatch between `MODEL_BY_KEY` (raw catalog) and `DISCOVERY_MODELS` (enhanced data)
-   - **Fix**: Updated `compareItems` calculation to use `DISCOVERY_MODELS` with proper data transformation
-   - **Files Changed**: `src/components/Catalog.jsx` (lines 226-227)
+   - **Root Cause**: Server-side/client-side state mismatch in initial `compareKeys` state
+   - **Fix**: Changed initial state from `useState(readCompareKeys)` to `useState([])` and forced refresh after component mount
+   - **Files Changed**: `src/components/Catalog.jsx` (lines 154-165)
    - **Verification**: Tests pass, localStorage working correctly, UI renders properly
+
+2. **Comparison Bar UI Rendering Issue**
+   - **Issue**: Comparison bar not appearing in DOM despite localStorage updates
+   - **Root Cause**: Component not re-rendering properly when localStorage changes
+   - **Fix**: Removed unnecessary `initialized` state variable and ensured proper component re-rendering
+   - **Files Changed**: `src/components/Catalog.jsx` (lines 154-165)
+   - **Verification**: Live site testing confirms comparison bar appears correctly when models are added
 
 **Test Results**
 - **npm test**: 56/56 tests pass
@@ -258,3 +265,40 @@
 8. `git push` prints a false PowerShell exit-code 1 — verify via the `main -> main` ref line.
 9. Never commit/push/deploy without the user's explicit instruction, and never expose credential/endpoint values from `BookingForm.jsx` in reports.
 10. When a business rule or data fact cannot be established (prices, availability, finance terms), stop and ask.
+
+---
+
+## 2026-11-03: Financial & Buying Experience Mega Pack (this session; not yet committed)
+
+Owner-approved 5-feature package. All financial logic in new pure Node-testable modules; existing working features extended, never duplicated.
+
+**Data honesty rules applied (binding):** prices single-source from uildDiscoveryModels() (generatedStock→catalog); NO fuel-consumption data exists in project sources (grep-verified in generatedModelDetails.js) so all consumption values are customer-entered and labeled as such; NO verified financing terms exist (inancingSource.js unconfigured, FINANCING_SHEET_URL='') so the installment calculator is a labeled scenario planner with user-entered rate/fees, never silent assumptions; NO verified offers exist so Offers shows an honest empty state (price updates are NOT offers — #updates stays the price-change page).
+
+**New files:**
+- src/data/budgetPlanner.js — uildBudgetPlan (budget ≤ price ⇒ fit with remaining; over-budget within saving×36 months or 15% ⇒ close with over amount + estimated months; missing price counted, never 0; brand/type filters; deterministic price→name sort) + closestOptions; first Arabic error; never throws.
+- src/data/installmentMath.js — calculateInstallmentPlan: zero-interest (P÷n) vs interest-bearing annuity ( = annual%/100/12; monthly = P·r / (1−(1+r)^−n), formula documented + verified in tests); down 0..price; months integer 1..120; fees ≥0 shown as separate line, never financed; totalPaid = down + round(monthly)×n + fees; financingCost = installments + fees − financed; scenario string; overflow guard; never throws.
+- src/data/runningCost.js — alidateSharedAssumptions (monthlyKm >0, fuelPrice ≥0>0), calculateModelRunningCost (monthly fuel = km ÷ (km/L) × price, annual ×12; missing consumption ⇒ {missing:true}, never ranked), uildRunningCostComparison (rows in input order, cheapest marked only when ALL rows computed, unique min else null), costDifference (null unless both computed).
+- src/data/offers.js — frozen empty VERIFIED_OFFERS + documented future schema (id/brand/name/details required; dates/terms only if owner-verified) + hasVerifiedOffers().
+- src/components/BudgetPlanner.jsx + .css — new #budget view: budget + optional monthly saving, brand/type filters, budget cards with «يتبقى من ميزانيتك» / «يتجاوز ميزانيتك بـ» (+months), actions: التفاصيل (modelHref) + قارن (shared compareStore, limit unchanged) + المفضلة (avoritesStore); closest-3 cheapest shown honestly with over-amount when nothing fits.
+- src/components/RunningCostComparison.jsx + .css — section inside #cost; reuses shared compare selection (2–3 models) + shared monthly-km/fuel-price; per-model user-entered km/L inline in table; cheapest badge only when all computed; pairwise monthly/annual difference lines; missing ⇒ «أدخل تقدير الاستهلاك»; full disclaimers (estimates are customer's, not published specs; running cost ≠ purchase price).
+- src/components/OffersCenter.jsx + .css — new #offers view: only VERIFIED_OFFERS; currently honest empty state «لا توجد عروض منشورة مؤكَّدة حاليًا» + pointer to #updates for verified price changes; ready for future owner-verified data.
+
+**Extended files:**
+- src/data/ownershipCost.js — calculateOwnershipCost extended: distanceMode 'daily' (dailyKm×days) | 'monthly' (direct monthlyKm) — separate field per mode, switching never loses values (verified in browser + tests); otherExpenses optional monthly input added to monthlyTotal; zero-distance rejected; monthlyKm returned.
+- src/components/OwnershipCostCalculator.jsx + .css — daily/monthly toggle chips (each mode keeps its own value), «مصاريف شهرية أخرى» field, monthly-distance stat added; internal link to #running-cost.
+- src/components/InstallmentCalculator.jsx — REWORKED on the same single calculator: illustrative flat MONTHLY_RATE=0.015 assumption REMOVED (was silently applied) → user-entered annual rate % (empty/0 = zero-interest scenario, clearly labeled) + optional fees + custom months input (chips [6,12,18,24,36] fill same field) + results: financed/total installments/total paid/financing cost-vs-cash; zero-interest vs interest-bearing scenario text distinguishes formulas on screen; price auto-fill (GENERATED_BY_KEY trusted sources) + needsReview warning preserved; CTA/booking path untouched; inancingSource.js untouched.
+- src/App.jsx — VIEWS udget/offers, hashes #budget/#offers, panels (budget between updates & calc; offers after cost; RunningCostComparison inside the cost panel below the calculator).
+- src/components/Header.jsx — LINKS «مخطط الميزانية» (after ساعدني أختار) + «العروض» (after حاسبة التشغيل); doc comment updated.
+
+**Tests:** 5 new permanent files in 	ests/ (47 new tests): installment-math.test.js (11), ownership-cost.test.js (9, incl. mode-separation + other-expenses), udget-planner.test.js (11, incl. missing-price≠zero, close-window 15%/saving×36, closest-when-none-fit), unning-cost.test.js (10, incl. no-false-ranking, tie⇒no-badge), offers.test.js (4, incl. frozen empty + required-field guard). Full suite **103/103 pass** (was 56).
+
+**Verification:** 
+pm test 103/103 ✓; 
+pm run lint 0 warnings ✓; 
+pm run build ✓ 85 modules, index-BNO8J25l.js 444.58 kB. Browser (dev server, DOM-driven): Budget 80,000 ⇒ 45 fits (10,000 Segway first, remaining shown), 30,000+2,000/mo ⇒ 11 fits + 45 close w/ months; calc Orbit 69,700 auto-filled, down 20,000 12mo zero-int ⇒ 4,142×12=49,704 / total 69,704; +12% ⇒ annuity 4,416, cost 3,292; ownership daily 30×26/25/14 ⇒ 780/31.2L/437/637/7,644 and monthly 780 identical after toggle; running cost 2 seeded models w/o km/L ⇒ honest «أدخل تقدير», then Orbit 30 ⇒364/4,368, Jet 35 ⇒312/3,744, badge on cheaper + diff 52/624; offers ⇒ truthful empty state, no fake cards; regression: 82 cards, Arabic search 2 results, compare bar + favorites still work.
+
+**Responsive (iframe-viewport method, widths 1440/1280/1024/768/390/360):** budget panel 2-col ⇄ 1-col at 960px breakpoint; ZERO horizontal page overflow at all 6 widths; running-cost table horizontally scrollable inside its wrapper on mobile.
+
+**Formulas (authoritative):** zero-interest monthly = P÷n; annuity r=annual%÷100÷12, monthly=P·r÷(1−(1+r)^−n); ownership monthly liters = monthlyKm ÷ km/L, fuel = liters × price, total = fuel + maintenance + other, annual = ×12; running cost per model = shared monthlyKm ÷ (customer km/L) × shared fuelPrice.
+
+**Not done / limits:** no verified financing terms (Sheets source still unconfigured — Phase 2 wiring blocked on owner data); no verified offers (empty state is final until owner supplies them); no model consumption data (customer estimates only). Nothing committed/pushed/deployed yet — sequence below.

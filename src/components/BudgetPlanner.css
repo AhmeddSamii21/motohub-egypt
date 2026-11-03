@@ -1,0 +1,285 @@
+/*
+ * مخطط الميزانية — نفس لغة التصميم الحالية (cost-* / calc-*) مع أسماء budget-*
+ * RTL كامل، وموبايل أولًا، وبلا أي أنماط ثابتة تُفسد تثبيت القسم.
+ */
+
+.budget-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+.budget-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.budget-result {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-width: 0;
+}
+
+.budget-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.budget-label {
+  color: var(--metal);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.budget-input,
+.budget-select {
+  padding: 0.7rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease;
+}
+
+.budget-input:focus,
+.budget-select:focus {
+  outline: none;
+  border-color: var(--metal);
+}
+
+.budget-hint {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.budget-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.budget-chip {
+  padding: 0.45rem 0.8rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--metal);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.budget-chip.is-active {
+  color: var(--accent-2);
+  border-color: rgba(255, 122, 26, 0.5);
+}
+
+/* الملخص أعلى النتائج */
+
+.budget-summary {
+  color: var(--metal);
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.budget-summary b {
+  color: var(--accent-2);
+}
+
+.budget-subhead {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 800;
+  margin-top: 0.4rem;
+}
+
+/* شبكة البطاقات — نفس أسلوب بطاقات الكتالوج لكن مُخصصة للميزانية */
+
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.9rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.budget-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1rem;
+  background: linear-gradient(180deg, var(--panel-2), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.budget-card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.budget-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.budget-card-brand {
+  color: var(--metal);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.budget-card-review {
+  color: var(--accent-2);
+  font-size: 0.95rem;
+  cursor: help;
+}
+
+.budget-card-name,
+.budget-card-price,
+.budget-card-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.budget-card-name {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.budget-card-price {
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.budget-card-price b {
+  color: var(--accent-2);
+  font-size: 1.05rem;
+}
+
+.budget-card-price span {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.budget-card-remaining,
+.budget-card-over {
+  position: relative;
+  z-index: 1;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.budget-card-remaining b,
+.budget-card-over b {
+  color: var(--text);
+}
+
+.budget-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.budget-card-link {
+  color: var(--accent-2);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.budget-card-compare {
+  padding: 0.35rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--metal);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.budget-card-compare.is-selected {
+  color: var(--accent-2);
+  border-color: rgba(255, 122, 26, 0.5);
+}
+
+.budget-card-compare:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.budget-card-fav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-inline-start: auto;
+  color: var(--metal);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.budget-card-fav.is-active {
+  color: var(--accent-2);
+  border-color: rgba(255, 122, 26, 0.5);
+}
+
+.budget-disclaimer {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  background: var(--bg-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+/* ===== استجابة الشاشات ===== */
+
+@media (max-width: 960px) {
+  .budget-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .budget-controls {
+    padding: 1.1rem;
+  }
+
+  .budget-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,156 @@
+/* ===== مقارنة تكاليف التشغيل — نفس اللغة البصرية (cost-*) ببدائل runcost-* ===== */
+
+.runcost-shared {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 280px));
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.runcost-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.runcost-label {
+  color: var(--metal);
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+.runcost-input {
+  padding: 0.65rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease;
+}
+
+.runcost-input:focus {
+  outline: none;
+  border-color: var(--metal);
+}
+
+.runcost-input-inline {
+  max-width: 120px;
+  text-align: center;
+}
+
+.runcost-empty,
+.runcost-note,
+.runcost-diff {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.runcost-empty a,
+.runcost-note a {
+  color: var(--accent-2);
+}
+
+.runcost-diff {
+  color: var(--metal);
+}
+
+.runcost-diff b {
+  color: var(--text);
+}
+
+/* جدول المقارنة — يتحول أفقياً للتمرير داخل الصفحة على الشاشات الصغيرة */
+
+.runcost-table-wrap {
+  margin-top: 1.25rem;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  -webkit-overflow-scrolling: touch;
+}
+
+.runcost-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.runcost-table th,
+.runcost-table td {
+  padding: 0.75rem 0.9rem;
+  text-align: start;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.runcost-table thead th {
+  color: var(--metal);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  background: var(--bg-2);
+}
+
+.runcost-table tbody tr:last-child th,
+.runcost-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.runcost-table tbody th {
+  color: var(--text);
+}
+
+.runcost-model-brand {
+  display: block;
+  color: var(--metal);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.runcost-model-name {
+  display: block;
+  font-weight: 800;
+}
+
+.runcost-table td span[dir='ltr'] {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.runcost-missing {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.runcost-badge-col {
+  white-space: nowrap;
+}
+
+.runcost-cheapest {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  color: var(--accent-2);
+  font-size: 0.72rem;
+  font-weight: 800;
+  border: 1px solid rgba(255, 122, 26, 0.5);
+  border-radius: 999px;
+}
+
+/* ===== استجابة الشاشات ===== */
+
+@media (max-width: 720px) {
+  .runcost-shared {
+    grid-template-columns: 1fr;
+    padding: 1.1rem;
+  }
+}

@@ -7,6 +7,9 @@ import Recommender from './components/Recommender'
 import CatalogUpdates from './components/CatalogUpdates'
 import InstallmentCalculator from './components/InstallmentCalculator'
 import OwnershipCostCalculator from './components/OwnershipCostCalculator'
+import RunningCostComparison from './components/RunningCostComparison'
+import BudgetPlanner from './components/BudgetPlanner'
+import OffersCenter from './components/OffersCenter'
 import Showroom from './components/Showroom'
 import Features from './components/Features'
 import CTA from './components/CTA'
@@ -28,8 +31,10 @@ const VIEWS = {
   catalog: 'catalog',
   recommend: 'recommend',
   updates: 'updates',
+  budget: 'budget',
   calc: 'calc',
   cost: 'cost',
+  offers: 'offers',
   showroom: 'showroom',
   book: 'book',
   model: 'model',
@@ -52,9 +57,11 @@ const HASH_TO_VIEW = new Map([
   ['#catalog', VIEWS.catalog],
   ['#recommend', VIEWS.recommend],
   ['#updates', VIEWS.updates],
+  ['#budget', VIEWS.budget],
   ['#calc', VIEWS.calc],
   ['#installments', VIEWS.calc],
   ['#cost', VIEWS.cost],
+  ['#offers', VIEWS.offers],
   ['#showroom', VIEWS.showroom],
   ['#book', VIEWS.book],
   ['#cart', VIEWS.cart],
@@ -119,11 +126,18 @@ function App() {
         <div className={`view-panel ${view === VIEWS.updates ? 'is-active' : ''}`}>
           <CatalogUpdates />
         </div>
+        <div className={`view-panel ${view === VIEWS.budget ? 'is-active' : ''}`}>
+          <BudgetPlanner />
+        </div>
         <div className={`view-panel ${view === VIEWS.calc ? 'is-active' : ''}`}>
           <InstallmentCalculator />
         </div>
         <div className={`view-panel ${view === VIEWS.cost ? 'is-active' : ''}`}>
           <OwnershipCostCalculator />
+          <RunningCostComparison />
+        </div>
+        <div className={`view-panel ${view === VIEWS.offers ? 'is-active' : ''}`}>
+          <OffersCenter />
         </div>
         <div className={`view-panel ${view === VIEWS.showroom ? 'is-active' : ''}`}>
           <Showroom />
