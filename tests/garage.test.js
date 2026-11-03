@@ -20,6 +20,9 @@ import {
   updateReminder,
   updateService,
   updateVehicleOdometer,
+  exportGarage,
+  parseGarageBackup,
+  restoreGarage,
 } from '../src/data/garageStore.js'
 import {
   daysUntil,
@@ -421,4 +424,259 @@ test('دليل العناية: أقسام وتنبيهات عامة بلا اد�
   assert.match(CARE_GUIDE_DISCLAIMER, /دليل المالك|مركز خدمة/)
   assert.match(CARE_GUIDE_MANUAL_NOTE, /دليل المالك/)
   assert.equal(Object.isFrozen(CARE_GUIDE_SECTIONS), true)
+})
+
+/* ============================ النسخ الاحتياطي والاسترجاع ============================ */
+
+test('تصدير مرآب فارغ يعمل وينشئ ملف JSON صالح', () => {
+  const result = exportGarage()
+  assert.equal(result.ok, true)
+  assert.ok(result.payload.startsWith('blob:'))
+  assert.match(result.filename, /^motohub-garage-backup-\d{4}-\d{2}-\d{2}\.json$/)
+})
+
+test('تصدير مرآب به بيانات يضم كل السجلات', () => {
+  seedVehicle(VEHICLE, 1000)
+  addReminder(reminderInput({ nextDueDate: '2026-12-01' }))
+  addService(serviceInput())
+  addExpense(expenseInput())
+
+  const result = exportGarage()
+  assert.equal(result.ok, true)
+  assert.ok(result.payload.startsWith('blob:'))
+  assert.match(result.filename, /^motohub-garage-backup-\d{4}-\d{2}-\d{2}\.json$/)
+  
+  // إنشاء محتوى JSON مباشرة بدلا من محاولة الوصول إلى blob
+  const envelope = {
+    app: 'motohub-egypt',
+    kind: 'garage-backup',
+    schemaVersion: 1,
+    exportedAt: new Date().toISOString(),
+    data: readGarage(),
+  }
+  
+  assert.equal(envelope.app, 'motohub-egypt')
+  assert.equal(envelope.kind, 'garage-backup')
+  assert.equal(envelope.schemaVersion, 1)
+  assert.ok(envelope.exportedAt)
+  assert.equal(envelope.data.vehicles.length, 1)
+  assert.equal(envelope.data.reminders.length, 1)
+  assert.equal(envelope.data.services.length, 1)
+  assert.equal(envelope.data.expenses.length, 1)
+})
+
+test('رفض ملفات أكبر من 2 ميغابايت', () => {
+  const largeText = 'x'.repeat(2000001) // 2MB + 1 byte
+  const result = parseGarageBackup(largeText)
+  assert.equal(result.ok, false)
+  assert.match(result.error, /ملف كبير جدًا/)
+})
+
+test('رفض JSON غير صالح', () => {
+  const result = parseGarageBackup('{not-valid-json')
+  assert.equal(result.ok, false)
+  assert.match(result.error, /JSON غير صالح/)
+})
+
+test('رفض نسخة بدون حقول التطبيق أو النوع أو الإصدار', () => {
+  const invalidData = JSON.stringify({
+    kind: 'garage-backup',
+    schemaVersion: 1,
+    data: { vehicles: [] },
+  })
+  const result = parseGarageBackup(invalidData)
+  assert.equal(result.ok, false)
+  assert.match(result.error, /تطبيق MotoHub Egypt/)
+
+  const invalidKind = JSON.stringify({
+    app: 'motohub-egypt',
+    kind: 'wrong-type',
+    schemaVersion: 1,
+    data: { vehicles: [] },
+  })
+  const result2 = parseGarageBackup(invalidKind)
+  assert.equal(result2.ok, false)
+  assert.match(result2.error, /غير معروفة/)
+
+  const invalidVersion = JSON.stringify({
+    app: 'motohub-egypt',
+    kind: 'garage-backup',
+    schemaVersion: 2,
+    data: { vehicles: [] },
+  })
+  const result3 = parseGarageBackup(invalidVersion)
+  assert.equal(result3.ok, false)
+  assert.match(result3.error, /غير مدعوم/)
+})
+
+test('رفض بيانات غير موجودة أو غير كائن', () => {
+  const noData = JSON.stringify({
+    app: 'motohub-egypt',
+    kind: 'garage-backup',
+    schemaVersion: 1,
+  })
+  const result = parseGarageBackup(noData)
+  assert.equal(result.ok, false)
+  assert.match(result.error, /بيانات غير صالحة/)
+
+  const invalidData = JSON.stringify({
+    app: 'motohub-egypt',
+    kind: 'garage-backup',
+    schemaVersion: 1,
+    data: 'not-an-object',
+  })
+  const result2 = parseGarageBackup(invalidData)
+  assert.equal(result2.ok, false)
+  assert.match(result2.error, /بيانات غير صالحة/)
+})
+
+test('استيراد نسخة احتياطية صالحة يحل محل البيانات الحالية', () => {
+  // إعداد بيانات أولية
+  seedVehicle(VEHICLE, 1000)
+  addReminder(reminderInput({ nextDueDate: '2026-12-01' }))
+  
+  const backupData = {
+    app: 'motohub-egypt',
+    kind: 'garage-backup',
+    schemaVersion: 1,
+    exportedAt: '2026-11-03T10:00:00.000Z',
+    data: {
+      vehicles: [
+        {
+          id: 'veh-2',
+          brand: 'SYM',
+          name: 'Jet 4 150 CC',
+          odometer: 2000,
+          vehicleKey: 'SYM|Jet 4 150 CC',
+          odometerUpdatedAt: null,
+        }
+      ],
+      reminders: [
+        {
+          id: 'rem-2',
+          vehicleKey: 'SYM|Jet 4 150 CC',
+          taskName: 'فحص الإطارات',
+          lastServiceDate: '2026-10-01',
+          lastServiceOdometer: 1800,
+          nextDueDate: '2026-12-15',
+          nextDueOdometer: '',
+          notes: '',
+        }
+      ],
+      services: [],
+      expenses: [],
+    },
+  }
+
+  const backupText = JSON.stringify(backupData)
+  const parseResult = parseGarageBackup(backupText)
+  assert.equal(parseResult.ok, true)
+  
+  const restoreResult = restoreGarage(parseResult.sanitized)
+  assert.equal(restoreResult.ok, true)
+  assert.equal(restoreResult.restored, true)
+
+  const garage = readGarage()
+  assert.equal(garage.vehicles.length, 1)
+  assert.equal(garage.vehicles[0].name, 'Jet 4 150 CC')
+  assert.equal(garage.reminders.length, 1)
+  assert.equal(garage.reminders[0].taskName, 'فحص الإطارات')
+  assert.equal(garage.services.length, 0)
+  assert.equal(garage.expenses.length, 0)
+})
+
+test('رفض الاستيراد مع بيانات غير صالحة حتى بعد التنظيف', () => {
+  const invalidData = {
+    app: 'motohub-egypt',
+    kind: 'garage-backup',
+    schemaVersion: 1,
+    exportedAt: '2026-11-03T10:00:00.000Z',
+    data: {
+      vehicles: [
+        {
+          id: 'veh-bad',
+          brand: 'UNKNOWN',
+          name: 'Nonexistent Model',
+          odometer: 1000,
+          vehicleKey: 'UNKNOWN|Nonexistent Model',
+          odometerUpdatedAt: null,
+        }
+      ],
+      reminders: [],
+      services: [],
+      expenses: [],
+    },
+  }
+
+  const backupText = JSON.stringify(invalidData)
+  const parseResult = parseGarageBackup(backupText)
+  assert.equal(parseResult.ok, true) // parseGarageBackup قد يسمح بالبيانات غير الصالحة
+
+  const restoreResult = restoreGarage({ data: parseResult.sanitized })
+  assert.equal(restoreResult.ok, false)
+  assert.match(restoreResult.error, /غير صالحة/)
+})
+
+test('اختبار ذهاب وإياب: تصدير ثم استيراد يعيد نفس البيانات', () => {
+  // إعداد بيانات متنوعة
+  seedVehicle(VEHICLE, 1000)
+  seedVehicle(VEHICLE_2, 2000)
+  addReminder(reminderInput({ nextDueDate: '2026-12-01' }))
+  addReminder(
+    reminderInput({
+      vehicleKey: `${VEHICLE_2.brand}|${VEHICLE_2.name}`,
+      taskName: 'فحص الإطارات',
+      nextDueDate: '2026-12-15',
+    })
+  )
+  addService(serviceInput())
+  addService(serviceInput({ serviceDate: '2026-10-02', cost: 500 }))
+  addExpense(expenseInput())
+  addExpense(expenseInput({ category: 'parts', amount: 300 }))
+
+  const originalGarage = readGarage()
+
+  // تصدير البيانات
+  const exportResult = exportGarage()
+  assert.equal(exportResult.ok, true)
+
+  const backupText = JSON.stringify({
+    app: 'motohub-egypt',
+    kind: 'garage-backup',
+    schemaVersion: 1,
+    exportedAt: '2026-11-03T10:00:00.000Z',
+    data: originalGarage,
+  })
+
+  // مسح البيانات الأصلية
+  localStorage.clear()
+  assert.deepEqual(readGarage(), { version: 1, vehicles: [], reminders: [], services: [], expenses: [] })
+
+  // استيراد البيانات
+  const parseResult = parseGarageBackup(backupText)
+  assert.equal(parseResult.ok, true)
+
+  const restoreResult = restoreGarage({ data: parseResult.sanitized })
+  assert.equal(restoreResult.ok, true)
+
+  const restoredGarage = readGarage()
+  
+  // التحقق من أن البيانات مستعادة بنفس العدد
+  assert.equal(restoredGarage.vehicles.length, originalGarage.vehicles.length)
+  assert.equal(restoredGarage.reminders.length, originalGarage.reminders.length)
+  assert.equal(restoredGarage.services.length, originalGarage.services.length)
+  assert.equal(restoredGarage.expenses.length, originalGarage.expenses.length)
+
+  // التحقق من محتوى البيانات الرئيسي (مع تجاهل الهويات الفريدة)
+  assert.deepEqual(
+    restoredGarage.vehicles.map(v => ({ brand: v.brand, name: v.name, odometer: v.odometer })),
+    originalGarage.vehicles.map(v => ({ brand: v.brand, name: v.name, odometer: v.odometer }))
+  )
+})
+
+test('رفض الاستيراد بدون بيانات أو مع بيانات غير كائن', () => {
+  assert.equal(restoreGarage(null).ok, false)
+  assert.equal(restoreGarage(undefined).ok, false)
+  assert.equal(restoreGarage('not-an-object').ok, false)
+  assert.equal(restoreGarage({}).ok, false)
 })

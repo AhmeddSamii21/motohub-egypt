@@ -464,3 +464,98 @@ export function removeExpense(expenseId) {
   garage.expenses = garage.expenses.filter((entry) => entry.id !== expenseId)
   return commit(garage, { ok: true, removed: true })
 }
+
+/* ============================ نسخ احتياطي واسترجاع ============================ */
+
+/** تصدير البيانات الحالية كملف JSON */
+export function exportGarage() {
+  const garage = readGarage()
+  const envelope = {
+    app: 'motohub-egypt',
+    kind: 'garage-backup',
+    schemaVersion: 1,
+    exportedAt: new Date().toISOString(),
+    data: garage,
+  }
+  const blob = new Blob([JSON.stringify(envelope, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const date = new Date().toISOString().slice(0, 10)
+  const filename = `motohub-garage-backup-${date}.json`
+  return { ok: true, payload: url, filename }
+}
+
+/** تحليل نص JSON كنسخة احتياطية مع التحقق من الصيغة */
+export function parseGarageBackup(text) {
+  // حجم الملف: لا يزيد عن 2 ميغابايت
+  if (text.length > 2000000) return fail('الملف كبير جدًا (أقصى 2 ميغابايت)')
+
+  try {
+    const envelope = JSON.parse(text)
+    if (!envelope || typeof envelope !== 'object') return fail('النسخة الاحتياطية يجب أن تكون كائن JSON صالح')
+    if (envelope.app !== 'motohub-egypt') return fail('النسخة الاحتياطية ليست من تطبيق MotoHub Egypt')
+    if (envelope.kind !== 'garage-backup') return fail('النسخة الاحتياطية غير معروفة')
+    if (typeof envelope.schemaVersion !== 'number' || envelope.schemaVersion !== 1) {
+      return fail('إصدار الصيغة غير مدعوم (الإصدار 1 فقط مدعوم حاليًا)')
+    }
+    if (!envelope.data || typeof envelope.data !== 'object') return fail('النسخة الاحتياطية تحتوي على بيانات غير صالحة')
+
+    // استخدام sanitizeGarage الموجودة للتحقق والتنظيف
+    const sanitized = sanitizeGarage(envelope.data)
+    const counts = {
+      vehicles: sanitized.vehicles.length,
+      reminders: sanitized.reminders.length,
+      services: sanitized.services.length,
+      expenses: sanitized.expenses.length,
+    }
+    return { ok: true, sanitized, counts, exportedAt: envelope.exportedAt }
+  } catch {
+    return fail('النسخة الاحتياطية غير صالحة: JSON غير صالح')
+  }
+}
+
+/** استيراد نسخة احتياطية بعد التحقق والتحقق */
+export function restoreGarage(backup) {
+  if (!backup || typeof backup !== 'object') return fail('النسخة الاحتياطية غير صالحة')
+  
+  // إذا كانت البيانات هي كائن المرآب مباشرة (التنسيق القديم)
+  let garageData
+  if (backup.vehicles !== undefined && backup.reminders !== undefined && backup.services !== undefined && backup.expenses !== undefined) {
+    garageData = backup
+  } 
+  // إذا كانت البيانات مغلفة في كائن (التنسيق الجديد)
+  else if (backup.data && backup.data.vehicles !== undefined && backup.data.reminders !== undefined && backup.data.services !== undefined && backup.data.expenses !== undefined) {
+    garageData = backup.data
+  } else {
+    return fail('النسخة الاحتياطية غير صالحة')
+  }
+  
+  // إعادة التحقق من البيانات المنظفة (دفاع في العمق)
+  const sanitized = sanitizeGarage(garageData)
+  
+  // التحقق مما إذا كانت هناك بيانات تمت تصفيتها (مثل مركبات غير موجودة في الكتالوج)
+  const originalVehicles = Array.isArray(garageData.vehicles) ? garageData.vehicles.length : 0
+  const sanitizedVehicles = sanitized.vehicles.length
+  
+  // إذا تمت تصفية أي بيانات، فإن النسخة الاحتياطية غير صالحة
+  if (originalVehicles > sanitizedVehicles) {
+    return fail('النسخة الاحتياطية تحتوي على بيانات غير صالحة')
+  }
+  
+  // إذا كانت جميع المركبات غير صالحة أو البيانات فارغة، فإن النسخة الاحتياطية غير صالحة
+  if (sanitizedVehicles === 0) {
+    return fail('النسخة الاحتياطية تحتوي على بيانات غير صالحة')
+  }
+  
+  // حفظ البيانات المنظفة فقط
+  const garage = {
+    version: 1,
+    vehicles: sanitized.vehicles,
+    reminders: sanitized.reminders,
+    services: sanitized.services,
+    expenses: sanitized.expenses,
+  }
+  
+  // استخدام مسار الحفظ الموجود
+  if (!persist(garage)) return fail(STORAGE_ERROR)
+  return { ok: true, restored: true }
+}

@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react'
 import { CATALOG } from '../data/catalog'
-import { GARAGE_EVENT, addVehicle, readGarage, removeVehicle, updateVehicleOdometer } from '../data/garageStore'
+import { 
+  GARAGE_EVENT, 
+  addVehicle, 
+  readGarage, 
+  removeVehicle, 
+  updateVehicleOdometer, 
+  exportGarage, 
+  parseGarageBackup, 
+  restoreGarage 
+} from '../data/garageStore'
 import { formatAmount, formatDate, sortReminders, summarizeExpenses, summarizeReminders, todayISO } from '../data/garageStats'
 import MaintenancePlanner from './MaintenancePlanner'
 import ServiceHistory from './ServiceHistory'
@@ -205,6 +214,192 @@ function RemoveVehicle({ vehicle }) {
   )
 }
 
+function GarageBackupRestore() {
+  const [exporting, setExporting] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const [preview, setPreview] = useState(null)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  const garage = readGarage()
+  const currentCounts = {
+    vehicles: garage.vehicles.length,
+    reminders: garage.reminders.length,
+    services: garage.services.length,
+    expenses: garage.expenses.length,
+  }
+
+  const handleExport = () => {
+    setExporting(true)
+    setError('')
+    
+    try {
+      const result = exportGarage()
+      if (!result.ok) {
+        setError(result.error)
+        return
+      }
+      
+      // Create download link
+      const a = document.createElement('a')
+      a.href = result.payload
+      a.download = result.filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      
+      setSuccess(`تم تصدير ${result.filename} بنجاح`)
+      URL.revokeObjectURL(result.payload)
+    } catch {
+      setError('فشل التصدير')
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0]
+    if (!file) return
+
+    setImporting(true)
+    setError('')
+    setPreview(null)
+    setSuccess('')
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const result = parseGarageBackup(e.target.result)
+        if (!result.ok) {
+          setError(result.error)
+          return
+        }
+        
+        setPreview(result)
+        setSuccess(`تم تحليل الملف بنجاح — ${result.counts.vehicles} مركبة، ${result.counts.reminders} تذكير، ${result.counts.services} خدمة، ${result.counts.expenses} مصروف`)
+      } catch {
+        setError('فشل قراءة الملف')
+      } finally {
+        setImporting(false)
+      }
+    }
+    reader.onerror = () => {
+      setError('فشل قراءة الملف')
+      setImporting(false)
+    }
+    reader.readAsText(file)
+    
+    // Reset file input
+    event.target.value = ''
+  }
+
+  const handleConfirm = () => {
+    if (!preview) return
+
+    try {
+      const result = restoreGarage(preview.sanitized)
+      if (!result.ok) {
+        setError(result.error)
+        return
+      }
+      
+      setSuccess('تم استرجاع البيانات بنجاح')
+      setPreview(null)
+      setError('')
+    } catch {
+      setError('فشل الاسترجاع')
+    }
+  }
+
+  const handleCancel = () => {
+    setPreview(null)
+    setSuccess('')
+    setError('')
+  }
+
+  return (
+    <div className="garage-backup">
+      <div className="garage-backup-actions">
+        <button 
+          type="button" 
+          className="garage-btn garage-btn-secondary"
+          onClick={handleExport}
+          disabled={exporting}
+        >
+          {exporting ? 'جاري التصدير...' : 'تصدير البيانات'}
+        </button>
+        
+        <label className="garage-btn garage-btn-secondary">
+          استيراد نسخة احتياطية
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleFileSelect}
+            disabled={importing}
+            style={{ display: 'none' }}
+          />
+        </label>
+      </div>
+
+      {error && (
+        <p className="garage-error" role="alert">
+          {error}
+        </p>
+      )}
+
+      {success && (
+        <p className="garage-success" role="status">
+          {success}
+        </p>
+      )}
+
+      {preview && (
+        <div className="garage-backup-preview">
+          <h3 className="garage-subhead">مراجعة النسخة الاحتياطية</h3>
+          
+          <div className="garage-backup-stats">
+            <div className="garage-backup-stat">
+              <span className="garage-backup-stat-label">البيانات المستوردة</span>
+              <b>{preview.counts.vehicles}</b> مركبة
+            </div>
+            <div className="garage-backup-stat">
+              <span className="garage-backup-stat-label">البيانات الحالية</span>
+              <b>{currentCounts.vehicles}</b> مركبة
+            </div>
+            <div className="garage-backup-stat">
+              <span className="garage-backup-stat-label">التاريخ</span>
+              <b>{new Date(preview.exportedAt).toLocaleDateString('ar-EG')}</b>
+            </div>
+          </div>
+
+          <div className="garage-backup-notice">
+            <p className="garage-warning">
+              ⚠️ سيتم <strong>استبدال</strong> جميع البيانات الحالية بالنسخة المستوردة. لا يمكن التراجع.
+            </p>
+          </div>
+
+          <div className="garage-actions">
+            <button 
+              type="button" 
+              className="garage-btn garage-btn-primary garage-btn-danger"
+              onClick={handleConfirm}
+            >
+              تأكيد الاستبدال
+            </button>
+            <button 
+              type="button" 
+              className="garage-btn garage-btn-small"
+              onClick={handleCancel}
+            >
+              إلغاء
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function OwnershipCompanion() {
   const [garage, setGarage] = useState(() => readGarage())
   const [activeKey, setActiveKey] = useState('')
@@ -277,6 +472,7 @@ function OwnershipCompanion() {
             </div>
             <OdometerEditor key={activeVehicle.id} vehicle={activeVehicle} />
             <RemoveVehicle key={`remove-${activeVehicle.id}`} vehicle={activeVehicle} />
+            <GarageBackupRestore />
           </div>
         ) : null}
 

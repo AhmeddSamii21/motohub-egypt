@@ -801,4 +801,69 @@
   .garage-stat-grid {
     grid-template-columns: 1fr;
   }
+
+/* ===== النسخ الاحتياطي والاسترجاع ===== */
+
+.garage-backup {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.garage-backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.garage-backup-preview {
+  margin-top: 1rem;
+  padding: 1rem 1.1rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.garage-backup-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.garage-backup-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.garage-backup-stat-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.garage-backup-stat b {
+  color: var(--accent-2);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.garage-backup-notice {
+  margin: 0.8rem 0 0;
+}
+
+.garage-backup-notice .garage-warning {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+.garage-backup-notice .garage-warning strong {
+  color: #ff9d9d;
+}
+
+.garage-success {
+  color: #7ee2a8;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
 }

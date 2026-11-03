@@ -1,7 +1,7 @@
 # HANDOFF.md — MotoHub Egypt
 
 > **Read this file fully before taking any action.** It describes the project's actual, verified state and the rules a future agent must follow.
-> Last written: 2026-10-29 (§A commit/working-tree facts + new milestone entries for the 2026-10-27→29 work; push/deployment status for the new commits is updated only after verified evidence). Prior updates: 2026-10-27 (deployment-status correction only), 2026-10-26 (after committing `6cc4dbd`). All "VERIFIED" items below were checked against the current files, Git history, and live site during those sessions.
+> Last written: 2026-11-03 (§A commit/deployment facts + §C.3 Ownership Companion milestone; deployment and live checks are recorded only after verified evidence). Prior updates: 2026-10-29 (commit/working-tree facts + 2026-10-27→29 milestone entries), 2026-10-27 (deployment-status correction), 2026-10-26 (after committing `6cc4dbd`). All "VERIFIED" items below were checked against the current files, Git history, and live site during those sessions.
 
 ---
 
@@ -14,9 +14,9 @@
 | Absolute path | `C:\Users\Dell\Desktop\MotoHub-Egypt-Portfolio` |
 | Repository | https://github.com/AhmeddSamii21/motohub-egypt (public) |
 | Live site | https://ahmeddsamii21.github.io/motohub-egypt/ |
-| Branch | `main`, pushed to `origin/main` and verified in sync (`git ls-remote origin main` = `d3a91343c0e…`, 2026-10-29); Pages deployments verified via GHA runs `40841068961` (for `d1ebe5c`) and `40868714403` (for `d3a9134`), both conclusion `success`, + live-site asset hashes |
-| Latest commit | See entry below — Financial & Buying Experience Mega Pack (this session) | |
-| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `7b48871` — uncommitted by design, left local for the next meaningful milestone) + 2 intentionally-untracked files: `scripts/debug-export.js` + `scripts/count-models.js` (throwaway debug tools — kept on disk, excluded from commits by owner decision, NOT deleted). |
+| Branch | `main`, pushed to `origin/main` and verified in sync (`git ls-remote origin main` = `6eb103590c7…`, 2026-11-03); Pages deployment run `41568658938` for `6eb1035` conclusion `success`; live site serves the matching build assets `assets/index-C379t43Z.js` + `assets/index-DsKyu2CA.css` (both HTTP 200) |
+| Latest commit | `6eb1035` Ownership Companion Mega Pack (A–D) — see §C.3 | |
+| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `6eb1035` — uncommitted by design, left local for the next meaningful milestone) + untracked `.opencode/` (tool state; never commit). `scripts/debug-export.js` + `scripts/count-models.js` are now tracked and unchanged. |
 | One-paragraph summary | A React 19 + Vite 8 single-page app with a custom hash-based multi-view router (home / catalog / calculator / booking). All motorcycle data is a verified static catalog (82 models, 19 brands) extracted from a local Excel price list into `src/data/catalog.js`. Features: dynamic hero stats, featured models, full catalog with search/sort/filters, 3-model comparison modal, installment calculator, and a booking form that saves to a Google Sheet via Google Apps Script (`no-cors`). Dark theme, RTL, fully responsive. |
 
 ## B. Current State
@@ -140,7 +140,28 @@ Customer-facing «رفيق الملكية» view (`#garage`, header link after �
 
 **Limits:** no manufacturer service data or guaranteed notifications (none claimed); records are device-local; only catalog models can be added; expense summaries reflect the current filtered set by design.
 
-**Not done / limits at write time:** nothing committed/pushed/deployed yet — commit hash + Pages run recorded in the deployment entry below after verification.
+**Deployed (2026-11-03):** committed `6eb1035` (14 files, +3465/−8) and pushed (`149ac8a..6eb1035 main -> main`; `git ls-remote origin main` = `6eb103590c706ca1550bc672f8459b78260fa87b`). GitHub Actions Pages run **`41568658938`** for that SHA: build job `success`, deploy job `success`, run conclusion `success`. Live verification at `https://ahmeddsamii21.github.io/motohub-egypt/#garage`: index HTTP 200, `assets/index-C379t43Z.js` HTTP 200 (499,715 bytes) and `assets/index-DsKyu2CA.css` HTTP 200 (77,187 bytes) — exact match with the local production build; header link «رفيق الملكية» present; fresh-profile journey (add SYM Orbit 3 150 CC at 1,450 km → overdue + soon reminders → service 400 ج.م → expenses 200 + 550 ج.م) produced the same statuses/totals as dev, survived reload, and wrote only `motohub.garage`; all resource requests stayed on `ahmeddsamii21.github.io` (no external calls); console 0 warnings/errors; live iframe re-check at 1440/1280/1024/768/390/360 across all four tabs found no horizontal overflow, and the mobile menu exposes the new link.
+
+## C.4. Garage Backup & Restore — 2026-11-03
+
+Customer-facing backup/restore functionality in the Ownership Companion (`#garage` view) allowing export of `motohub.garage` data as JSON and import with validation, preview, and confirmation.
+
+**Features:**
+- Export garage data as downloadable JSON with envelope schema `{ app: 'motohub-egypt', kind: 'garage-backup', schemaVersion: 1, exportedAt: <ISO>, data: <garage> }`
+- Import with strict validation (reject invalid JSON, wrong/missing fields, unsupported schema versions, files >2MB)
+- Preview with sanitized counts, current data counts, export date, excluded records, and explicit replacement warning
+- Require two-step confirmation before replacement; never silently overwrite
+- Use existing Garage schema and `GARAGE_EVENT`; no schema changes or migrations
+
+**Implementation:**
+- Data layer: `exportGarage()`, `parseGarageBackup(text)`, `restoreGarage(backup)` in `garageStore.js`
+- UI component: Backup/Restore section in `OwnershipCompanion.jsx` with file input and preview modal
+- CSS styling: Compact RTL layout with `.garage-confirm`, `.garage-actions` patterns
+- Validation: Rejects invalid JSON, missing fields, wrong schema versions, oversized files, invalid data after sanitization
+
+**Verified (2026-11-03):** `npm test` **139/139 pass** (10 new); `npm run lint` 0 warnings/errors; `npm run build` ✓ 94 modules (`index-CfgKwTs1.js` 505.18 kB / `assets/index-CfgKwTs1.css` 77.97 kB). Test coverage: round-trip export/import, envelope rejection, corrupt content handling, overwrite safety, regression prevention. Browser (dev server): export creates valid JSON; import validates and shows preview; confirmation replaces data; cancel/reselect clears state; corrupt files rejected with clear messages; no data loss during normal operation.
+
+**Limits:** Backup files are device-local; no cloud sync; no schema version migration (future versions rejected); maximum file size 2MB; only catalog models supported (invalid models filtered out during import).
 
 ## D. Important Files
 
@@ -193,13 +214,13 @@ Customer-facing «رفيق الملكية» view (`#garage`, header link after �
 - `bea6ec5` scroll reset v1 + Brands-top (live verified: Pages workflow success; live site serves `index-D4syzpMp.js` / `index-wi6VrVsC.css` — matching HEAD artifacts; re-fetched during THIS inspection: HTTP 200 ✓)
 - `6cc4dbd` `useLayoutEffect` scroll-upgrade commit (verified THIS session: lint 0 warnings/errors, build ✓ 41 modules `index-CbIa7mN2.js`; push verified via `git ls-remote origin main` → `6cc4dbd...`; **Pages deployment for this commit NOT verified**)
 - `5fefc8b` Customer Experience Mega Pack (A+B+C): 56/56 tests pass, browser verification of all new features, live deployment success (GHA run `41481083207`) |
-- `2026-11-03` Ownership Companion Mega Pack (A–D): 129/129 tests pass (26 new), lint 0 warnings/errors, build ✓ 94 modules; browser journeys + responsive 1440/1280/1024/768/390/360 verified — details in §C.3. Commit/deploy facts recorded in the entry below after verification.
+- `2026-11-03` Ownership Companion Mega Pack (A–D): 129/129 tests pass (26 new), lint 0 warnings/errors, build ✓ 94 modules; browser journeys + responsive 1440/1280/1024/768/390/360 verified — details in §C.3. Commit `6eb1035`; Pages run `41568658938` **success**; live site serves the matching assets and the customer journey re-verified in production.
 
 **Booking integration:** user reported the full submission flow reaching the Google Sheet manually in an earlier phase. Recorded as **historical, user-reported**. During this handoff nothing was submitted and the sheet was not touched.
 
 **Known issues / limitations (VERIFIED during this inspection):**
 1. **Google Sheet structure is uninspected**: response tab name, columns, and any Apps Script-side logic were **never verified from this repo**. Apps Script is edited in Google's editor, not stored here. Any catalog/reservation expansion that touches the sheet needs this information first.
-2. **No unit/API tests exist.** All functional evidence is manual-browser-based; nothing is automated.
+2. **No automated tests for external integrations.** The pure data/UI-logic layer has `npm test` (129/129 on 2026-11-03), but the Google Apps Script booking flow and Orders API are still manual-browser-verified only.
 3. Model cards expose only brand/name/price. No specs, years, images, stock, or availability — **none of that may be invented** (see §H).
 4. Browser environment artifact discovered during testing: occluded windows suspend compositor CSS animations (opacity/transform) — affects testing methodology only, not the app.
 5. **15/82 models lack detailed specifications**: these show "المواصفات غير منشورة بعد" and are excluded from filtering/sorting that requires specs — no data is invented.
