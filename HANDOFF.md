@@ -1,7 +1,7 @@
 # HANDOFF.md — MotoHub Egypt
 
 > **Read this file fully before taking any action.** It describes the project's actual, verified state and the rules a future agent must follow.
-> Last written: 2026-11-03 (§A commit/deployment facts + §C.3 Ownership Companion milestone; deployment and live checks are recorded only after verified evidence). Prior updates: 2026-10-29 (commit/working-tree facts + 2026-10-27→29 milestone entries), 2026-10-27 (deployment-status correction), 2026-10-26 (after committing `6cc4dbd`). All "VERIFIED" items below were checked against the current files, Git history, and live site during those sessions.
+> Last written: 2026-11-03 (§A commit/deployment facts + §C.3 Ownership Companion milestone + §C.4 Garage Backup & Restore; deployment and live checks are recorded only after verified evidence). Prior updates: 2026-10-29 (commit/working-tree facts + 2026-10-27→29 milestone entries), 2026-10-27 (deployment-status correction), 2026-10-26 (after committing `6cc4dbd`). All "VERIFIED" items below were checked against the current files, Git history, and live site during those sessions.
 
 ---
 
@@ -14,9 +14,9 @@
 | Absolute path | `C:\Users\Dell\Desktop\MotoHub-Egypt-Portfolio` |
 | Repository | https://github.com/AhmeddSamii21/motohub-egypt (public) |
 | Live site | https://ahmeddsamii21.github.io/motohub-egypt/ |
-| Branch | `main`, pushed to `origin/main` and verified in sync (`git ls-remote origin main` = `6eb103590c7…`, 2026-11-03); Pages deployment run `41568658938` for `6eb1035` conclusion `success`; live site serves the matching build assets `assets/index-C379t43Z.js` + `assets/index-DsKyu2CA.css` (both HTTP 200) |
-| Latest commit | `6eb1035` Ownership Companion Mega Pack (A–D) — see §C.3 | |
-| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `6eb1035` — uncommitted by design, left local for the next meaningful milestone) + untracked `.opencode/` (tool state; never commit). `scripts/debug-export.js` + `scripts/count-models.js` are now tracked and unchanged. |
+| Branch | `main`, pushed to `origin/main` and verified in sync (`git ls-remote origin main` = `3d0b4b4…`, 2026-11-03); Pages deployment run `41568658938` for `6eb1035` conclusion `success`; live site serves the matching build assets `assets/index-C379t43Z.js` + `assets/index-DsKyu2CA.css` (both HTTP 200) |
+| Latest commit | `3d0b4b4` Garage Backup & Restore — see §C.4 | |
+| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `3d0b4b4` — uncommitted by design, left local for the next meaningful milestone) + untracked `.opencode/` (tool state; never commit). `scripts/debug-export.js` + `scripts/count-models.js` are now tracked and unchanged. |
 | One-paragraph summary | A React 19 + Vite 8 single-page app with a custom hash-based multi-view router (home / catalog / calculator / booking). All motorcycle data is a verified static catalog (82 models, 19 brands) extracted from a local Excel price list into `src/data/catalog.js`. Features: dynamic hero stats, featured models, full catalog with search/sort/filters, 3-model comparison modal, installment calculator, and a booking form that saves to a Google Sheet via Google Apps Script (`no-cors`). Dark theme, RTL, fully responsive. |
 
 ## B. Current State
@@ -198,7 +198,7 @@ Customer-facing backup/restore functionality in the Ownership Companion (`#garag
   - Lint: `npm run lint` (oxlint) — expect **0 warnings / 0 errors**; it is the acceptance bar for every change
   - Build: `npm run build` — expect ✓ 94 modules (2026-11-03 tree)
   - Preview: `npm run preview`
-- **Tests**: `npm test` runs `node --test tests/*.test.js` — **129/129 pass** on 2026-11-03 (11 files; pure Node modules). UI and integrations are still verified manually in a browser.
+- **Tests**: `npm test` runs `node --test tests/*.test.js` — **139/139 pass** on 2026-11-03 (11 files; pure Node modules). UI and integrations are still verified manually in a browser.
 - **Environment variables**: only `GITHUB_ACTIONS` (set by Actions, read by `vite.config.js` for the base path). No `.env` needed; none contains secrets.
 - **Git on this machine**: use `C:\Program Files\Git\cmd\git.exe`. PowerShell quirk: `git push ... 2>&1` prints a false `Exited with code 1` — **confirm pushes via the `main -> main` ref-update line**, not the exit code.
 
@@ -220,7 +220,7 @@ Customer-facing backup/restore functionality in the Ownership Companion (`#garag
 
 **Known issues / limitations (VERIFIED during this inspection):**
 1. **Google Sheet structure is uninspected**: response tab name, columns, and any Apps Script-side logic were **never verified from this repo**. Apps Script is edited in Google's editor, not stored here. Any catalog/reservation expansion that touches the sheet needs this information first.
-2. **No automated tests for external integrations.** The pure data/UI-logic layer has `npm test` (129/129 on 2026-11-03), but the Google Apps Script booking flow and Orders API are still manual-browser-verified only.
+2. **No automated tests for external integrations.** The pure data/UI-logic layer has `npm test` (139/139 on 2026-11-03), but the Google Apps Script booking flow and Orders API are still manual-browser-verified only.
 3. Model cards expose only brand/name/price. No specs, years, images, stock, or availability — **none of that may be invented** (see §H).
 4. Browser environment artifact discovered during testing: occluded windows suspend compositor CSS animations (opacity/transform) — affects testing methodology only, not the app.
 5. **15/82 models lack detailed specifications**: these show "المواصفات غير منشورة بعد" and are excluded from filtering/sorting that requires specs — no data is invented.
@@ -229,7 +229,7 @@ Customer-facing backup/restore functionality in the Ownership Companion (`#garag
 
 ## G. Git and Data Safety
 
-- `git status -sb`: `## main...origin/main` in sync at HEAD `e3f470b`; clean tree, untracked `AGENTS.md` (project instructions, HANDOFF.md maintenance policy) and `HANDOFF.md` (kept untracked by user decision).
+- `git status -sb`: `## main...origin/main` in sync at HEAD `3d0b4b4`; clean tree, untracked `AGENTS.md` (project instructions, HANDOFF.md maintenance policy) and `HANDOFF.md` (kept untracked by user decision).
 - **Resolved (2026-10-26)**: the previously staged `src/App.jsx` change (`rAF` → `useLayoutEffect`; a stray UTF-8 BOM was stripped immediately before committing) is committed and pushed as `6cc4dbd`. Remote equality verified via `git ls-remote origin main`.
 - Tracked docs images: `docs/images/motohub-booking.png`, `docs/images/motohub-sales.png` (README assets).
 - Ignored locally: `*.xlsx` (the price-list workbook), `~$*`, `Thumbs.db`, `node_modules`, `dist`, `.env*`. The workbook is the **raw master reference** — never commit it (it contains 167 "X"-priced rows the site deliberately excludes).
