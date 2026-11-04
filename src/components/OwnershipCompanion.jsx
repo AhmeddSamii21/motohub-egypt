@@ -15,6 +15,7 @@ import MaintenancePlanner from './MaintenancePlanner'
 import ServiceHistory from './ServiceHistory'
 import ExpenseTracker from './ExpenseTracker'
 import CareGuide from './CareGuide'
+import SmartOwnershipDashboard from './SmartOwnershipDashboard'
 import './OwnershipCompanion.css'
 
 /**
@@ -24,6 +25,7 @@ import './OwnershipCompanion.css'
  */
 
 const TABS = [
+  { id: 'dashboard', label: 'لوحة الملكية' },
   { id: 'maintenance', label: 'مخطط الصيانة' },
   { id: 'services', label: 'سجل الخدمات' },
   { id: 'expenses', label: 'مصاريف الملكية' },
@@ -403,7 +405,7 @@ function GarageBackupRestore() {
 function OwnershipCompanion() {
   const [garage, setGarage] = useState(() => readGarage())
   const [activeKey, setActiveKey] = useState('')
-  const [tab, setTab] = useState('maintenance')
+  const [tab, setTab] = useState('dashboard')
 
   useEffect(() => {
     const refresh = () => setGarage(readGarage())
@@ -537,7 +539,7 @@ function OwnershipCompanion() {
               aria-selected={tab === entry.id}
               aria-controls={`garage-panel-${entry.id}`}
               className={`garage-tab ${tab === entry.id ? 'is-active' : ''}`}
-              disabled={!activeVehicle && entry.id !== 'guide'}
+              disabled={!activeVehicle && entry.id !== 'guide' && entry.id !== 'dashboard'}
               onClick={() => setTab(entry.id)}
             >
               {entry.label}
@@ -551,7 +553,8 @@ function OwnershipCompanion() {
           id={`garage-panel-${tab}`}
           aria-labelledby={`garage-tab-${tab}`}
         >
-          {!activeVehicle && !tabIsGuide && (
+          {!activeVehicle && tab === 'dashboard' && <SmartOwnershipDashboard />}
+          {!activeVehicle && !tabIsGuide && tab !== 'dashboard' && (
             <div className="garage-empty">
               <p className="garage-empty-title">أضف موتوسيكلًا للبدء</p>
               <p className="garage-empty-sub">
@@ -560,6 +563,7 @@ function OwnershipCompanion() {
             </div>
           )}
           {!activeVehicle && tabIsGuide && <CareGuide />}
+          {activeVehicle && tab === 'dashboard' && <SmartOwnershipDashboard />}
           {activeVehicle && tab === 'maintenance' && (
             <MaintenancePlanner key={activeVehicle.vehicleKey} vehicle={activeVehicle} garage={garage} />
           )}

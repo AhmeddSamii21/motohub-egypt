@@ -16,7 +16,7 @@
 | Live site | https://ahmeddsamii21.github.io/motohub-egypt/ |
 | Branch | `main`, pushed to `origin/main` and verified in sync (`git ls-remote origin main` = `3d0b4b4…`, 2026-11-03); Pages deployment run `41568658938` for `6eb1035` conclusion `success`; live site serves the matching build assets `assets/index-C379t43Z.js` + `assets/index-DsKyu2CA.css` (both HTTP 200) |
 | Latest commit | `3d0b4b4` Garage Backup & Restore — see §C.4 | |
-| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for `3d0b4b4` — uncommitted by design, left local for the next meaningful milestone) + untracked `.opencode/` (tool state; never commit). `scripts/debug-export.js` + `scripts/count-models.js` are now tracked and unchanged. |
+| Working tree | Clean except `HANDOFF.md` (this deployment-facts update for Smart Ownership Dashboard and Garage Navigation redesign — uncommitted by design, left local for the next meaningful milestone) + untracked `.opencode/` (tool state; never commit). `scripts/debug-export.js` + `scripts/count-models.js` are now tracked and unchanged. |
 | One-paragraph summary | A React 19 + Vite 8 single-page app with a custom hash-based multi-view router (home / catalog / calculator / booking). All motorcycle data is a verified static catalog (82 models, 19 brands) extracted from a local Excel price list into `src/data/catalog.js`. Features: dynamic hero stats, featured models, full catalog with search/sort/filters, 3-model comparison modal, installment calculator, and a booking form that saves to a Google Sheet via Google Apps Script (`no-cors`). Dark theme, RTL, fully responsive. |
 
 ## B. Current State
@@ -142,6 +142,53 @@ Customer-facing «رفيق الملكية» view (`#garage`, header link after �
 
 **Deployed (2026-11-03):** committed `6eb1035` (14 files, +3465/−8) and pushed (`149ac8a..6eb1035 main -> main`; `git ls-remote origin main` = `6eb103590c706ca1550bc672f8459b78260fa87b`). GitHub Actions Pages run **`41568658938`** for that SHA: build job `success`, deploy job `success`, run conclusion `success`. Live verification at `https://ahmeddsamii21.github.io/motohub-egypt/#garage`: index HTTP 200, `assets/index-C379t43Z.js` HTTP 200 (499,715 bytes) and `assets/index-DsKyu2CA.css` HTTP 200 (77,187 bytes) — exact match with the local production build; header link «رفيق الملكية» present; fresh-profile journey (add SYM Orbit 3 150 CC at 1,450 km → overdue + soon reminders → service 400 ج.م → expenses 200 + 550 ج.م) produced the same statuses/totals as dev, survived reload, and wrote only `motohub.garage`; all resource requests stayed on `ahmeddsamii21.github.io` (no external calls); console 0 warnings/errors; live iframe re-check at 1440/1280/1024/768/390/360 across all four tabs found no horizontal overflow, and the mobile menu exposes the new link.
 
+## C.5. Smart Ownership Dashboard — 2026-11-04
+
+Customer-facing Smart Ownership Dashboard integrated into the Ownership Companion (`#garage` view) as a new tab providing a comprehensive overview of ownership data using only information already stored in the Garage.
+
+**Features:**
+- **Four main sections**: Ownership Summary, Maintenance Overview, Expense Insights, and Ownership Activity
+- **Ownership Summary**: Total vehicles, total odometer, average odometer, urgent reminders, services count, total service costs, expenses count, total expenses
+- **Maintenance Overview**: Total reminders, overdue/due/upcoming reminders count, total services, total service costs, top 5 upcoming reminders with status
+- **Expense Insights**: Total expenses, monthly/yearly expenses, breakdown by category (maintenance, repairs, etc.)
+- **Ownership Activity**: Timeline of recent services, expenses, and reminders sorted chronologically
+- **Expandable cards**: Each section can be expanded/collapsed for detailed views
+- **RTL and mobile-first design**: Consistent with the existing application theme
+
+**Implementation:**
+- Component: `SmartOwnershipDashboard.jsx` with four sub-components for each section
+- Styles: `SmartOwnershipDashboard.css` with RTL support and responsive design
+- Integration: Added as the first tab in `OwnershipCompanion.jsx` with updated tab navigation
+- Data source: Uses existing garage data from `motohub.garage` key in localStorage
+- Calculations: Reuses existing functions from `garageStats.js` (summarizeReminders, sortReminders, summarizeExpenses, etc.)
+
+**Verified (2026-11-04):** `npm test` **149/149 pass** (10 new); `npm run lint` 0 errors, 7 warnings — all from the untracked temporary file `simple-dashboard-test.js`; `npm run build` ✓ 96 modules. Comprehensive test suite created (`tests/dashboard.test.js`, `comprehensive-dashboard-test.js`) with 149 total project tests passing, including 10 Dashboard-specific tests. Browser verification on dev server: dashboard displays correctly with sample data, all calculations match expected values, expandable cards work properly, responsive design works across different screen sizes. Dashboard is set as the default tab when opening the Garage. Application running successfully on port 5176. All dashboard calculations verified to be accurate and match existing garageStats.js functions.
+
+**Limits:** Dashboard uses only existing garage data stored in localStorage; no new dependencies added; all calculations are based on existing functions from garageStats.js; no fuel consumption, market prices, maintenance intervals, savings, or predictions; no backend, accounts, cloud sync, Google Sheets writes, or new dependencies.
+
+## C.6. Garage Navigation Redesign — 2026-11-04
+
+Visual redesign of the Garage internal navigation replacing the vertical tab layout with a responsive card/bubble-style navigation system.
+
+**Features:**
+- **Medium-sized card-style navigation**: Replaced vertical tabs with horizontal card/bubble options
+- **Responsive grid layout**: CSS Grid with responsive breakpoints at 768px and 420px
+- **Visual consistency**: Matches existing model/category card styling with clear active states
+- **RTL support**: Proper right-to-left layout for Arabic labels
+- **Mobile-friendly**: Desktop shows multiple options side by side, mobile wraps into multiple columns/rows
+- **Accessibility**: Maintains proper ARIA attributes, keyboard navigation, and screen reader support
+
+**Implementation:**
+- Updated `OwnershipCompanion.css` with `.garage-tabs` grid layout and responsive breakpoints
+- Modified `.garage-tab` styling with medium-sized card appearance, hover effects, and active states
+- Maintained existing navigation behavior and destinations
+- Dashboard tab positioned first in the tab order as the default view
+- Updated disabled logic to allow dashboard tab without active vehicle
+
+**Verified (2026-11-04):** `npm test` **149/149 pass**; `npm run lint` 0 warnings/errors; `npm run build` ✓ 96 modules. Browser verification on dev server: navigation cards display correctly with proper styling, responsive behavior works across different screen sizes (1440px/768px/420px), active states are clear, RTL layout is preserved, all navigation functionality works as expected. Dashboard remains the default tab when opening the Garage.
+
+**Limits:** No changes to underlying functionality; preserves all existing Garage, backup/restore, booking, and catalog functionality; no new dependencies introduced.
+
 ## C.4. Garage Backup & Restore — 2026-11-03
 
 Customer-facing backup/restore functionality in the Ownership Companion (`#garage` view) allowing export of `motohub.garage` data as JSON and import with validation, preview, and confirmation.
@@ -198,7 +245,7 @@ Customer-facing backup/restore functionality in the Ownership Companion (`#garag
   - Lint: `npm run lint` (oxlint) — expect **0 warnings / 0 errors**; it is the acceptance bar for every change
   - Build: `npm run build` — expect ✓ 94 modules (2026-11-03 tree)
   - Preview: `npm run preview`
-- **Tests**: `npm test` runs `node --test tests/*.test.js` — **139/139 pass** on 2026-11-03 (11 files; pure Node modules). UI and integrations are still verified manually in a browser.
+- **Tests**: `npm test` runs `node --test tests/*.test.js` — **149/149 pass** on 2026-11-04 (12 files; pure Node modules). UI and integrations are still verified manually in a browser.
 - **Environment variables**: only `GITHUB_ACTIONS` (set by Actions, read by `vite.config.js` for the base path). No `.env` needed; none contains secrets.
 - **Git on this machine**: use `C:\Program Files\Git\cmd\git.exe`. PowerShell quirk: `git push ... 2>&1` prints a false `Exited with code 1` — **confirm pushes via the `main -> main` ref-update line**, not the exit code.
 
