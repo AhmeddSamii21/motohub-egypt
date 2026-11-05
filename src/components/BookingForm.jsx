@@ -260,7 +260,7 @@ function BookingForm() {
               )}
               {status === 'error' && (
                 <p className="form-msg form-msg-error" role="alert">
-                  ⚠️ حصل خطأ وقت إرسال الطلب. جرّب تاني أو تواصل معنا هاتفيًا.
+                  ⚠️ حصل خطأ وقت إرسال الطلب. جرّب تاني أو تواصل معنا واتساب.
                 </p>
               )}
             </div>

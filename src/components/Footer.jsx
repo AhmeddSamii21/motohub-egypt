@@ -39,6 +39,9 @@ function Footer() {
           <ul>
             <li><a href="#home">الرئيسية</a></li>
             <li><a href="#catalog">الكتالوج</a></li>
+            <li><a href="#guide">دليل الشراء والمساعدة</a></li>
+            <li><a href="#favorites">المفضلة</a></li>
+            <li><a href="#compare">صفحة المقارنة</a></li>
             <li><a href="#calc">حاسبة الأقساط</a></li>
             <li><a href="#book">حجز معاينة</a></li>
           </ul>

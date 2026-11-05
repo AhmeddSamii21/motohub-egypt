@@ -3,6 +3,7 @@ import { resolveModelUrl } from '../data/modelSlug'
 import { storeRequestedModel, REQUESTED_MODEL_EVENT } from '../data/requestedModel'
 import { addItem } from '../data/cartStore'
 import { isFavorite, toggleFavorite, FAVORITES_EVENT } from '../data/favoritesStore'
+import { recordModelView } from '../data/recentlyViewedStore'
 import { GENERATED_BY_KEY, formatDisplayPrice } from '../data/modelDisplay'
 import { AVAILABILITY_NOTE, LAST_RECORDED_PRICE_NOTE } from '../data/generatedStock'
 import { MODEL_DETAILS } from '../data/generatedModelDetails'
@@ -170,6 +171,14 @@ function ModelPage() {
     // توجيه بديل (بدون سجل تاريخ إضافي) حصرًا عندما يأتي التطبيق بروابط #/m/ غير صالحة
     if (!resolved && hash.startsWith('#/m/')) window.location.replace('#catalog')
   }, [resolved, hash])
+
+  // «شوهد مؤخرًا»: تسجيل فتح صفحة الموديل الصالحة — مخزن محلي آمن يتجاهل المفاتيح
+  // غير الموجودة في الكتالوج بنفسه (بلا حالة جديدة وبلا أي مساس بالمفضلة/السلة).
+  // الاعتماديات نصوص مستقرة (ليست كائن resolved الجديد كل رندر) فلا تسجيل متكرر.
+  useEffect(() => {
+    if (favBrand && favName) recordModelView(favBrand, favName)
+  }, [favBrand, favName])
+
   if (!resolved) return null
 
   const { brand, model } = resolved

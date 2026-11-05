@@ -19,6 +19,8 @@ import ModelPage from './components/ModelPage'
 import ComparePage from './components/ComparePage'
 import Cart from './components/Cart'
 import Favorites from './components/Favorites'
+import BuyingGuide from './components/BuyingGuide'
+import ContinueExploring from './components/ContinueExploring'
 import Footer from './components/Footer'
 import './App.css'
 
@@ -43,6 +45,7 @@ const VIEWS = {
   compare: 'compare',
   cart: 'cart',
   favorites: 'favorites',
+  guide: 'guide',
 }
 
 /** بادئة روابط صفحات الموديل الفردية — لا ماركة/موديل داخل App؛ الحلّ الدقيق في ModelPage/modelSlug */
@@ -70,6 +73,7 @@ const HASH_TO_VIEW = new Map([
   ['#cart', VIEWS.cart],
   ['#favorites', VIEWS.favorites],
   ['#compare', VIEWS.compare],
+  ['#guide', VIEWS.guide],
 ])
 
 function viewFromHash(hash) {
@@ -117,6 +121,7 @@ function App() {
         <div className={`view-panel ${view === VIEWS.home ? 'is-active' : ''}`}>
           <Hero />
           <FeaturedModels />
+          <ContinueExploring />
           <Features />
           <CTA />
         </div>
@@ -162,6 +167,9 @@ function App() {
         </div>
         <div className={`view-panel ${view === VIEWS.compare ? 'is-active' : ''}`}>
           <ComparePage />
+        </div>
+        <div className={`view-panel ${view === VIEWS.guide ? 'is-active' : ''}`}>
+          <BuyingGuide />
         </div>
       </main>
       <Footer />

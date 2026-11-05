@@ -210,6 +210,24 @@ Customer-facing backup/restore functionality in the Ownership Companion (`#garag
 
 **Limits:** Backup files are device-local; no cloud sync; no schema version migration (future versions rejected); maximum file size 2MB; only catalog models supported (invalid models filtered out during import).
 
+## C.7. Customer Experience Mega Pack (Buying Guide / Recently Viewed / Retention) — 2026-11-05
+
+NOT COMMITTED/PUSHED/DEPLOYED (per owner instruction — no authorization given). Implemented as four sub-packages without touching the Header (13 links already need ~1452px of the 1460px breakpoint) or any protected integration (catalog, booking Apps Script, Orders API, stock/financing/compare/favorites/Garage all untouched).
+
+**Package A+C — «دليل الشراء والمساعدة» (`#guide` view):** New `src/data/buyingGuide.js` (GUIDE_META stats derived from catalog/generatedModelDetails: 82 models / 19 brands / 15 without specs; GUIDE_SECTIONS 7; JOURNEY_STEPS 5; TRUST_POINTS 6; FAQS 26 across 9 categories; searchFaqs reuses catalogDiscovery `searchMatches` with Arabic normalization; faqsByCategory). New `src/components/BuyingGuide.jsx` + `.css` matching existing card token language; honest contact strip (WhatsApp `wa.me` only + `#book` + `#showroom`); `<details name="motohub-faq">` accordion; searchable/filterable FAQ with live count and empty state.
+
+**Package B — Recently Viewed:** New `src/data/recentlyViewedStore.js` — localStorage key `motohub.recentlyViewed`, event `motohub:recently-viewed-changed`, MAX_RECENT=10, dedupe→top, strict `brand|name` sanitize against the frozen catalog at read, corrupt/missing storage ⇒ empty list, silent persist failure. `ModelPage.jsx` records a valid resolved model in an effect (deps are stable brand/name strings to avoid redundant writes).
+
+**Package D — «واصل استكشافك» (home view panel after FeaturedModels):** New `src/components/ContinueExploring.jsx` + `.css` — recently-viewed grid (cards reuse GENERATED_BY_KEY/formatDisplayPrice/modelHref/`*` needs-review + availability-note logic identical to Favorites), per-item remove, two-step clear (label flips to «اضغط مرة أخرى للتأكيد», 3.5s reset), favorites/compare live counts, shortcut list (`#favorites`/`#compare`/`#guide`/`#catalog`), honest empty state.
+
+**Also:** `App.jsx` — `VIEWS.guide` + `['#guide']` mapping + view panel; home panel mounts ContinueExploring. `Footer.jsx` — quick links added: دليل الشراء والمساعدة / المفضلة / صفحة المقارنة. `BookingForm.jsx` — one wording fix only (error message «تواصل معنا هاتفيًا» → «واتساب»: no verified phone exists; the only verified channel is WhatsApp/contact.js). No API/behavior changes.
+
+**Tests:** New `tests/recentlyViewed.test.js` (15) and `tests/buyingGuide.test.js` (15). `npm test` **179/179 pass**. `npm run lint`: 7 pre-existing warnings, all from untracked temp scripts (simple-dashboard-test.js etc.), 0 from committed src/tests. `npm run build` ✓ (js 548.14 kB, css 93.57 kB; build.js hash index-DQ2zQuZS).
+
+**Verified in browser (localhost:5173, ~298px window):** #guide route renders all sections (26 FAQs, 9 chips); FAQ search «الحجز مؤكد» → 1 result; home empty state, cards after viewing models, record-on-model-open (SYM WOLF/KEEWAY F25), dedupe→top order, per-item remove, two-step clear behavior confirmed by storage diffs; direction rtl; no horizontal overflow on #home/#guide/#m/sym/wolf at 298px (catalog `.brands-list` has a pre-existing 25px overflow at this extreme width, untouched by this work). **NOT verified:** desktop/tablet screenshots — the connected browser window could not exceed ~298px CSS width (no resize tool); wide-layout CSS mirrors existing verified patterns but wide-viewport rendering was not observed.
+
+**Limits:** Recently viewed is device-local, max 10, catalog-key validated; no PII; no accounts/tracking. Guide content is static Arabic text derived from verified sources; no invented specs/financing/availability/policies.
+
 ## D. Important Files
 
 | File | Responsibility / why it matters |

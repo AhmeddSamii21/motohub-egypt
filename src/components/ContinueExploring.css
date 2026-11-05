@@ -1,0 +1,272 @@
+/* «واصل استكشافك» — لغة visual واحدة مع بطاقات المفضلة (.fav-card): 
+ * panel/line/radius نفس التوكنات، شبكة بطاقات، حالة فراغ صادقة، RTL أصلًا ومتجاوب. */
+
+.rx {
+  background: var(--bg);
+}
+
+.rx-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+/* —— شوهد مؤخرًا —— */
+
+.rx-recent {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  min-width: 0;
+}
+
+.rx-recent-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.rx-recent-title {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.rx-count {
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.rx-clear {
+  padding: 0.3rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--metal);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.rx-clear:hover {
+  color: var(--text);
+  border-color: var(--metal);
+}
+
+/* حالة التأكيد بخطوتين — إشعار بصري أوضح قبل التنفيذ */
+.rx-clear.is-confirm {
+  color: var(--accent-2);
+  background: rgba(255, 122, 26, 0.12);
+  border-color: rgba(255, 122, 26, 0.5);
+}
+
+.rx-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+  gap: 0.6rem;
+}
+
+.rx-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.8rem;
+  min-width: 0;
+}
+
+.rx-card-brand {
+  margin: 0 0 0.15rem;
+  color: var(--metal);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.rx-card-name {
+  margin: 0 0 0.35rem;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.rx-card-price {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+  color: var(--accent-2);
+}
+
+.rx-card-price span {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* علامة (*) نفس دلالة بطاقات الكتالوج — سعر قائمة قديمة قيد المراجعة */
+.rx-card-price .catalog-card-review {
+  margin-inline-start: 0.25rem;
+  color: var(--metal);
+  font-weight: 800;
+  cursor: help;
+}
+
+.rx-card-availability {
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.rx-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.rx-card-link {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.rx-card-link:hover {
+  color: var(--accent-2);
+  text-decoration: underline;
+}
+
+.rx-card-remove {
+  padding: 0.2rem 0.55rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.rx-card-remove:hover {
+  color: var(--text);
+  border-color: var(--metal);
+}
+
+.rx-card-link:focus-visible,
+.rx-clear:focus-visible,
+.rx-card-remove:focus-visible,
+.rx-shortcut:focus-visible,
+.rx-empty-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* حالة الفراغ — صادقة وموجهة لخطوة تالية */
+
+.rx-empty {
+  padding: 1.4rem 1rem;
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+}
+
+.rx-empty-title {
+  margin: 0 0 0.3rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.rx-empty-sub {
+  margin: 0 auto 0.9rem;
+  max-width: 38ch;
+  font-size: 0.88rem;
+}
+
+/* —— اختصارات العودة —— */
+
+.rx-shortcuts {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.rx-shortcuts .rx-recent-title {
+  margin-bottom: 0.75rem;
+}
+
+.rx-shortcut-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.rx-shortcut {
+  display: block;
+  padding: 0.7rem 0.85rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+}
+
+.rx-shortcut:hover {
+  border-color: var(--metal);
+}
+
+.rx-shortcut-label {
+  display: block;
+  color: var(--text);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.rx-shortcut-meta {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-top: 0.1rem;
+}
+
+/* تجاوب — تابلت/هاتف: العمودان يصيران عمودًا واحدًا */
+
+@media (max-width: 960px) {
+  .rx-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .rx-recent,
+  .rx-shortcuts {
+    padding: 0.85rem;
+  }
+
+  .rx-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .rx-grid {
+    grid-template-columns: 1fr;
+  }
+}
