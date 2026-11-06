@@ -3,6 +3,7 @@ import Header from './components/Header'
 import Hero from './components/Hero'
 import FeaturedModels from './components/FeaturedModels'
 import Catalog from './components/Catalog'
+import Finder from './components/Finder'
 import Recommender from './components/Recommender'
 import CatalogUpdates from './components/CatalogUpdates'
 import InstallmentCalculator from './components/InstallmentCalculator'
@@ -22,6 +23,8 @@ import Favorites from './components/Favorites'
 import BuyingGuide from './components/BuyingGuide'
 import ContinueExploring from './components/ContinueExploring'
 import Footer from './components/Footer'
+import ShortlistShare from './components/ShortlistShare'
+import SharedShortlist from './components/SharedShortlist'
 import './App.css'
 
 /**
@@ -32,6 +35,7 @@ import './App.css'
 const VIEWS = {
   home: 'home',
   catalog: 'catalog',
+  finder: 'finder',
   recommend: 'recommend',
   updates: 'updates',
   budget: 'budget',
@@ -46,6 +50,8 @@ const VIEWS = {
   cart: 'cart',
   favorites: 'favorites',
   guide: 'guide',
+  shortlist: 'shortlist',
+  shared: 'shared',
 }
 
 /** بادئة روابط صفحات الموديل الفردية — لا ماركة/موديل داخل App؛ الحلّ الدقيق في ModelPage/modelSlug */
@@ -60,6 +66,7 @@ const HASH_TO_VIEW = new Map([
   ['#features', VIEWS.home],
   ['#cta', VIEWS.home],
   ['#catalog', VIEWS.catalog],
+  ['#finder', VIEWS.finder],
   ['#recommend', VIEWS.recommend],
   ['#updates', VIEWS.updates],
   ['#budget', VIEWS.budget],
@@ -74,6 +81,7 @@ const HASH_TO_VIEW = new Map([
   ['#favorites', VIEWS.favorites],
   ['#compare', VIEWS.compare],
   ['#guide', VIEWS.guide],
+  ['#shortlist', VIEWS.shortlist],
 ])
 
 function viewFromHash(hash) {
@@ -82,6 +90,8 @@ function viewFromHash(hash) {
   // روابط الموديل المشاركة (#/m/...) تذهب لصفحة الموديل — الحلّ الدقيق والرجوع
   // إلى #catalog عند عدم التطابق يُدار داخل ModelPage (بلا تخمين).
   if (hash && hash.startsWith(MODEL_ROUTE_PREFIX)) return VIEWS.model
+  // روابط القائمة المشاركة (#shared/...) تذهب لصفحة العرض
+  if (hash && hash.startsWith('#shared/')) return VIEWS.shared
   return null
 }
 
@@ -128,6 +138,9 @@ function App() {
         <div className={`view-panel ${view === VIEWS.catalog ? 'is-active' : ''}`}>
           <Catalog />
         </div>
+        <div className={`view-panel ${view === VIEWS.finder ? 'is-active' : ''}`}>
+          <Finder />
+        </div>
         <div className={`view-panel ${view === VIEWS.recommend ? 'is-active' : ''}`}>
           <Recommender />
         </div>
@@ -170,6 +183,12 @@ function App() {
         </div>
         <div className={`view-panel ${view === VIEWS.guide ? 'is-active' : ''}`}>
           <BuyingGuide />
+        </div>
+        <div className={`view-panel ${view === VIEWS.shortlist ? 'is-active' : ''}`}>
+          <ShortlistShare />
+        </div>
+        <div className={`view-panel ${view === VIEWS.shared ? 'is-active' : ''}`}>
+          <SharedShortlist />
         </div>
       </main>
       <Footer />

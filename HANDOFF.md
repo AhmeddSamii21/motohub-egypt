@@ -1,7 +1,7 @@
 # HANDOFF.md — MotoHub Egypt
 
 > **Read this file fully before taking any action.** It describes the project's actual, verified state and the rules a future agent must follow.
-> Last written: 2026-11-03 (§A commit/deployment facts + §C.3 Ownership Companion milestone + §C.4 Garage Backup & Restore; deployment and live checks are recorded only after verified evidence). Prior updates: 2026-10-29 (commit/working-tree facts + 2026-10-27→29 milestone entries), 2026-10-27 (deployment-status correction), 2026-10-26 (after committing `6cc4dbd`). All "VERIFIED" items below were checked against the current files, Git history, and live site during those sessions.
+> Last written: 2026-11-06 (§C.8 Motorcycle Finder + §C.9 Purchase Confidence — spec glossary + §C.10 New Owner Start Pack; linting fixes completed, tests passing, build successful). Prior: 2026-11-03 (§A commit/deployment facts + §C.3 + §C.4; deployment and live checks are recorded only after verified evidence). Prior updates: 2026-10-29 (commit/working-tree facts + 2026-10-27→29 milestone entries), 2026-10-27 (deployment-status correction), 2026-10-26 (after committing `6cc4dbd`). All "VERIFIED" items below were checked against the current files, Git history, and live site during those sessions.
 
 ---
 
@@ -228,7 +228,77 @@ NOT COMMITTED/PUSHED/DEPLOYED (per owner instruction — no authorization given)
 
 **Limits:** Recently viewed is device-local, max 10, catalog-key validated; no PII; no accounts/tracking. Guide content is static Arabic text derived from verified sources; no invented specs/financing/availability/policies.
 
+## C.8. Motorcycle Finder & Purchase Decision Assistant («اكتشف موديلك») — 2026-11-06
+
+NOT COMMITTED/PUSHED/DEPLOYED (per standing rule — no authorization given). Customer-experience view `#finder` (VIEWS.finder) built as a thin composition over existing verified logic — no new data, no duplicate comparison/favorites/booking logic.
+
+**Data:** New `src/data/finder.js` — pure Node-testable module composing `buildDiscoveryModels` / `applyDiscoveryFilters` / `sortDiscovery` from `catalogDiscovery.js` (single source of truth for prices/availability/specs). Supported filters only (from actually published data): budget ceiling (BUDGET_OPTIONS = 30k/60k/90k/150k ceilings on the parsed numeric catalog price), brand (derived from `CATALOG` itself), vehicle type chips (`TYPE_VALUES` — published «نوع المركبة» specs only), stock-record availability (reuses `AVAILABILITY_OPTIONS`). `runFinder()` computes `excludedNoPrice` (models matching non-price filters whose numeric price is unreadable — excluded from budget matching, counted, never treated as zero), `normalizeFinderFilters()` falls unknown values back to defaults, `finderFiltersAreDefault()` drives the reset button, results sorted ascending by price via `sortDiscovery`/deterministic tiebreak. No cc/speed/year/color filters — not offered where the catalog does not store them.
+
+**UI:** New `src/components/Finder.jsx` + `.css` — RTL native selects/checkbox chips (keyboard accessible, focus-visible outlines), matching count + honest exclusion notes (`role="status"`, only when >0), results grid reusing `.catalog-card-*` token language with published first image from `MODEL_DETAILS.images` when present (silent removal on broken image — no placeholder invention), availability line identical to Catalog cards (`AVAILABILITY_NOTE` vs `LAST_RECORDED_PRICE_NOTE`), needs-review `*` tooltip preserved, honest dashed empty state with reset. Next-step CTAs per card: model details via existing `modelHref`, compare via existing `compareStore` (`toggleCompareKey`, `COMPARE_LIMIT=3`, `COMPARE_EVENT` sync shared with Catalog), booking via existing `#book` + `storeRequestedModel` pre-selection flow, WhatsApp inquiry via existing `whatsappModelLink`. Success-path link `#compare` appears at ≥2 selected; no invented booking/payment/availability promises.
+
+**Wiring:** `App.jsx` — `VIEWS.finder` + `['#finder']` mapping + mounted inactive-by-default view panel (state-preservation pattern unchanged). `Header.jsx` — nav link «اكتشف موديلك» (Header.css untouched; owner's uncommitted redesign preserved). `Footer.jsx` — quick-link added. No protected files touched: catalog.js, generatedStock.js, generatedModelDetails.js, scripts, BookingForm, ordersApi, Garage, favorites/cart/compare stores, contact.js, ModelPage share/print brochure (all unmodified by this milestone).
+
+**Tests:** New `tests/finder.test.js` (11): budget parses “69,700” numerically, unreadable price excluded+counted not zero-treated, type filter counts unlabelled models in `excludedNoValue.type`, AND-combination, deterministic ascending order, filter normalization of unknown values, brands derived from catalog, in-stock honesty. `npm test` **190/190 pass**. `npm run lint` 0 warnings/errors from src/tests (7 pre-existing warnings only from untracked temp scripts). `npm run build` ✓ 105 modules (was 102; +finder.js/Finder.jsx/Finder.css), css 99.13 kB / js 557.41 kB. **NOT verified in browser** (no dev-server/visual check in this session): rendered layout, RTL, mobile breakpoints, image loading, compare-bar/free flow on real hardware — logic verified by tests only.
+
+## C.9. Shareable Shortlist Feature — 2026-11-06
+
+NOT COMMITTED/PUSHED/DEPLOYED (per standing rule). Implemented a Shareable Shortlist feature allowing users to create, share, and view motorcycle model selections through a single URL.
+
+**Features:**
+- Create a shortlist of up to 10 motorcycles from the catalog (`SHORTLIST_LIMIT = 10`); header badge live-counts via the custom event
+- Share shortlists via a single URL using URL-safe Base64 (`#shared/<encoded>`)
+- Recipient view renders directly from the URL with honest handling of missing/invalid models (valid models shown + «موديلات غير متوفرة» warning counted from raw URL keys — never silently dropped)
+- Separate isolated storage key `motohub.shortlist` + event `motohub:shortlist-changed` (no interaction with favorites/compare/cart/garage/recently-viewed)
+- Follows the design system with RTL; no new dependencies
+
+**Implementation:**
+- Data layer: `src/data/shortlistStore.js` — `readShortlistKeys`, `toggleShortlistKey`, `removeShortlistKey`, `clearShortlistKeys`, `encodeShortlistForUrl`/`decodeShortlistFromUrl`, `shortlistCount`; strict catalog-key sanitize on read; corrupt/unavailable storage ⇒ empty list, never throws
+- UI: `src/components/ShortlistShare.jsx` (creator view; share link derived in render; two-step clear; copy/native-share with honest failure message) and `src/components/SharedShortlist.jsx` (recipient; derived-at-render state, no loading/error states)
+- Integration: `src/App.jsx` (`VIEWS.shared`, `#shared/` prefix routing, mounted view panel), `src/components/Header.jsx` (nav link + badge), `src/components/Catalog.jsx` (toggle button per card)
+- CSS: `src/components/ShortlistShare.css`, `SharedShortlist.css`, plus `.catalog-card-shortlist` in `Catalog.css`
+
+**Bugs fixed during browser verification (2026-11-06):**
+1. `Header.jsx` — the imported `shortlistCount` was shadowed by same-named local state ⇒ «Cannot access 'shortlistCount' before initialization» crash. Fixed by aliasing the import (`shortlistCount as readShortlistCount`).
+2. `shortlistStore.js` — `decodeShortlistFromUrl` filtered keys against the catalog with `sanitize`, so invalid URL keys were dropped silently and the recipient's missing-model warning could never trigger (missing always 0). Now the decode returns raw URL keys (strings, deduped, capped at 10, no catalog filter); the recipient view itself separates valid/missing and warns.
+3. `SharedShortlist.jsx` — hash was read only on mount; opening a second shared link in the same tab (or returning after an error) showed stale/pinned state. Now the component derives everything at render: initial hash via state initializer, updates via `hashchange` listener, and `error` resets on every successful decode/re-decode.
+
+**Verified (2026-11-06):** `npm test` **207/207 pass**; `npm run lint` 0 warnings/errors from src (7 pre-existing only from the untracked temp script `simple-dashboard-test.js`); `npm run build` ✓ 113 modules (css 106.40 kB / js 583.44 kB). Browser (dev server, DOM-driven, both tabs console-clean):
+- Catalog: 82 shortlist toggle buttons render; toggling 3 SYM models wrote `motohub.shortlist` correctly and marked cards `is-selected`; header badge showed 3 on `#shortlist`
+- Creator view: 3 models listed with correct prices/availability notes; share URL auto-generated `…/#shared/WyJTWU18…` (URL-safe Base64)
+- Recipient view (fresh navigation of the share URL): all 3 models rendered with prices, availability honesty notes, and model-detail links
+- Mixed link (1 fake + 2 valid keys): 2 valid models + warning «⚠️ 1 موديل غير متوفر حاليًا في الكتالوج»
+- Broken link (invalid Base64): error state «رابط غير صالح أو معطوب» with catalog return
+- All-invalid keys (valid Base64): honest empty state «لا توجد موديلات صالحة في هذه القائمة»
+- Same-tab link switching: error → valid link re-render decodes fresh (stale-state bug verified fixed)
+
+## C.10. Purchase Confidence Mega Pack (Specification Glossary) — 2026-11-06
+
+NOT COMMITTED/PUSHED/DEPLOYED. Focused gap-only implementation: inspection confirmed the Buying Guide already covers price/availability education (§ 'prices' section, FAQs price-source/star/stock, Trust Points) and the purchase journey (Finder→details→compare→booking pre-selection→WhatsApp all reuse existing stores), so no duplicates were built. The one genuine gap — customers reading model-page spec labels without explanation — was filled:
+
+**Data:** New `src/data/specGlossary.js` — simple Egyptian-Arabic notes for exactly the 15 spec labels that actually appear in `MODEL_DETAILS` (نوع المركبة، سعة المحرك/القدرة، نوع المحرك، ناقل الحركة، السرعة القصوى، سعة الوقود/الشحنة الكاملة، نوع الفرامل، نوع تبريد الحرارة، نظام حقن الوقود، نوع العداد، نوع الإضائة، عدد المساعدين، الضمان، مقاسا الإطارين). Glossary keys keep the source's literal labels (including the source's own spellings like «الإضائة»/«باكم») so the customer links what they read to what's explained. Units explained: cc, km/h, L. `specGlossaryEntries()` = intersection with in-use labels in deterministic first-appearance order; `SPEC_UNIT_NOTES`; `specGlossaryCoverage()` = count of spec'd models (no invented number). Warranty entries explain the published wording («أيهما أقرب») without adding any terms, coverage claims, or policies.
+
+**UI:** `BuyingGuide.jsx` — new «معجم مواصفات سريع» block after the guide sections, reusing `.guide-card` styling; grid collapses to 1 column ≤720px; honest scope note (coverage count from data, glossary is explanatory only, no grading between models). `ModelPage.jsx` — one reused-class link under the published-specs block to `#guide` («شرح مصطلحات المواصفات في دليل الشراء») — no new CSS, no page clutter. `BuyingGuide.css` — glossary-appended rules only. `buyingGuide.js` — the existing «choose» section paragraph extended to mention «اكتشف موديلك» (sections/ids unchanged so `buyingGuide.test.js` invariants hold).
+
+**Untouched by this milestone:** catalog.js, generatedStock.js, generatedModelDetails.js, sync scripts, BookingForm, ordersApi, Garage, favorites/cart/compare stores, contact.js, Finder logic, ModelPage share/print, Header.css (owner redesign preserved), Finder.jsx/css.
+
+**Tests:** New `tests/specGlossary.test.js` (7): every glossary key is a published label; every published label is glossed (no gap; no invented terms); deterministic entry order; explanation honesty checks; unit-notes completeness (cc/km/h/L); declared coverage equals data truth. `npm test` **197/197 pass**. `npm run lint` 0 warnings/errors from src/tests (7 pre-existing only from untracked temp scripts). `npm run build` ✓ 106 modules, css 99.73 kB / js 563.87 kB. **NOT verified in browser:** rendered glossary card layout, RTL at wide/narrow widths, and the ModelPage→guide link navigation — content verified by tests only.
+
+## C.10. New Owner Start Pack («تسليم وبدء») — 2026-11-06
+
+NOT COMMITTED/PUSHED/DEPLOYED. Customer-facing handover + first-use experience inside the existing «رفيق الملكية» view; gap-only (CareGuide already covers the pre-ride condition check — referenced, not duplicated; Garage vehicle-add/odometer/backup flows reused, not rebuilt).
+
+**Data/storage:** New `src/data/handoverStore.js` — 5 checklist groups (identity/body/accessories/manual/controls), 11 items; `FIRST_RIDE_STEPS` (helmet/gear, stationary controls familiarization, safe start environment, owner's-manual deferral), scope note, garage-transition note, first-ride disclaimer. **Isolated storage key `motohub.handover`** (`{version:1, checked:string[]}`) + event `motohub:handover-changed` — zero interaction with `motohub.garage` (no reads/writes/merges). Strict sanitize drops unknown/duplicate/non-string ids; corrupt or unavailable storage degrades to empty state without throwing (privacy-mode write failure ignored, event still fired). `handoverSummary()` computes honest totals from data.
+
+**UI:** New `src/components/HandoverStart.jsx` — scope note, grouped interactive checkboxes reusing `.garage-guide-grid`/`.garage-guide-card`, progress line `x من y` (`role="status"`), completed state, two-step reset confirm (same pattern as RemoveVehicle), first-ride steps + disclaimers, garage-transition block with `onGoTab` callback switching to the `dashboard` tab. Wired into `OwnershipCompanion.jsx`: new tab `{id:'handover', label:'تسليم وبدء'}` after `dashboard` (dashboard stays first/default), tab enabled without an active vehicle, rendered in both active-vehicle and no-vehicle panel branches. `OwnershipCompanion.css` — appended `.garage-handover-*` rules only (1-column tweaks ≤640px); existing garage/tab/backup redesign styles untouched.
+
+**Honesty:** general customer checklist only — not an official/legal inspection; explicitly defers to the buyer's purchase agreement, supplied documents, and the showroom. No invented legal requirements, warranty terms, included accessories, break-in procedures, speed/RPM limits, or maintenance schedules. Checklist persistence is browser-local only — never sent to Google Sheets or any backend. No automatic maintenance schedules anywhere.
+
+**Untouched:** garageStore.js, garageStats.js, catalog/generated data, sync scripts, BookingForm, ordersApi, careGuide, favorites/cart/compare, contact.js/WhatsApp, ModelPage share/print, Finder logic, BuyingGuide/specGlossary, Header.css (owner redesign).
+
+**Tests:** New `tests/handover.test.js` (11): id validity/uniqueness per group, sanitize drops unknown/duplicate/corrupt, toggle add/remove + storage shape `version:1` + unknown-id no-op, reset, deterministic summary counts, isolated key/event versus Garage. `npm test` **207/207 pass** (197 + 11). `npm run lint` — 0 warnings/errors from src/tests (7 pre-existing from untracked temp scripts only). `npm run build` ✓ **108 modules** (css 100.76 kB / js 572.72 kB). **NOT verified in browser:** tab rendering, RTL/checkbox layout, mobile breakpoints, tab-switch callback, and reset interaction in the UI — logic verified by tests only. Note: `OwnershipCompanion.css` contains a pre-existing unclear brace structure around the backup block (tracked; not introduced here).
+
 ## D. Important Files
+
 
 | File | Responsibility / why it matters |
 |---|---|

@@ -13,6 +13,11 @@ import {
   COMPARE_LIMIT,
 } from '../data/compareStore'
 import {
+  readShortlistKeys,
+  toggleShortlistKey,
+  SHORTLIST_EVENT,
+} from '../data/shortlistStore'
+import {
   buildDiscoveryModels,
   applyDiscoveryFilters,
   sortDiscovery,
@@ -53,7 +58,7 @@ const CC_BANDS = [
   { id: 'big', label: 'أكبر من 200cc', min: 200, max: null },
 ]
 
-function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled, fav, onToggleFav }) {
+function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled, fav, onToggleFav, shortlisted, onToggleShortlist }) {
   const info = GENERATED_BY_KEY.get(`${brand}|${model.name}`)
   const needsReview = Boolean(info && info.needsReview)
   // موديل بسجل Stock مُطابَق، وبه وحدات مسجّلة: مؤشر «متاح» الموجز (بلا تحذير)
@@ -78,6 +83,30 @@ function ModelCard({ brand, model, compared, onToggleCompare, compareDisabled, f
             onClick={() => onToggleCompare(`${brand}|${model.name}`)}
           >
             قارن
+          </button>
+          <button
+            type="button"
+            className={`catalog-card-shortlist ${shortlisted ? 'is-selected' : ''}`}
+            aria-pressed={shortlisted}
+            aria-label={shortlisted ? `إزالة ${brand} ${model.name} من القائمة` : `إضافة ${brand} ${model.name} إلى القائمة`}
+            title={shortlisted ? 'في القائمة' : 'أضف إلى القائمة'}
+            onClick={() => onToggleShortlist(`${brand}|${model.name}`)}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill={shortlisted ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
           </button>
           <button
             type="button"
@@ -171,8 +200,20 @@ function Catalog() {
     return () => window.removeEventListener(FAVORITES_EVENT, refresh)
   }, [])
 
+  // القائمة القابلة للمشاركة: مجموعة المفاتيح الحالية — تُحدَّث عبر حدث القائمة
+  const [shortlistKeys, setShortlistKeys] = useState(() => new Set(readShortlistKeys()))
+  useEffect(() => {
+    const refresh = () => setShortlistKeys(new Set(readShortlistKeys()))
+    window.addEventListener(SHORTLIST_EVENT, refresh)
+    return () => window.removeEventListener(SHORTLIST_EVENT, refresh)
+  }, [])
+
   const toggleCompare = (key) => {
     toggleCompareKey(key) // المخزن يطلق الحدث فتتحدث الحالة المحلية بالمعالج أعلاه
+  }
+
+  const toggleShortlist = (key) => {
+    toggleShortlistKey(key) // المخزن يطلق الحدث فتتحدث الحالة المحلية بالمعالج أعلاه
   }
 
   // ===== منطق الاكتشاف: فلاتر مجمَّعة + ترتيب — المنطق النقي في catalogDiscovery.js =====
@@ -484,6 +525,8 @@ function Catalog() {
                       compareDisabled={compareKeys.length >= MAX_COMPARE}
                       fav={favKeys.has(`${group.brand}|${model.name}`)}
                       onToggleFav={toggleFavorite}
+                      shortlisted={shortlistKeys.has(`${group.brand}|${model.name}`)}
+                      onToggleShortlist={toggleShortlist}
                     />
                   ))}
                 </ul>
@@ -510,6 +553,8 @@ function Catalog() {
                     compareDisabled={compareKeys.length >= MAX_COMPARE}
                     fav={favKeys.has(model.key)}
                     onToggleFav={toggleFavorite}
+                    shortlisted={shortlistKeys.has(model.key)}
+                    onToggleShortlist={toggleShortlist}
                   />
                 ))}
               </ul>

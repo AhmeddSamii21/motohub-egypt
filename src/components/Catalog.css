@@ -419,6 +419,31 @@
   background: rgba(224, 36, 94, 0.08);
 }
 
+.catalog-card-shortlist {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.55rem;
+  font-family: inherit;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.catalog-card-shortlist:hover {
+  color: var(--text);
+  border-color: var(--metal);
+}
+
+.catalog-card-shortlist.is-selected {
+  color: #4285f4;
+  border-color: rgba(66, 133, 244, 0.55);
+  background: rgba(66, 133, 244, 0.08);
+}
+
 .catalog-card-compare {
   padding: 0.25rem 0.7rem;
   font-family: inherit;

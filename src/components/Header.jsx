@@ -8,10 +8,12 @@ import './Header.css'
  */
 import { CART_EVENT, cartCount } from '../data/cartStore'
 import { FAVORITES_EVENT, favoritesCount } from '../data/favoritesStore'
+import { SHORTLIST_EVENT, shortlistCount as readShortlistCount } from '../data/shortlistStore'
 
 const LINKS = [
   { href: '#home', label: 'الرئيسية', view: 'home' },
   { href: '#catalog', label: 'الكتالوج', view: 'catalog' },
+  { href: '#finder', label: 'اكتشف موديلك', view: 'finder' },
   { href: '#recommend', label: 'ساعدني أختار موتوسيكل', view: 'recommend' },
   { href: '#budget', label: 'مخطط الميزانية', view: 'budget' },
   { href: '#updates', label: 'تحديثات الأسعار', view: 'updates' },
@@ -28,17 +30,22 @@ function Header({ view = 'home' }) {
   const [cartItems, setCartItems] = useState(() => cartCount())
   // عدد الموديلات المفضَّلة — يتحدّث فورًا عبر حدث المفضلة المخصص
   const [favCount, setFavCount] = useState(() => favoritesCount())
+  // عدد الموديلات في القائمة القابلة للمشاركة — يتحدّث فورًا عبر حدث القائمة المخصص
+  const [shortlistCount, setShortlistCount] = useState(() => readShortlistCount())
 
   useEffect(() => {
     const refresh = () => {
       setCartItems(cartCount())
       setFavCount(favoritesCount())
+      setShortlistCount(readShortlistCount())
     }
     window.addEventListener(CART_EVENT, refresh)
     window.addEventListener(FAVORITES_EVENT, refresh)
+    window.addEventListener(SHORTLIST_EVENT, refresh)
     return () => {
       window.removeEventListener(CART_EVENT, refresh)
       window.removeEventListener(FAVORITES_EVENT, refresh)
+      window.removeEventListener(SHORTLIST_EVENT, refresh)
     }
   }, [])
 
@@ -83,6 +90,20 @@ function Header({ view = 'home' }) {
                 </a>
               </li>
             ))}
+            <li>
+              <a
+                href="#shortlist"
+                aria-current={view === 'shortlist' ? 'page' : undefined}
+                onClick={() => setOpen(false)}
+              >
+                القائمة القابلة للمشاركة
+                {shortlistCount > 0 && (
+                  <span className="nav-cart-badge" aria-label={`${shortlistCount} موديل في القائمة`}>
+                    {shortlistCount}
+                  </span>
+                )}
+              </a>
+            </li>
             <li>
               <a
                 href="#favorites"
